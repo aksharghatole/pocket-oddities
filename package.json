@@ -1,0 +1,23 @@
+{
+  "name": "pocket-oddities",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "20 playable mobile mini-games, playable in the browser or bundled through Capacitor",
+  "scripts": {
+    "start": "npx --yes http-server . -p 4173 -c-1",
+    "serve": "python3 -m http.server 4173",
+    "android:add": "npm run build:web && cap add android",
+    "ios:add": "npm run build:web && cap add ios",
+    "native:sync": "npm run build:web && cap sync",
+    "native:android": "cap open android",
+    "native:ios": "cap open ios",
+    "build:web": "node tools/build-web.mjs"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/ios": "^7.0.0"
+  }
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1023">
+  <meta name="description" content="Pocket Oddities: 20 wonderfully weird bite-sized games, playable offline on your phone.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Pocket Oddities · 20 Mini-Games</title>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-glyph" aria-hidden="true">✳</span><div><strong>Pocket Oddities</strong><small>20 tiny strange worlds</small></div></div>
+      <div class="top-actions"><span class="offline-pill">● WORKS OFFLINE</span><button id="sound-toggle" class="icon-btn" aria-label="Toggle sound" title="Toggle sound">♫</button></div>
+    </header>
+    <main>
+      <section id="home-screen" class="home-screen">
+        <div class="hero">
+          <div class="hero-copy"><span class="eyebrow">THE WEIRD LITTLE ARCADE</span><h1>Twenty games.<br><em>Zero ordinary.</em></h1><p>Quick puzzles, tiny disasters, suspicious buttons, and pocket-sized chaos. All playable with one finger.</p><div class="hero-meta"><span>✦ 20 playable games</span><span>◷ 1–3 min rounds</span><span>↯ No account needed</span></div></div>
+          <div class="hero-art" aria-hidden="true"><span class="orbit orbit-a">👁</span><span class="orbit orbit-b">☄</span><div class="planet"><span>ಠ‿ಠ</span></div><span class="orbit orbit-c">★</span><span class="orbit orbit-d">◈</span></div>
+        </div>
+        <div class="section-heading"><div><span class="eyebrow">PICK YOUR NEXT OBSESSION</span><h2>The collection</h2></div><div class="completion" id="completion">0 / 20 beaten</div></div>
+        <div class="filter-row" id="filter-row" role="group" aria-label="Filter games"><button class="filter active" data-filter="all">All 20</button><button class="filter" data-filter="reflex">Reflex</button><button class="filter" data-filter="puzzle">Puzzles</button><button class="filter" data-filter="strategy">Strategy</button><button class="filter" data-filter="weird">Weird</button></div>
+        <div id="game-grid" class="game-grid"></div>
+        <footer>Made for small screens, short breaks, and curious fingers. ♡</footer>
+      </section>
+      <section id="play-screen" class="play-screen hidden" aria-label="Current game">
+        <button id="back-btn" class="back-btn">← All games</button>
+        <div class="game-heading"><div><div class="eyebrow" id="game-category"></div><h2 id="game-title"></h2><p id="game-description"></p></div><div id="level-pill" class="level-pill">ROUND 01</div></div>
+        <div class="arena-shell">
+          <div class="hud"><div><small>SCORE</small><strong id="score">0</strong></div><div><small>TIME</small><strong id="clock">—</strong></div><div><small>BEST</small><strong id="best">0</strong></div></div>
+          <div class="canvas-wrap"><canvas id="arena" width="360" height="450" aria-label="Game arena"></canvas><div id="game-overlay" class="game-overlay hidden"><div id="overlay-icon" class="overlay-icon">✦</div><h3 id="overlay-title"></h3><p id="overlay-message"></p><button id="restart-btn" class="primary-btn">Play again ↻</button><button id="overlay-home" class="secondary-btn">All games</button></div></div>
+          <div class="instruction" id="instruction"></div>
+          <div class="game-controls" id="game-controls"></div>
+        </div>
+        <div class="below-game"><span>✦ Each game saves your best score locally.</span><button id="next-btn">Try another game →</button></div>
+      </section>
+    </main>
+  </div>
+  <script src="./games.js" defer></script>
+</body>
+</html>

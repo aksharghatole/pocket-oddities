@@ -1,0 +1,19 @@
+{
+  "name": "Pocket Oddities — 20 Strange Mini-Games",
+  "short_name": "Oddities",
+  "description": "Twenty playable, offline mini-games for curious fingers.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1023",
+  "theme_color": "#0b1023",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

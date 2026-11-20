@@ -25,6 +25,10 @@ npx cap open android
 
 For a Play Store release, choose a permanent unique package ID, generate brand icons and screenshots, configure versioning and a **secure, persistent signing keystore**, create a signed **Android App Bundle (.aab)**, perform device and Play internal testing, and complete Google Play Console requirements.
 
+## iOS — simulator artifact and Xcode
+
+The **Build iOS simulator test app** GitHub Actions workflow runs on macOS and packages an unsigned `App.app` suitable for testing in an iOS Simulator. It does not generate a signed IPA for installation on an actual iPhone. Use its manual **Run workflow** action for an updated simulator test build.
+
 ## iOS — use the same games
 
 On macOS with Xcode installed:

@@ -1,6 +1,6 @@
 # Pocket Oddities — a growing mobile mini-game arcade
 
-A dependency-free, original HTML5 arcade built for mobile portrait screens. All **22 mini-games** are playable with tap, drag, or on-screen buttons. Includes a responsive game library with a UTC-stable Game of the Day, a Surprise Me shortcut, completed and unfinished shelves, scores saved locally, independent sound, optional vibration, and a reduced-motion preference, offline PWA caching, and a Capacitor starter configuration for Android/iOS packaging. GitHub Actions deploys the project to GitHub Pages once Pages is enabled under Settings → Pages → Build and deployment → Source: GitHub Actions.
+A dependency-free, original HTML5 arcade built for mobile portrait screens. All **24 mini-games** are playable with tap, drag, or on-screen buttons. Includes a responsive game library with a UTC-stable Game of the Day, a Surprise Me shortcut, completed and unfinished shelves, scores saved locally, independent sound, optional vibration, and a reduced-motion preference, offline PWA caching, and a Capacitor starter configuration for Android/iOS packaging. GitHub Actions deploys the project to GitHub Pages once Pages is enabled under Settings → Pages → Build and deployment → Source: GitHub Actions.
 
 **Important:** This is a working **MVP**, not twenty polished commercial games or finished App Store / Play Store binaries. It needs playtesting, screenshots, store assets, privacy policy and native signing before release.
 
@@ -27,12 +27,14 @@ The Cabinet now shows your **Oddity Score**, level, a per-game **Oddity Passport
 
 ## The Oddity Cabinet: achievements and hidden connections
 
-Play the same arcade, but now victories matter across games. Tap **◈ Cabinet** to see medals, total progress, and five hidden story threads:
+Play the same arcade, but now victories matter across games. Tap **◈ Cabinet** to see medals, total progress, and six hidden story threads:
 
 - **The Night Circuit:** Shadow Thief · The Last Light Switch · Invisible Maze
 - **A Borrowed Galaxy:** Don't Wake the Planet · Pocket Black Hole · Unfinished Universe
 - **The Lost Frequency:** You Are the Notification · One Finger Orchestra · Echo Tiles
 - **The Unlikely Clock:** The Clock Is Hungry · Gravity Is Shy · The Button Has Feelings
+- **The Moon’s Unclaimed Mail:** Moon Mail Sorter · The Game Is Lying · One Finger Orchestra
+- **The Buried Signal:** Fossil Forecast · Moon Mail Sorter · Circuit Garden
 
 The Cabinet only reveals **riddle clues** for missing fragments. Winning all three connected games uncovers a secret relic and unlocks a **cosmetic theme** that can be equipped or reset. Medals display Common, Uncommon, Rare, Epic, Legendary, or Secret rarity; beating every registered game earns the Legendary full-collection medal. Achievements and rewards are stored entirely on the player's device. Existing beaten games count toward the threads automatically; older scores are not reset.
 
@@ -92,6 +94,9 @@ Release prep: use the included SVG icon as a starting point; add 192px and 512px
 19. Invisible Maze — escape two mazes by memorizing briefly shown walls.
 20. One Minute Villain — reach 100 chaos within eight turns while avoiding the detectives.
 21. Echo Tiles — memorize patterns and tap four colored tiles in order.
+22. Moon Mail Sorter — sort cosmic parcels into matching mailboxes.
+23. Circuit Garden — rotate wires to carry light from seed to flower.
+24. Fossil Forecast — solve three 5×5 nonograms to uncover tiny fossils.
 
 ## How to customize
 

@@ -1,8 +1,13 @@
 import assert from 'node:assert/strict';
 import {readFile,readdir,access} from 'node:fs/promises';
 const read=async file=>readFile(new URL('../'+file,import.meta.url),'utf8');
-const [html,engine,css,manifest,worker]=await Promise.all(['index.html','games.js','styles.css','manifest.webmanifest','sw.js'].map(read));
+const [html,engine,css,manifest,worker,cabinet]=await Promise.all(['index.html','games.js','styles.css','manifest.webmanifest','sw.js','achievements.js'].map(read));
 assert.match(html,/id="game-search"/,'Library search input missing');
+assert.match(html,/id="cabinet-dialog"/,'Achievement dialog missing');
+assert.match(html,/src="\.\/achievements\.js"/,'Achievement script not loaded');
+assert.match(cabinet,/oddities-cabinet-v1/,'Local achievements store missing');
+assert.match(worker,/\.\/achievements\.js/,'Achievement assets missing from offline cache');
+assert.match(engine,/oddities:game-finish/,'Gameplay completion event missing');
 assert.match(engine,/PocketOddities=Object\.freeze/,'Game pack registration API missing');
 assert.match(engine,/info\.length\+' beaten'/,'Completion count must be dynamic');
 const manifestJSON=JSON.parse(manifest);

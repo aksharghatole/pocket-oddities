@@ -8,6 +8,21 @@ async function start(page,title){
   await page.goto('/');
   await page.getByRole('button',{name:new RegExp(title)}).first().click();
 }
+test('reduced motion setting applies and survives reload',async ({page})=>{
+  await page.goto('/');
+  await openCabinet(page);
+  const toggle=page.locator('#reduced-motion-toggle');
+  await expect(toggle).not.toBeChecked();
+  await toggle.check();
+  await expect(page.locator('html')).toHaveAttribute('data-reduced-motion','true');
+  expect(await page.evaluate(()=>localStorage.getItem('oddities-reduced-motion'))).toBe('true');
+  const duration=await page.locator('.game-card').first().evaluate(el=>getComputedStyle(el).transitionDuration);
+  expect(duration.split(',').every(value=>parseFloat(value)<=0.001)).toBe(true);
+  await page.reload();
+  await openCabinet(page);
+  await expect(page.locator('#reduced-motion-toggle')).toBeChecked();
+  await expect(page.locator('html')).toHaveAttribute('data-reduced-motion','true');
+});
 test('Cabinet shows achievements and five hidden cross-game threads',async ({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));

@@ -84,3 +84,16 @@ footer a{display:inline-block;margin-left:12px;color:var(--mint);text-decoration
 .cabinet-stats{grid-template-columns:repeat(auto-fit,minmax(94px,1fr))}.cabinet-stat-score{background:linear-gradient(145deg,#263c4a,#292444);border-color:#79f2c36b}.cabinet-stat-level{display:block;margin-top:4px;color:var(--yellow);font-size:10px;font-weight:850;letter-spacing:.5px}.cabinet-stat-score strong{color:var(--yellow)}@media(max-width:600px){.cabinet-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.cabinet-stat{padding:9px 5px}.cabinet-stat strong{font-size:18px}.cabinet-stat small{font-size:10px}}
 
 .speedrun-record{font-variant-numeric:tabular-nums;color:var(--yellow)!important}.speedrun-record-none{color:var(--muted)!important}.game-card-bottom .speedrun-record{font-size:11px}
+
+/* Oddity Passport stamps */
+.cabinet-passport{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:12px 0 22px}
+.passport-stamp{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;min-height:66px;padding:10px 11px;border:1px dashed #56617f;border-radius:14px;background:#171e34;color:#bac5dd}
+.passport-stamp.collected{border-style:solid;border-color:#7ce7c0;background:linear-gradient(135deg,#203b42,#202a42);color:#f1fff8}
+.passport-stamp-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#28314a;color:#9eabc5;font-size:17px}
+.passport-stamp.collected .passport-stamp-mark{background:#79efc4;color:#173546;font-size:20px}
+.passport-stamp-copy{display:grid;gap:4px;min-width:0}
+.passport-stamp-copy strong{font-size:12px;line-height:1.25}
+.passport-stamp-copy small{font-size:9px;letter-spacing:.08em;color:#98a6c0}
+.passport-stamp.collected .passport-stamp-copy small{color:#8ceac5}
+.passport-stamp-number{align-self:start;font-size:10px;color:#8792ad;font-variant-numeric:tabular-nums}
+@media(max-width:460px){.cabinet-passport{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.passport-stamp{grid-template-columns:30px minmax(0,1fr);gap:7px;padding:8px;min-height:62px}.passport-stamp-mark{width:29px;height:29px}.passport-stamp-number{display:none}.passport-stamp-copy strong{font-size:11px}}

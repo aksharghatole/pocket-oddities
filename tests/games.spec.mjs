@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {readFileSync,readdirSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 
 const root=new URL('../',import.meta.url);
@@ -7,8 +7,10 @@ const core=readFileSync(new URL('games.js',root),'utf8');
 const listMatch=core.match(/const info=\[([\s\S]*?)\];\s*const games=/);
 if(!listMatch)throw new Error('Cannot find the built-in game catalog');
 const builtIn=vm.runInNewContext('['+listMatch[1]+']',{}, {timeout:1000}).map(entry=>entry[0]);
+const indexHtml=readFileSync(new URL('index.html',root),'utf8');
+const extensionFiles=[...indexHtml.matchAll(/<script[^>]+src=["']\.\/game-packs\/([^"']+\.js)["']/g)].map(match=>match[1]);
 const expansions=[];
-for(const file of readdirSync(new URL('game-packs/',root)).filter(p=>p.endsWith('.js'))){
+for(const file of extensionFiles){
   const content=readFileSync(new URL('game-packs/'+file,root),'utf8');
   const names=content.matchAll(/PocketOddities\.register\(\s*\[\s*(['"])(.*?)\1/g);
   for(const m of names)expansions.push(m[2]);

@@ -5,6 +5,7 @@
 - Added Echo Tiles as game #21.
 - Added library search and automatically updated game totals.
 - Improved the service worker so newly published game packs can be loaded and cached offline.
+- Added mobile browser installation support, raster PWA icons, and a repeatable unsigned iOS Simulator build.
 - Added automated library validation, GitHub Pages checks and a manually triggerable Android debug APK workflow.
 - Added contribution, development and mobile publishing documentation.
 

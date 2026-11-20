@@ -140,8 +140,58 @@ define({init(){m.level=1;m.lives=3;m.t=null;m.lastFeedback='Every instruction is
 const rules=['STAY LEFT','STAY RIGHT','STAY CENTER','DO NOT MOVE','MOVE AT LEAST ONCE'];
 define({init(){m.t=35;m.phase=0;m.phaseTime=7;m.x=180;m.moved=false;controls([['◀ LEFT','left'],['RIGHT ▶','right']])},action(a){let before=m.x;if(a==='left')m.x=clamp(m.x-60,35,325);if(a==='right')m.x=clamp(m.x+60,35,325);if(before!==m.x)m.moved=true},tap(x){if(x!==m.x)m.moved=true;m.x=clamp(x,30,330)},update(dt){m.phaseTime-=dt;if(m.phaseTime<=0){let pass=[m.x<125,m.x>235,m.x>=125&&m.x<=235,!m.moved,m.moved][m.phase];if(!pass){finish(false,'Rule broken: '+rules[m.phase]+'.');return}addScore(1);m.phase++;m.level=m.phase+1;m.phaseTime=7;m.moved=false;if(m.phase>=5)finish(true,'You obeyed every one of the changing room rules!')}},draw(){base('#141e34');T('THE CURRENT RULE',180,55,12,U.muted);panel(24,88,312,83,'#343e5c');T(rules[Math.min(m.phase,4)],180,131,23,U.yellow);R(35,217,88,133,'#34685c',8);R(136,217,88,133,'#4f4b7b',8);R(237,217,88,133,'#68445d',8);T('LEFT',79,235,11);T('CENTER',180,235,11);T('RIGHT',281,235,11);O(m.x,300,18,U.pink);S(m.x,300,24,U.white,2);meter('NEXT RULE',m.phaseTime,7,55,400,U.mint,250)}});
 
-// 05 — Grid puzzle; some tiles are lit. Change light phases to find paths.
-define({init(){m.t=55;m.x=0;m.y=5;m.phase=0;m.lives=4;controls([['↻ SHIFT LIGHT','shift',true]])},lit(x,y){return (x+2*y+m.phase)%4===0},action(a){if(a==='shift')m.phase=(m.phase+1)%4},tap(x,y){let col=Math.floor((x-30)/50),row=Math.floor((y-82)/50);if(col<0||col>5||row<0||row>5||Math.abs(col-m.x)+Math.abs(row-m.y)!==1)return;if(this.lit(col,row)){m.lives--;beep(165);if(m.lives<=0)finish(false,'You ran out of cover in the light.')}else{m.x=col;m.y=row;addScore(1);if(m.x===5&&m.y===0)finish(true,'You crossed the gallery without stepping into the light.')}},draw(){base('#111629');T('SHADOW GALLERY',180,41,18,U.purple);for(let y=0;y<6;y++)for(let x=0;x<6;x++){let px=30+x*50,py=82+y*50;R(px+2,py+2,46,46,this.lit(x,y)?'#bdab78':'#283452',7);if(this.lit(x,y))O(px+25,py+25,10,'#f4d78c44')}T('★',304,107,21,U.mint);O(55+m.x*50,107+m.y*50,15,U.pink);T('♥ '.repeat(m.lives),180,412,18,U.red)}});
+// 05 — A stealth gallery with readable light, marked safe moves, and shift cooldown.
+define({
+  init(){
+    m.t=80;m.x=0;m.y=5;m.phase=0;m.lives=4;
+    m.shifts=0;m.shiftCooldown=0;m.visited=new Set(['0,5']);
+    m.note='Tap a neighboring dark tile.';
+    controls([['↻ SHIFT THE LIGHT','shift',true]]);
+  },
+  lit(x,y){return (x+2*y+m.phase)%4===0},
+  action(a){
+    if(a!=='shift'||m.shiftCooldown>0)return;
+    m.phase=(m.phase+1)%4;m.shifts++;
+    m.shiftCooldown=.65;
+    m.note='Light shifted. Find your next shadow.';
+    beep(380);
+  },
+  tap(x,y){
+    const col=Math.floor((x-30)/50),row=Math.floor((y-82)/50);
+    if(col<0||col>5||row<0||row>5)return;
+    if(Math.abs(col-m.x)+Math.abs(row-m.y)!==1){m.note='Move only one tile at a time.';return}
+    if(this.lit(col,row)){
+      m.lives--;m.note='Too bright! Shift the light or choose another tile.';
+      beep(165);
+      if(m.lives<=0)finish(false,'The spotlights found you four times. Follow the shadow tiles!');
+      return;
+    }
+    m.x=col;m.y=row;m.visited.add(col+','+row);
+    m.note='Nice and quiet. Keep moving.';
+    addScore();
+    if(m.x===5&&m.y===0)finish(true,'You slipped through the gallery without losing your cover.');
+  },
+  update(dt){m.shiftCooldown=Math.max(0,m.shiftCooldown-dt)},
+  draw(){
+    base('#111629');
+    T('SHADOW GALLERY',180,35,20,U.purple);
+    T('DARK = SAFE   ·   GOLD = SPOTLIGHT',180,64,11,U.muted);
+    for(let y=0;y<6;y++)for(let x=0;x<6;x++){
+      const px=30+x*50,py=82+y*50,lit=this.lit(x,y);
+      const visited=m.visited.has(x+','+y);
+      R(px+2,py+2,46,46,lit?'#a98c60':visited?'#344f5b':'#25324c',7);
+      if(lit){O(px+25,py+25,11,'#f7d8a04d');S(px+25,py+25,15,'#f2c98b',2)}
+      else if(Math.abs(x-m.x)+Math.abs(y-m.y)===1)S(px+25,py+25,13,U.mint,2);
+      if(visited&&!(m.x===x&&m.y===y))O(px+25,py+25,3,U.blue);
+    }
+    T('★',305,107,23,U.mint);
+    O(55+m.x*50,107+m.y*50,15,U.pink);
+    S(55+m.x*50,107+m.y*50,18,U.white,2);
+    T('♥ '.repeat(m.lives)+'  ·  SHIFT '+m.shifts,180,400,16,U.red);
+    T(m.note,180,421,11,U.muted);
+    T(m.shiftCooldown>0?'SHIFT RECHARGING':'SHIFT READY',180,442,11,m.shiftCooldown>0?U.yellow:U.mint);
+  }
+});
 
 // 06 — Space hazards, noise budget, tap to deflect.
 define({init(){m.t=45;m.noise=12;m.hp=3;m.spawn=.4;m.rocks=[];m.target=10;m.shush=0;controls([['🤫 SHUSH (4s COOLDOWN)','shush',true]])},action(a){if(a==='shush'&&m.shush<=0){m.noise=Math.max(0,m.noise-21);m.shush=4}},tap(x,y){let r=m.rocks.findIndex(a=>dist(x,y,a.x,a.y)<25);if(r>=0){m.rocks.splice(r,1);m.noise+=25;addScore();if(m.score>=m.target)finish(true,'Ten asteroids caught. The planet slept through it.')}},update(dt){m.noise=Math.max(0,m.noise-dt*7);m.shush=Math.max(0,m.shush-dt);if(m.noise>=100){finish(false,'The planet woke up from all the tapping!');return}m.spawn-=dt;if(m.spawn<=0){let a=rnd(0,TAU),r=210;m.rocks.push({x:180+Math.cos(a)*r,y:224+Math.sin(a)*r,s:rnd(22,38)});m.spawn=rnd(.8,1.4)}for(const a of m.rocks){let z=dist(a.x,a.y,180,224);a.x+=(180-a.x)/z*a.s*dt;a.y+=(224-a.y)/z*a.s*dt;if(z<50){a.hit=true;m.hp--}}m.rocks=m.rocks.filter(a=>!a.hit);if(m.hp<=0)finish(false,'The sleepy planet was hit too many times.')},draw(){base('#121a37');for(let i=0;i<3;i++)S(180,224,80+i*48,'#a6baff1d');O(180,224,59,U.purple);T(m.noise>75?'ಠ_ಠ':'－_－',180,220,35,'#26243e');m.rocks.forEach(a=>{O(a.x,a.y,14,'#e3a98e');O(a.x-4,a.y-4,4,'#8d6e76')});meter('NOISE LEVEL',m.noise,100,53,55,m.noise>75?U.red:U.mint,254);T('PLANET HEALTH: '+'♥ '.repeat(m.hp),180,405,13,U.yellow)}});
@@ -185,8 +235,75 @@ define({init(){m.t=75;m.stage=0;m.x=0;m.y=5;m.walls=makeLightMaze(0);m.flash=2;m
 // 14 — Press and hold to change gravity; survive scrolling gap obstacles.
 define({init(){m.t=47;m.y=220;m.v=0;m.held=false;m.gates=[];m.spawn=.9;m.gateNo=0;controls([['⬆ TAP TO TOGGLE GRAVITY','go',true]])},down(){m.held=true},up(){m.held=false},action(a){if(a==='go')m.held=!m.held},update(dt){m.v=clamp(m.v+(m.held?-390:390)*dt,-155,155);m.y+=m.v*dt;if(m.y<15||m.y>435){finish(false,'Gravity got the better of you. Hold to rise.');return}m.spawn-=dt;if(m.spawn<=0&&m.gateNo<8){let gaps=[220,155,265,190,255,160,225,195];m.gates.push({x:385,gap:gaps[m.gateNo],passed:false});m.gateNo++;m.spawn=3.15}for(let g of m.gates){g.x-=120*dt;if(Math.abs(g.x-75)<30&&Math.abs(m.y-g.gap)>68){finish(false,'A gate caught your ball. Adjust your altitude sooner.');return}if(!g.passed&&g.x<46){g.passed=true;addScore();if(m.score>=8)finish(true,'All eight gravity gates survived!')}}m.gates=m.gates.filter(g=>g.x>-45)},draw(){base('#15213a');L(0,10,360,10,'#f0a1b755',4);L(0,440,360,440,'#f0a1b755',4);m.gates.forEach(g=>{R(g.x-23,0,46,g.gap-70,'#9f7adc',5);R(g.x-23,g.gap+70,46,450-(g.gap+70),'#9f7adc',5)});O(75,m.y,19,U.yellow);S(75,m.y,23,'#fff8c777',3);T('HOLD = RISE    RELEASE = FALL',180,45,12,U.muted);T('GATES: '+m.score+' / 8',180,412,15,U.mint)}});
 
-// 15 — Crossroad traffic; tap cars to pause and avoid collisions.
-define({init(){m.t=48;m.spawn=.25;m.cars=[];m.total=0;controls([])},tap(x,y){let a=m.cars.find(c=>dist(x,y,c.axis==='h'?c.pos:180,c.axis==='v'?c.pos:225)<32);if(a){a.brake=a.brake>0?0:2.5;beep(390)}},update(dt){m.spawn-=dt;if(m.spawn<=0&&m.total<16){m.cars.push({axis:'h',pos:-25,brake:0});m.cars.push({axis:'v',pos:-25,brake:0});m.total+=2;m.spawn=4.3}for(let c of m.cars){c.brake=Math.max(0,c.brake-dt);if(c.brake<=0)c.pos+=90*dt}const h=m.cars.find(c=>c.axis==='h'&&Math.abs(c.pos-180)<28),v=m.cars.find(c=>c.axis==='v'&&Math.abs(c.pos-225)<28);if(h&&v)finish(false,'Collision at the intersection! Tap a car to brake.');for(let c of m.cars)if(c.pos>390&&!c.counted){c.counted=true;addScore();if(m.score>=12)finish(true,'Twelve cars crossed safely under your watch.')}m.cars=m.cars.filter(c=>c.pos<410)},draw(){base('#1b2637');R(0,192,360,66,'#47536b');R(147,0,66,450,'#47536b');for(let i=0;i<7;i++){R(i*55,223,26,3,'#ffeca4');R(179,i*75,3,35,'#ffeca4')}m.cars.forEach(c=>{let x=c.axis==='h'?c.pos:180,y=c.axis==='v'?c.pos:225;R(x-20,y-13,40,26,c.brake>0?U.red:c.axis==='h'?U.mint:U.yellow,7);T(c.brake>0?'Ⅱ':'●',x,y,13,'#2b344e')});T('SAFE CROSSINGS: '+m.score+' / 12',180,35,15,U.white);T('TAP A CAR TO STOP OR RELEASE',180,415,12,U.muted)}});
+// 15 — A readable traffic-control puzzle with pause/resume and recoverable crashes.
+define({
+  init(){
+    m.t=72;m.spawn=.35;m.cars=[];m.total=0;m.lives=3;
+    m.note='Pause one lane so the other can pass.';
+    controls([['Ⅱ HORIZONTAL','pause-h',true],['Ⅱ VERTICAL','pause-v',true]]);
+  },
+  toggleCar(car){
+    if(!car)return;
+    car.held=!car.held;
+    m.note=car.held?'Traffic held. Tap again to release.':'Green light! Keep the intersection clear.';
+    beep(car.held?330:510);
+  },
+  action(a){
+    const axis=a==='pause-h'?'h':a==='pause-v'?'v':null;
+    if(!axis)return;
+    // Select the next approaching vehicle rather than one that is already gone.
+    const target=axis==='h'?180:225;
+    const cars=m.cars.filter(c=>c.axis===axis&&c.pos<=target+35);
+    cars.sort((a,b)=>Math.abs(a.pos-target)-Math.abs(b.pos-target));
+    this.toggleCar(cars[0]);
+  },
+  tap(x,y){
+    const car=m.cars.find(c=>dist(x,y,c.axis==='h'?c.pos:180,c.axis==='v'?c.pos:225)<31);
+    this.toggleCar(car);
+  },
+  update(dt){
+    m.spawn-=dt;
+    if(m.spawn<=0&&m.total<16){
+      m.cars.push({axis:'h',pos:-26,held:false,counted:false});
+      m.cars.push({axis:'v',pos:-26,held:false,counted:false});
+      m.total+=2;m.spawn=4.8;
+    }
+    for(const c of m.cars)if(!c.held)c.pos+=110*dt;
+    const h=m.cars.find(c=>c.axis==='h'&&Math.abs(c.pos-180)<27);
+    const v=m.cars.find(c=>c.axis==='v'&&Math.abs(c.pos-225)<27);
+    if(h&&v){
+      h.crashed=true;v.crashed=true;m.lives--;m.note='CRASH! Watch both lanes.';
+      beep(165);
+      if(m.lives<=0){finish(false,'Three traffic collisions! Brake before cars reach the center.');return}
+    }
+    for(const c of m.cars){
+      if(c.pos>405&&!c.counted&&!c.crashed){
+        c.counted=true;addScore();
+        if(m.score>=12){finish(true,'Twelve vehicles reached safety under your traffic control!');return}
+      }
+    }
+    m.cars=m.cars.filter(c=>!c.crashed&&c.pos<430);
+    if(m.total===16&&m.cars.length===0&&m.score<12)
+      finish(false,'Not enough cars made it through. Control the lanes and try again.');
+  },
+  draw(){
+    base('#1b2637');
+    R(0,192,360,66,'#47536b');R(147,0,66,450,'#47536b');
+    R(0,189,360,3,'#76859a');R(0,258,360,3,'#76859a');
+    for(let i=0;i<7;i++){R(i*55,223,26,3,'#ffeca4');R(179,i*75,3,35,'#ffeca4')}
+    S(180,225,35,'#ffe18d90',3);
+    m.cars.forEach(c=>{
+      const x=c.axis==='h'?c.pos:180,y=c.axis==='v'?c.pos:225;
+      R(x-19,y-12,38,24,c.held?U.red:c.axis==='h'?U.mint:U.yellow,7);
+      T(c.held?'Ⅱ':'●',x,y,14,'#25314a');
+      if(c.held)S(x,y,23,U.white,2);
+    });
+    T('SAFE CROSSINGS: '+m.score+' / 12',180,35,15,U.white);
+    T('CRASHES LEFT: '+'♥ '.repeat(m.lives),180,62,12,U.pink);
+    T(m.note,180,397,12,U.white);
+    T('TAP A CAR OR USE A LANE BUTTON',180,425,11,U.muted);
+  }
+});
 
 // 16 — Feed a hungry stopwatch with green +3s snacks.
 define({init(){m.t=23;m.spawn=.1;m.snacks=[];m.misses=0;controls([])},tap(x,y){let i=m.snacks.findIndex(a=>dist(a.x,a.y,x,y)<24);if(i>=0){const s=m.snacks.splice(i,1)[0];if(s.good){m.t=Math.min(35,m.t+3.3);addScore();if(m.score>=12)finish(true,'The clock is full! You collected twelve time snacks.')}else{m.t=Math.max(0,m.t-4);m.misses++;beep(170)}}},update(dt){m.spawn-=dt;if(m.spawn<=0){m.snacks.push({x:rnd(36,324),y:-20,vy:rnd(65,104),good:Math.random()>.28});m.spawn=.65}for(const s of m.snacks)s.y+=s.vy*dt;m.snacks=m.snacks.filter(s=>s.y<465)},draw(){base('#1a203b');O(180,211,85,'#34425f');S(180,211,92,U.yellow,7);L(180,211,180+55*Math.sin(m.elapsed),211-55*Math.cos(m.elapsed),U.white,5);O(180,211,7,U.pink);m.snacks.forEach(a=>{O(a.x,a.y,18,a.good?U.mint:U.red);T(a.good?'+3':'−4',a.x,a.y,14,'#26344d')});T('FEED ME!',180,50,23,U.yellow);T('GOOD SNACKS: '+m.score+' / 12',180,405,14,U.white)}});
@@ -198,9 +315,77 @@ define({init(){m.t=82;m.stage=0;m.placed=new Set();m.mistakes=0;controls([])},ta
 // 18 — Chase orbs while your ghost follows your movements with a delay.
 define({init(){m.t=43;m.x=65;m.y=200;m.ghostX=295;m.ghostY=90;m.hist=[];m.inv=2;m.hp=3;m.orb={x:270,y:300};controls([])},move(x,y){m.x=clamp(x,18,342);m.y=clamp(y,65,411)},tap(x,y){this.move(x,y)},update(dt){m.hist.push({x:m.x,y:m.y,t:m.elapsed});while(m.hist.length>200)m.hist.shift();const trail=m.hist.findLast(p=>p.t<=m.elapsed-1.2);if(trail){m.ghostX+=clamp(trail.x-m.ghostX,-300*dt,300*dt);m.ghostY+=clamp(trail.y-m.ghostY,-300*dt,300*dt)}m.inv=Math.max(0,m.inv-dt);if(dist(m.x,m.y,m.ghostX,m.ghostY)<30&&m.inv<=0){m.hp--;m.inv=2;beep(170);if(!m.hp)finish(false,'Your delayed echo caught up three times.')}if(dist(m.x,m.y,m.orb.x,m.orb.y)<24){addScore();m.orb={x:rnd(35,325),y:rnd(98,393)};if(m.score>=10)finish(true,'Ten orbs claimed. The other cursor never caught you.')}},draw(){base('#181931');m.hist.filter((_,i)=>i%8===0).forEach((p,i)=>O(p.x,p.y,2+i*.05,'#8aa0d24a'));O(m.orb.x,m.orb.y,14,U.mint);S(m.orb.x,m.orb.y,21,'#9cf6d67b',2);O(m.ghostX,m.ghostY,19,U.red);T('☹',m.ghostX,m.ghostY,17,'#34263f');O(m.x,m.y,16,m.inv>0&&Math.floor(m.elapsed*7)%2?U.white:U.blue);T('✦',m.x,m.y,18,'#2b2a50');T('YOUR ECHO IS 1.2s BEHIND',180,38,13,U.pink);T('♥ '.repeat(m.hp)+'  ·  ORBS '+m.score+'/10',180,424,14,U.muted)}});
 
-// 19 — Invisible walls and on-demand peek mechanic.
-function makeInvisibleMaze(stage){let walls=new Set();for(let y=0;y<7;y++)for(let x=0;x<7;x++){let safe=stage===0?(y===6||x===6):(x===0||y===0);if(!safe&&Math.random()<.46)walls.add(x+','+y)}return walls}
-define({init(){m.t=78;m.stage=0;m.x=0;m.y=6;m.walls=makeInvisibleMaze(0);m.peek=2.8;m.cooldown=0;m.lives=5;controls([['←','left'],['↑','up'],['↓','down'],['→','right'],['👁 PEEK','peek',true]])},action(a){if(a==='peek'){if(m.cooldown<=0){m.peek=1.5;m.cooldown=5}return}const d={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[a];if(!d)return;let x=m.x+d[0],y=m.y+d[1];if(x<0||x>6||y<0||y>6)return;if(m.walls.has(x+','+y)){m.lives--;m.peek=Math.max(.3,m.peek);beep(160);if(!m.lives)finish(false,'Invisible walls took all your hearts.');return}m.x=x;m.y=y;addScore();if(x===6&&y===0){m.stage++;m.level=m.stage+1;if(m.stage===2){finish(true,'Both invisible labyrinths conquered.');return}m.x=0;m.y=6;m.peek=2.5;m.cooldown=0;m.walls=makeInvisibleMaze(1)}},tap(x,y){let c=Math.floor((x-30)/43),r=Math.floor((y-93)/43),dx=c-m.x,dy=r-m.y;if(Math.abs(dx)+Math.abs(dy)!==1)return;this.action(dx===1?'right':dx===-1?'left':dy===1?'down':'up')},update(dt){m.peek=Math.max(0,m.peek-dt);m.cooldown=Math.max(0,m.cooldown-dt)},draw(){base('#12172a');T('WALLS ARE '+(m.peek>0?'VISIBLE':'INVISIBLE'),180,46,16,m.peek>0?U.mint:U.pink);for(let y=0;y<7;y++)for(let x=0;x<7;x++)R(31+x*43,93+y*43,39,39,m.peek>0&&m.walls.has(x+','+y)?'#cd778a':'#26324c',5);O(50+m.x*43,112+m.y*43,13,U.yellow);T('★',50+6*43,112,20,U.mint);T('♥ '.repeat(m.lives)+'  ·  '+(m.cooldown>0?'PEEK '+Math.ceil(m.cooldown)+'s':'PEEK READY'),180,422,13,U.muted)}});
+// 19 — Two solvable hidden mazes with breadcrumbs, fair peeks, and feedback.
+const invisibleRoutes=[
+  [[0,6],[1,6],[2,6],[2,5],[2,4],[3,4],[4,4],[4,3],[4,2],[5,2],[6,2],[6,1],[6,0]],
+  [[0,6],[0,5],[1,5],[2,5],[2,4],[2,3],[3,3],[4,3],[5,3],[5,2],[6,2],[6,1],[6,0]]
+];
+function makeInvisibleMaze(stage){
+  const walls=new Set();
+  for(let y=0;y<7;y++)for(let x=0;x<7;x++)
+    if(Math.random()<.47)walls.add(x+','+y);
+  // Each randomized maze always has at least one valid route to the exit.
+  for(const [x,y] of invisibleRoutes[stage])walls.delete(x+','+y);
+  return walls;
+}
+define({
+  init(){
+    m.t=105;m.stage=0;m.x=0;m.y=6;m.walls=makeInvisibleMaze(0);
+    m.peek=3.2;m.cooldown=0;m.lives=5;m.visited=new Set(['0,6']);
+    m.bump='';m.bumpTime=0;
+    controls([['←','left'],['↑','up'],['↓','down'],['→','right'],['👁 PEEK','peek',true]]);
+  },
+  action(a){
+    if(a==='peek'){
+      if(m.cooldown<=0){m.peek=2.5;m.cooldown=4.5;beep(540)}
+      return;
+    }
+    const delta={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[a];
+    if(!delta)return;
+    const x=m.x+delta[0],y=m.y+delta[1];
+    if(x<0||x>6||y<0||y>6)return;
+    if(m.walls.has(x+','+y)){
+      m.lives--;m.bump=x+','+y;m.bumpTime=1.1;
+      m.peek=Math.max(.55,m.peek);beep(160);
+      if(!m.lives)finish(false,'Five walls stopped you. Follow your footprints and peek when lost.');
+      return;
+    }
+    m.x=x;m.y=y;m.visited.add(x+','+y);addScore();
+    if(x===6&&y===0){
+      m.stage++;m.level=m.stage+1;
+      if(m.stage===2){finish(true,'You escaped both disappearing labyrinths!');return}
+      m.x=0;m.y=6;m.peek=3.2;m.cooldown=0;
+      m.walls=makeInvisibleMaze(1);m.visited=new Set(['0,6']);m.bump='';m.bumpTime=0;
+    }
+  },
+  tap(x,y){
+    const c=Math.floor((x-30)/43),r=Math.floor((y-93)/43),dx=c-m.x,dy=r-m.y;
+    if(Math.abs(dx)+Math.abs(dy)!==1)return;
+    this.action(dx===1?'right':dx===-1?'left':dy===1?'down':'up');
+  },
+  update(dt){
+    m.peek=Math.max(0,m.peek-dt);
+    m.cooldown=Math.max(0,m.cooldown-dt);
+    m.bumpTime=Math.max(0,m.bumpTime-dt);
+  },
+  draw(){
+    base('#12172a');
+    T(m.peek>0?'WALLS REVEALED':'FOLLOW YOUR FOOTPRINTS',180,42,15,m.peek>0?U.mint:U.pink);
+    T('MAZE '+(m.stage+1)+'/2  ·  REACH THE STAR',180,68,12,U.muted);
+    for(let y=0;y<7;y++)for(let x=0;x<7;x++){
+      const key=x+','+y,known=m.visited.has(key);
+      const wall=m.walls.has(key)&&m.peek>0;
+      const bump=m.bump===key&&m.bumpTime>0;
+      R(31+x*43,93+y*43,39,39,bump?'#e16d87':wall?'#b57087':known?'#396273':'#25344c',5);
+      if(known&&!(x===m.x&&y===m.y))O(50+x*43,112+y*43,4,U.mint);
+    }
+    O(50+m.x*43,112+m.y*43,13,U.yellow);
+    S(50+m.x*43,112+m.y*43,17,U.white,2);
+    T('★',50+6*43,112,20,U.mint);
+    T('♥ '.repeat(m.lives)+'  ·  '+(m.cooldown>0?'PEEK '+Math.ceil(m.cooldown)+'s':'PEEK READY'),180,416,13,U.muted);
+    T('GREEN TILES = YOUR SAFE PATH',180,442,11,U.mint);
+  }
+});
 
 // 20 — 8-turn lighthearted villain strategy; increase chaos without maxing heat.
 define({init(){m.t=null;m.turn=1;m.chaos=0;m.heat=12;m.level=1;controls([['🎈 PRANK','prank'],['⚡ GLITCH','glitch'],['🕶 DECOY','decoy'],['🌙 HIDE','hide',true]])},action(a){if(a==='prank'){m.chaos+=16;m.heat+=9}else if(a==='glitch'){m.chaos+=27;m.heat+=23}else if(a==='decoy'){m.chaos+=5;m.heat-=17}else if(a==='hide'){m.chaos=Math.max(0,m.chaos-5);m.heat-=28}else return;m.heat=clamp(m.heat-2,0,110);if(m.heat>=100){finish(false,'The city detectives caught you! Keep HEAT below 100.');return}addScore(1);if(m.chaos>=100){finish(true,'Maximum cartoon chaos achieved without getting caught!');return}if(m.turn>=8){finish(false,'Eight turns are up. Reach 100 chaos while staying stealthy.');return}m.turn++;m.level=m.turn},draw(){base('#241a38');T('EVIL MASTER PLAN',180,45,21,U.pink);T('TURN '+m.turn+' / 8',180,75,12,U.muted);for(let i=0;i<7;i++){let h=50+(i*47)%104;R(12+i*50,268-h,38,h,'#35365d',4);for(let q=0;q<3;q++)R(20+i*50,280-h+q*25,8,12,'#f4d69188',2)}R(0,268,360,7,'#435273');meter('CHAOS (TARGET 100)',m.chaos,100,41,328,U.mint,278);meter('HEAT (STAY UNDER 100)',m.heat,100,41,389,U.red,278);T('Choose your next evil decision below',180,435,11,U.muted)}});

@@ -23,7 +23,7 @@ test('Cloud Shepherd waters three gardens and wins on a compact touchscreen',asy
     for(const lane of flowers[garden]){await water(page,lane);await water(page,lane);}
     if(garden<2)await expect(page.locator('#level-pill')).toHaveText('ROUND 0'+(garden+2));
   }
-  await expect(page.locator('#overlay-title')).toHaveText('You win!');
+  await expect(page.locator('#overlay-title')).toHaveText('You did it!');
   await page.locator('#restart-btn').click();
   await expect(page.locator('#game-overlay')).toBeHidden();
   await expect(page.locator('#score')).toHaveText('0');

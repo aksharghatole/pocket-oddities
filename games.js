@@ -123,20 +123,18 @@ define({init(){m.t=36;m.lane=1;m.remaining=9;m.active=null;m.scanner=180;control
 
 // 03 — Ten deception riddles.
 const lies=[
-['Tap the LEFT button. (The instruction is lying.)',['LEFT','RIGHT','MIDDLE'],1],
-['The correct answer is NOT the moon.',['SUN','MOON','STAR'],1],
-['Choose the number that IS NOT even.',['2','4','7'],1],
-['The word below this one is spelled backwards.',['FORWARD','DRAWKCAB','STRAIGHT'],0],
-['The smallest number is the biggest.',['1','9','4'],0],
-['Nothing here is purple.',['PURPLE','GREEN','ORANGE'],0],
-['Tap the last option.',['FIRST','SECOND','THIRD'],0],
-['Every option below is a fruit.',['APPLE','CHAIR','PEAR'],1],
-['Choose something that cannot fly.',['ROCK','BIRD','PLANE'],1],
-['The middle option is not the answer.',['UP','DOWN','LEFT'],1],
-['Avoid the word STOP.',['GO','STOP','WAIT'],1],
-['This is your first puzzle.',['FIRST','LAST','TWELFTH'],2]
+['Only LEFT will work.',['LEFT','RIGHT'],1],
+['Never tap MOON.',['SUN','MOON'],1],
+['An even number is forbidden.',['8','7'],0],
+['The LARGEST number is safe.',['1','9'],0],
+['PURPLE is the wrong color.',['PURPLE','GREEN'],0],
+['The FIRST button is a trap.',['FIRST','LAST'],0],
+['All three are fruits. Find the impostor.',['APPLE','CHAIR','PEAR'],1],
+['Things that fly are safe.',['ROCK','BIRD'],0],
+['The MIDDLE is definitely incorrect.',['UP','DOWN','LEFT'],1],
+['STOP will cause failure.',['STOP','GO'],0]
 ];
-define({init(){m.level=1;m.lives=3;m.t=null;controls(lies[0][1].map((s,i)=>[s,'c'+i,i===1]))},action(a){if(!a.startsWith('c'))return;const q=lies[m.level-1],sel=+a.slice(1);if(sel===q[2]){addScore(1);m.level++;if(m.level>10){finish(true,'You outsmarted ten deliberately dishonest puzzles.');return}}else{m.lives--;beep(180);if(m.lives<=0){finish(false,'The lies got you. Read the instructions twice.');return}}const ans=lies[m.level-1];controls(ans[1].map((s,i)=>[s,'c'+i,i===1]))},draw(){base('#22203b');T('RULE #'+m.level,180,48,13,U.mint);heartBar(m.lives,3,90);panel(25,136,310,185,'#323553');wrap(lies[Math.min(m.level-1,9)][0],180,218,270,26,18);T('Look closely. Something is off.',180,367,14,U.pink);T('Survive ten tricks',180,409,13,U.muted)}});
+define({init(){m.level=1;m.lives=3;m.t=null;m.lastFeedback='Every instruction is suspicious.';controls(lies[0][1].map((s,i)=>[s,'c'+i,false]))},action(a){if(!a.startsWith('c'))return;const q=lies[m.level-1],sel=+a.slice(1);if(sel===q[2]){m.lastFeedback='YOU FOUND THE LIE!';addScore(1);m.level++;if(m.level>10){finish(true,'You outsmarted ten deliberately dishonest puzzles.');return}}else{m.lives--;m.lastFeedback='THE GAME TRICKED YOU. TRY AGAIN.';beep(180);if(m.lives<=0){finish(false,'The lies got you. Read the instructions twice.');return}}const ans=lies[m.level-1];controls(ans[1].map((s,i)=>[s,'c'+i,false]))},draw(){base('#22203b');T('RULE #'+m.level,180,48,13,U.mint);heartBar(m.lives,3,90);panel(25,136,310,185,'#323553');wrap(lies[Math.min(m.level-1,9)][0],180,218,270,26,18);T(m.lastFeedback,180,367,13,U.pink);T('Survive ten tricks',180,409,13,U.muted)}});
 
 // 04 — Zone commands, including no-movement and movement commands.
 const rules=['STAY LEFT','STAY RIGHT','STAY CENTER','DO NOT MOVE','MOVE AT LEAST ONCE'];

@@ -43,7 +43,7 @@ test('Echo Tiles offers three paces, animates the preview, and wins each mode',(
     ['rapid',4,6,.58]
   ];
   for(const [mode,start,goal,beat] of expected){
-    const run=createGame(Array(16).fill(0));
+    const run=createGame(Array.from({length:32},(_,index)=>index%4));
     run.game.init();
     expect(run.buttons().map(button=>button[0])).toEqual(['CALM · 2 TILES','CLASSIC · 3 TILES','RAPID · 4 TILES']);
     expect(run.state.t).toBeNull();

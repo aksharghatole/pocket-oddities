@@ -14,7 +14,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] PWA install affordance and generated raster icons
 
 ## v1.2 — usability and polish
-- [ ] Playtest all 24 games end-to-end on small Android and iPhone screens
+- [ ] Playtest all 27 games end-to-end on small Android and iPhone screens
 - [x] Stop timer progression while browsing the achievement Cabinet
 - [x] First gameplay pass: Shadow Thief light readability and cooldown; Tiny Traffic God lane pause/resume, crossing logic and collision lives; Invisible Maze guaranteed routes, breadcrumbs, and improved peek feedback
 - [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all remaining games
@@ -28,6 +28,8 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] In-app reduced-motion control plus system reduced-motion support
 - [x] Screen-reader announcements for game instructions and round outcomes
 - [x] Brief, distinct win and loss vibration cues with off-by-default preference
+- [x] The Game Is Lying explains its false-statement mechanic and tests all ten counterexamples
+- [x] Ghost Gallery and Fossil Field win/fail/restart paths tested on compact touch screens
 - [ ] Original icon, splash screen and store screenshots for both OSes
 - [ ] Native Android internal-testing release and iOS TestFlight release
 
@@ -40,7 +42,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Common-to-Legendary and Secret medal rarity labels with a full-collection milestone
 - [x] Six hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
-- [x] Expansion packs #21–24: Echo Tiles, Moon Mail Sorter, Circuit Garden, and Fossil Forecast
+- [x] Expansion packs #21–27: Echo Tiles, Moon Mail Sorter, Circuit Garden, Fossil Forecast, Ghost Gallery, Fossil Field, and Orbit Locksmith
 - [x] Fossil Forecast’s three fixed nonograms and sixth hidden relic thread
 - [ ] More game packs; prioritize quality over sheer count
 - [ ] Per-game tuning profiles and difficulty settings
@@ -54,7 +56,6 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [ ] Optional sync/profiles only if clearly useful and privacy requirements are addressed
 
 ## Ideas to refine next
-- The Game Is Lying: clarify ambiguous riddles and add 10 tested puzzles
 - Shadow Thief: improve distinction between lit and dark tiles
 - Tiny Traffic God: broaden intersections and safer collision logic
 - The Other Cursor: make the trail feel clearer

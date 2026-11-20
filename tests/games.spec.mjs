@@ -51,6 +51,55 @@ test('Moon Mail Sorter is registered and launches with touch-sized controls',asy
   await expect(page.locator('#play-screen')).toBeVisible();
   expect(errors).toEqual([]);
 });
+test('progress backup exports local records and merges an import without replacing progress',async ({page})=>{
+  const initialDate='2026-11-19';
+  await page.addInitScript(date=>{
+    localStorage.setItem('oddities-wins',JSON.stringify({0:true}));
+    localStorage.setItem('oddities-highs',JSON.stringify({0:7}));
+    localStorage.setItem('oddities-favorites',JSON.stringify(['The Button Has Feelings']));
+    localStorage.setItem('oddities-recent',JSON.stringify(['The Button Has Feelings']));
+    localStorage.setItem('oddities-fastest-clears',JSON.stringify({'One Minute Villain':{seconds:40,score:5,date}}));
+    localStorage.setItem('oddities-daily-records',JSON.stringify({[date]:{date,seconds:80,score:9,attempts:1,completed:true,splits:[]}}));
+    localStorage.setItem('oddities-cabinet-v1',JSON.stringify({plays:{'The Button Has Feelings':2},earned:{},found:{},theme:'default',bestStreak:2,completedRounds:4}));
+  },initialDate);
+  await ready(page);
+  await page.locator('#cabinet-trigger').click();
+  const downloadPromise=page.waitForEvent('download');
+  await page.locator('#progress-export').click();
+  const download=await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^pocket-oddities-progress-\d{4}-\d{2}-\d{2}\.json$/);
+  const exported=JSON.parse(readFileSync(await download.path(),'utf8'));
+  expect(exported.format).toBe('pocket-oddities-progress');
+  expect(exported.data['oddities-wins']['0']).toBe(true);
+  const backup={format:'pocket-oddities-progress',version:1,data:{
+    'oddities-wins':{1:true},
+    'oddities-highs':{0:12,1:6},
+    'oddities-favorites':['Moon Mail Sorter'],
+    'oddities-recent':['Moon Mail Sorter'],
+    'oddities-fastest-clears':{'One Minute Villain':{seconds:25,score:10,date:'2026-11-20'}},
+    'oddities-daily-records':{[initialDate]:{date:initialDate,seconds:70,score:5,attempts:2,completed:true,splits:[]}},
+    'oddities-cabinet-v1':{plays:{'The Button Has Feelings':5,'Moon Mail Sorter':1},bestStreak:4,completedRounds:9}
+  }};
+  const reloaded=page.waitForNavigation({waitUntil:'load'});
+  await page.locator('#progress-import-file').setInputFiles({name:'progress.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
+  await reloaded;
+  const values=await page.evaluate(()=>({
+    wins:JSON.parse(localStorage.getItem('oddities-wins')),
+    highs:JSON.parse(localStorage.getItem('oddities-highs')),
+    favorites:JSON.parse(localStorage.getItem('oddities-favorites')),
+    fastest:JSON.parse(localStorage.getItem('oddities-fastest-clears')),
+    daily:JSON.parse(localStorage.getItem('oddities-daily-records'))['2026-11-19'],
+    cabinet:JSON.parse(localStorage.getItem('oddities-cabinet-v1'))
+  }));
+  expect(values.wins).toMatchObject({'0':true,'1':true});
+  expect(values.highs).toMatchObject({'0':12,'1':6});
+  expect(values.favorites).toEqual(['The Button Has Feelings','Moon Mail Sorter']);
+  expect(values.fastest['One Minute Villain'].seconds).toBe(25);
+  expect(values.daily).toMatchObject({seconds:70,score:9,attempts:2});
+  expect(values.cabinet.plays).toMatchObject({'The Button Has Feelings':5,'Moon Mail Sorter':1});
+  expect(values.cabinet.bestStreak).toBe(4);
+  expect(values.cabinet.completedRounds).toBe(9);
+});
 test('vibration is an optional independent setting that persists',async ({page})=>{
   await page.addInitScript(()=>{window.vibrationCalls=[];Object.defineProperty(navigator,'vibrate',{configurable:true,value:pattern=>{window.vibrationCalls.push(pattern);return true}})});
   await ready(page);

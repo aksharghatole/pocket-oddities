@@ -147,7 +147,7 @@ test('Moon Mail Sorter connects a new hidden thread and achievement',async ({pag
   await expect(thread).toHaveClass(/completed/);
   await expect(thread).toContainText('Moonpost');
   await expect(page.locator('[data-achievement="lunar-courier"]')).toHaveClass(/earned/);
-  await expect(page.locator('#cabinet-subtitle')).toContainText('1 / 5 threads connected');
+  await expect(page.locator('#cabinet-subtitle')).toContainText('1 / 6 threads connected');
 });
 test('Oddity Passport displays a stamp for every game and reflects saved clears',async ({page})=>{
   await page.addInitScript(()=>localStorage.setItem('oddities-wins',JSON.stringify({0:true,1:true})));

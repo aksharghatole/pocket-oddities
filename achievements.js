@@ -60,19 +60,20 @@
     }
   ];
   const medals = [
-    {id:'first-spark', icon:'✦', title:'First Spark', desc:'Beat your first game.', unlock:c=>c.uniqueWins.size>=1},
-    {id:'curious', icon:'◈', title:'Curious Collector', desc:'Beat five different games.', unlock:c=>c.uniqueWins.size>=5},
-    {id:'archivist', icon:'✺', title:'Oddity Archivist', desc:'Beat ten different games.', unlock:c=>c.uniqueWins.size>=10},
-    {id:'explorer', icon:'◇', title:'Wandering Finger', desc:'Try ten different games.', unlock:c=>c.visited>=10},
-    {id:'reflex', icon:'⚡', title:'Lightning Hands', desc:'Beat three reflex games.', unlock:c=>c.categoryWins.reflex>=3},
-    {id:'puzzle', icon:'🗝', title:'Puzzle Whisperer', desc:'Beat three puzzle games.', unlock:c=>c.categoryWins.puzzle>=3},
-    {id:'strategy', icon:'♟', title:'Tiny Tactician', desc:'Beat two strategy games.', unlock:c=>c.categoryWins.strategy>=2},
-    {id:'weird', icon:'☻', title:'Certified Oddity', desc:'Beat two weird games.', unlock:c=>c.categoryWins.weird>=2},
-    {id:'return', icon:'↻', title:'One More Round', desc:'Start any game three times.', unlock:c=>c.maxAttempts>=3},
-    {id:'streak', icon:'✴', title:'Three in a Row', desc:'Win three rounds without losing.', unlock:c=>c.bestStreak>=3},
-    {id:'lunar-courier', icon:'📮', title:'Lunar Courier', desc:'Beat Moon Mail Sorter.', unlock:c=>c.uniqueWins.has('Moon Mail Sorter')},
-    {id:'first-thread', icon:'◐', title:'Thread Collector', desc:'Uncover your first hidden connection.', unlock:c=>c.completeThreads>=1},
-    {id:'all-threads', icon:'✳', title:'Keeper of Secrets', desc:'Uncover all five hidden connections.', unlock:c=>c.completeThreads===threads.length}
+    {id:'first-spark', icon:'✦', title:'First Spark', desc:'Beat your first game.', rarity:'Common', unlock:c=>c.uniqueWins.size>=1},
+    {id:'curious', icon:'◈', title:'Curious Collector', desc:'Beat five different games.', rarity:'Uncommon', unlock:c=>c.uniqueWins.size>=5},
+    {id:'archivist', icon:'✺', title:'Oddity Archivist', desc:'Beat ten different games.', rarity:'Rare', unlock:c=>c.uniqueWins.size>=10},
+    {id:'explorer', icon:'◇', title:'Wandering Finger', desc:'Try ten different games.', rarity:'Common', unlock:c=>c.visited>=10},
+    {id:'reflex', icon:'⚡', title:'Lightning Hands', desc:'Beat three reflex games.', rarity:'Uncommon', unlock:c=>c.categoryWins.reflex>=3},
+    {id:'puzzle', icon:'🗝', title:'Puzzle Whisperer', desc:'Beat three puzzle games.', rarity:'Uncommon', unlock:c=>c.categoryWins.puzzle>=3},
+    {id:'strategy', icon:'♟', title:'Tiny Tactician', desc:'Beat two strategy games.', rarity:'Rare', unlock:c=>c.categoryWins.strategy>=2},
+    {id:'weird', icon:'☻', title:'Certified Oddity', desc:'Beat two weird games.', rarity:'Rare', unlock:c=>c.categoryWins.weird>=2},
+    {id:'return', icon:'↻', title:'One More Round', desc:'Start any game three times.', rarity:'Common', unlock:c=>c.maxAttempts>=3},
+    {id:'streak', icon:'✴', title:'Three in a Row', desc:'Win three rounds without losing.', rarity:'Epic', unlock:c=>c.bestStreak>=3},
+    {id:'lunar-courier', icon:'📮', title:'Lunar Courier', desc:'Beat Moon Mail Sorter.', rarity:'Uncommon', unlock:c=>c.uniqueWins.has('Moon Mail Sorter')},
+    {id:'first-thread', icon:'◐', title:'Thread Collector', desc:'Uncover your first hidden connection.', rarity:'Rare', unlock:c=>c.completeThreads>=1},
+    {id:'all-threads', icon:'✳', title:'Keeper of Secrets', desc:'Uncover all five hidden connections.', rarity:'Secret', unlock:c=>c.completeThreads===threads.length},
+    {id:'all-games', icon:'♛', title:'The Whole Oddity', desc:'Beat every registered game.', rarity:'Legendary', unlock:c=>c.uniqueWins.size===c.catalog.length}
   ];
   const byTitle = new Map(threads.flatMap(t => t.parts.map(p => [p[0],t])));
 
@@ -289,11 +290,11 @@
     badges.replaceChildren();
     for(const medal of medals){
       const earned=Boolean(data.earned[medal.id]);
-      const badge=el('article','cabinet-medal'+(earned?' earned':' locked'));
+      const badge=el('article','cabinet-medal'+(earned?' earned':' locked')+' rarity-'+medal.rarity.toLowerCase());
       badge.dataset.achievement=medal.id;
       badge.append(el('span','cabinet-medal-icon',earned?medal.icon:'?'));
       const content=el('div','cabinet-medal-copy');
-      content.append(el('strong',null,medal.title),el('small',null,medal.desc));
+      content.append(el('strong',null,medal.title),el('small',null,medal.desc),el('small','cabinet-medal-rarity',medal.rarity));
       badge.append(content,el('span','cabinet-medal-status',earned?'✓':'◇'));
       badges.append(badge);
     }

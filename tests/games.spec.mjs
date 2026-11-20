@@ -84,7 +84,7 @@ for(let index=0;index<titles.length;index++){
     await expect(page.locator('#play-screen')).toBeHidden();
   });
 }
-test('progress, failure overlay, and restart work for a strategy game',async ({page})=>{
+test('winning, local high score, and restart work for a strategy game',async ({page})=>{
   const errors=collectErrors(page);
   await ready(page);
   await page.getByRole('button',{name:/One Minute Villain/}).click();
@@ -95,11 +95,23 @@ test('progress, failure overlay, and restart work for a strategy game',async ({p
     await glitch.click();
   }
   await expect(page.locator('#game-overlay')).toBeVisible();
-  await expect(page.locator('#overlay-title')).toHaveText('Round over');
+  await expect(page.locator('#overlay-title')).toHaveText('You did it!');
   await expect(page.locator('#score')).not.toHaveText('0');
   await page.locator('#restart-btn').click();
   await expect(page.locator('#game-overlay')).toBeHidden();
   await expect(page.locator('#score')).toHaveText('0');
   await expect(page.locator('#best')).not.toHaveText('0');
+  expect(errors).toEqual([]);
+});
+test('losing after eight turns shows a retry path',async ({page})=>{
+  const errors=collectErrors(page);
+  await ready(page);
+  await page.getByRole('button',{name:/One Minute Villain/}).click();
+  const decoy=page.locator('#game-controls .control-btn').filter({hasText:'DECOY'});
+  for(let turn=0;turn<8;turn++)await decoy.click();
+  await expect(page.locator('#game-overlay')).toBeVisible();
+  await expect(page.locator('#overlay-title')).toHaveText('Round over');
+  await page.locator('#restart-btn').click();
+  await expect(page.locator('#game-overlay')).toBeHidden();
   expect(errors).toEqual([]);
 });

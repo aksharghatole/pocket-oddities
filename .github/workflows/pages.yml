@@ -24,7 +24,11 @@ jobs:
         with:
           node-version: 22
       - name: Check JavaScript syntax
-        run: node --check games.js
+        run: |
+          node --check games.js
+          for file in game-packs/*.js; do node --check "$file"; done
+      - name: Validate growing game library
+        run: npm test
       - name: Create web bundle
         run: npm run build:web
       - name: Configure GitHub Pages

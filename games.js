@@ -23,6 +23,67 @@ let recentlyPlayed=storeGet('oddities-recent',[]),favorites=storeGet('oddities-f
 if(!Array.isArray(recentlyPlayed))recentlyPlayed=[];if(!Array.isArray(favorites))favorites=[];
 let libraryView='discover';
 const QUICK_PLAY_NAMES=new Set(['The Button Has Feelings','You Are the Notification',"Don't Wake the Planet",'One Finger Orchestra','Wrong Answers Only','One Minute Villain']);
+let dailyRecords=storeGet('oddities-daily-records',{});
+if(!dailyRecords||typeof dailyRecords!=='object'||Array.isArray(dailyRecords))dailyRecords={};
+let activeDailyRun=null;
+function todayUTC(){return new Date().toISOString().slice(0,10)}
+function dailyRoute(date=todayUTC()){
+  const pool=[...QUICK_PLAY_NAMES].map(name=>info.findIndex(item=>item[0]===name)).filter(index=>index>=0);
+  let seed=0;for(const char of date)seed=(Math.imul(seed,31)+char.charCodeAt(0))|0;
+  for(let i=pool.length-1;i>0;i--){seed=(Math.imul(seed,1664525)+1013904223)|0;const j=(seed>>>0)%(i+1);[pool[i],pool[j]]=[pool[j],pool[i]]}
+  return pool.slice(0,Math.min(3,pool.length));
+}
+function dailyStreak(){
+  let date=new Date(todayUTC()+'T00:00:00Z');
+  if(!dailyRecords[date.toISOString().slice(0,10)])date.setUTCDate(date.getUTCDate()-1);
+  let count=0;
+  while(dailyRecords[date.toISOString().slice(0,10)]){count++;date.setUTCDate(date.getUTCDate()-1)}
+  return count;
+}
+function formatDuration(seconds){const value=Math.max(0,Number(seconds)||0);return value<60?value.toFixed(1)+'s':Math.floor(value/60)+'m '+(value%60).toFixed(0)+'s'}
+function startDailyRush(){
+  const date=todayUTC();
+  if(!activeDailyRun||activeDailyRun.date!==date)activeDailyRun={date,route:dailyRoute(date),position:0,seconds:0,score:0};
+  if(activeDailyRun.position>=activeDailyRun.route.length){activeDailyRun=null;return startDailyRush()}
+  openGame(activeDailyRun.route[activeDailyRun.position]);
+}
+function renderDailyRush(grid){
+  const date=todayUTC(),route=dailyRoute(date),record=dailyRecords[date];
+  const card=document.createElement('section');card.className='daily-rush-card';
+  const intro=document.createElement('div');intro.className='daily-rush-intro';
+  intro.innerHTML='<span class="eyebrow">TODAY’S SPEEDRUN CHALLENGE</span><h3>Daily Oddity Rush</h3><p>Clear three quick games in sequence. Your fastest completed run is saved on this device.</p>';
+  const list=document.createElement('ol');list.className='daily-rush-route';list.setAttribute('aria-label','Today’s game sequence');
+  route.forEach((index,position)=>{const item=document.createElement('li');item.dataset.gameIndex=String(index);item.innerHTML='<span class="rush-step">'+String(position+1).padStart(2,'0')+'</span><span>'+info[index][0]+'</span>';list.appendChild(item)});
+  const stats=document.createElement('div');stats.className='daily-rush-stats';
+  stats.innerHTML='<span>Best today: <strong>'+(record?formatDuration(record.seconds):'—')+'</strong></span><span>Current streak: <strong>'+dailyStreak()+'</strong></span>';
+  const action=document.createElement('button');action.type='button';action.id='daily-rush-start';action.className='primary-btn';action.textContent=activeDailyRun&&activeDailyRun.date===date?'Resume Daily Rush':record?'Run Again':'Start Daily Rush';
+  action.onclick=startDailyRush;
+  const foot=document.createElement('small');foot.className='daily-rush-date';foot.textContent='Challenge resets at 00:00 UTC · '+date;
+  card.append(intro,list,stats,action,foot);grid.appendChild(card);
+}
+function onDailyGameFinish(event){
+  const detail=event.detail||{},run=activeDailyRun;
+  if(!run||run.date!==todayUTC()||detail.index!==run.route[run.position])return;
+  run.seconds+=Math.max(0,Number(detail.elapsed)||0);run.score+=Math.max(0,Number(detail.score)||0);
+  if(!detail.won){$('overlay-title').textContent='Round over · Daily Rush';$('overlay-message').textContent='Retry this game to continue the challenge. Your failed attempt counts toward your time.';return}
+  run.position++;
+  if(run.position<run.route.length){
+    $('overlay-title').textContent='Daily Rush · '+run.position+'/'+run.route.length+' cleared';
+    $('overlay-message').textContent='So far: '+formatDuration(run.seconds)+'. Continue to the next game.';
+    $('restart-btn').hidden=true;$('rush-next').classList.remove('hidden');return;
+  }
+  const previous=dailyRecords[run.date],attempts=(previous?.attempts||0)+1;
+  const bestSeconds=previous?Math.min(previous.seconds,run.seconds):run.seconds;
+  const bestScore=previous?Math.max(previous.score,run.score):run.score;
+  dailyRecords[run.date]={date:run.date,seconds:bestSeconds,score:bestScore,attempts,completed:true};
+  storeSet('oddities-daily-records',dailyRecords);
+  $('overlay-icon').textContent='✦';$('overlay-title').textContent='Daily Rush complete!';
+  $('overlay-message').textContent='Run: '+formatDuration(run.seconds)+' · Best: '+formatDuration(bestSeconds)+' · '+run.score+' points';
+  $('restart-btn').hidden=false;$('rush-next').classList.add('hidden');activeDailyRun=null;renderHome();
+}
+window.addEventListener('oddities:game-finish',onDailyGameFinish);
+$('rush-next').addEventListener('click',()=>{if(activeDailyRun)openGame(activeDailyRun.route[activeDailyRun.position])});
+
 let game=null,idx=-1,m=null,last=performance.now();
 let audioCtx=null;
 function beep(freq=490){if(!sound)return;try{audioCtx??=new (window.AudioContext||window.webkitAudioContext)();let osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(.07,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.09);osc.connect(gain).connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.1)}catch{}}
@@ -98,7 +159,7 @@ window.PocketOddities=Object.freeze({
 function finish(win,message=''){if(!m||m.ended)return;m.ended=true;m.win=win;if(win){beaten[idx]=true;storeSet('oddities-wins',beaten);beep(750)}else beep(170);if(m.score>(highs[idx]||0)){highs[idx]=m.score;storeSet('oddities-highs',highs)}$('overlay-icon').textContent=win?'✦':'☄';$('overlay-title').textContent=win?'You did it!':'Round over';$('overlay-message').textContent=message|| (win?'Another strange victory for your collection.':'Try again — every oddity takes practice.');$('game-overlay').classList.remove('hidden');refreshHud();renderHome();window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{name:info[idx]?.[0],category:info[idx]?.[1],index:idx,won:!!win,score:m.score,elapsed:m.elapsed}}))}
 function addScore(n=1){m.score+=n;beep(480+Math.min(400,m.score*25))}
 function refreshHud(){$('score').textContent=m?m.score:0;$('clock').textContent=m&&m.t!=null?Math.max(0,Math.ceil(m.t))+'s':'—';$('best').textContent=highs[idx]||0;$('level-pill').textContent='ROUND '+String(m?.level||1).padStart(2,'0')}
-function openGame(i){idx=i;game=games[i];recentlyPlayed=[info[i][0],...recentlyPlayed.filter(name=>name!==info[i][0])].slice(0,12);storeSet('oddities-recent',recentlyPlayed);m={score:0,t:null,level:1,ended:false,elapsed:0};$('home-screen').classList.add('hidden');$('play-screen').classList.remove('hidden');$('game-overlay').classList.add('hidden');$('game-title').textContent=info[i][0];$('game-category').textContent=info[i][1].toUpperCase()+' · MINI GAME '+String(i+1).padStart(2,'0');$('game-description').textContent=info[i][3];$('instruction').textContent=info[i][4];controls([]);game.init();refreshHud();window.scrollTo({top:0,behavior:'instant'});window.dispatchEvent(new CustomEvent('oddities:game-start',{detail:{name:info[i][0],category:info[i][1],index:i}}))}
+function openGame(i){$('rush-next').classList.add('hidden');$('restart-btn').hidden=false;idx=i;game=games[i];recentlyPlayed=[info[i][0],...recentlyPlayed.filter(name=>name!==info[i][0])].slice(0,12);storeSet('oddities-recent',recentlyPlayed);m={score:0,t:null,level:1,ended:false,elapsed:0};$('home-screen').classList.add('hidden');$('play-screen').classList.remove('hidden');$('game-overlay').classList.add('hidden');$('game-title').textContent=info[i][0];$('game-category').textContent=info[i][1].toUpperCase()+' · MINI GAME '+String(i+1).padStart(2,'0');$('game-description').textContent=info[i][3];$('instruction').textContent=info[i][4];controls([]);game.init();refreshHud();window.scrollTo({top:0,behavior:'instant'});window.dispatchEvent(new CustomEvent('oddities:game-start',{detail:{name:info[i][0],category:info[i][1],index:i}}))}
 function showHome(){game=null;m=null;idx=-1;$('play-screen').classList.add('hidden');$('home-screen').classList.remove('hidden');renderHome();window.scrollTo({top:0,behavior:'instant'})}
 function act(action){if(!m||m.ended)return;game.action?.(action)}
 function point(e){const b=C.getBoundingClientRect();return{x:(e.clientX-b.left)*W/b.width,y:(e.clientY-b.top)*H/b.height}}
@@ -117,7 +178,8 @@ function renderHome(filter='all'){
   if(selected!=='all')catalog=catalog.filter(item=>item.category===selected);
   if(term)catalog=catalog.filter(item=>(`${item.name} ${item.category} ${item.desc}`).toLowerCase().includes(term));
   grid.replaceChildren();
-  catalog.forEach(({name,category,emoji,desc,index:i})=>{
+  if(libraryView==='daily')renderDailyRush(grid);
+  else catalog.forEach(({name,category,emoji,desc,index:i})=>{
     const card=document.createElement('article');card.className='game-card';
     const launch=document.createElement('button');launch.type='button';launch.className='game-launch';launch.setAttribute('aria-label','Play '+name);
     launch.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span>${category}</span><span class="${beaten[i]?'card-beat':''}">${beaten[i]?'★ BEATEN':'PLAY →'}</span></div>`;
@@ -129,7 +191,7 @@ function renderHome(filter='all'){
   $('completion').textContent=Object.keys(beaten).filter(k=>beaten[k]).length+' / '+info.length+' beaten';
   $('game-count-tagline').textContent=info.length+' tiny strange worlds';$('hero-count').textContent=info.length;
   $('hero-game-count').textContent='✦ '+info.length+' playable games';$('all-filter').textContent='All '+info.length;
-  const heading=libraryView==='quick'?'Quick Play':libraryView==='recent'?'Recently Played':libraryView==='favorites'?'Favorites':'The collection';
+  const heading=libraryView==='quick'?'Quick Play':libraryView==='recent'?'Recently Played':libraryView==='favorites'?'Favorites':libraryView==='daily'?'Daily Rush':'The collection';
   document.querySelector('.section-heading h2').textContent=heading;
   document.title='Pocket Oddities · '+info.length+' Mini-Games';
   if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent=libraryView==='recent'?'Games you play will appear here.':libraryView==='favorites'?'Tap ☆ on a game to save it here.':'No games match your search. Try another name or category.';grid.appendChild(p)}

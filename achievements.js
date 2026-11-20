@@ -162,6 +162,23 @@
       const item=el('div','cabinet-stat');
       item.append(el('strong',null,number),el('small',null,title));stats.append(item);
     }
+    const passport=$('cabinet-passport');
+    passport.replaceChildren();
+    let passportCount=0;
+    const categoryMarks={reflex:'⚡',puzzle:'◇',strategy:'♟',weird:'✳'};
+    c.catalog.forEach(({name,category},index)=>{
+      const earned=c.uniqueWins.has(name);
+      if(earned)passportCount++;
+      const stamp=el('article','passport-stamp'+(earned?' collected':''));
+      stamp.dataset.passportGame=name;
+      stamp.setAttribute('aria-label',name+', '+(earned?'stamp collected':'not cleared yet'));
+      stamp.append(el('span','passport-stamp-mark',earned?'✦':(categoryMarks[category]||'◈')));
+      const copy=el('span','passport-stamp-copy');
+      copy.append(el('strong',null,name),el('small',null,earned?'STAMP COLLECTED':'NOT CLEARED'));
+      stamp.append(copy,el('span','passport-stamp-number',String(index+1).padStart(2,'0')));
+      passport.append(stamp);
+    });
+    $('cabinet-passport-count').textContent=passportCount+' / '+c.catalog.length+' stamps collected';
     const badges=$('cabinet-medals');
     badges.replaceChildren();
     for(const medal of medals){

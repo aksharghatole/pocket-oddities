@@ -38,6 +38,29 @@ test('the library shows all registered games with a dynamic count',async ({page}
   await expect(page.locator('#game-grid .game-card')).toHaveCount(titles.length);
   expect(errors).toEqual([]);
 });
+test('Quick Play, recent games, and favorites are easy to reach and persist',async ({page})=>{
+  const errors=collectErrors(page);
+  await ready(page);
+  await page.locator('[data-view="quick"]').click();
+  const quickCount=await page.locator('#game-grid .game-card').count();
+  expect(quickCount).toBeGreaterThan(0);
+  await page.locator('#game-grid .game-launch').first().click();
+  const played=await page.locator('#game-title').textContent();
+  await page.locator('#back-btn').click();
+  await page.locator('[data-view="recent"]').click();
+  await expect(page.locator('#game-grid .game-card')).toHaveCount(1);
+  await expect(page.locator('#game-grid .game-card')).toContainText(played);
+  await page.locator('[data-view="discover"]').click();
+  const card=page.locator('#game-grid .game-card').filter({has:page.locator('h3',{hasText:played})});
+  await card.locator('.favorite-toggle').click();
+  await page.locator('[data-view="favorites"]').click();
+  await expect(page.locator('#game-grid .game-card')).toHaveCount(1);
+  await expect(page.locator('#game-grid .game-card')).toContainText(played);
+  await page.reload();
+  await page.locator('[data-view="favorites"]').click();
+  await expect(page.locator('#game-grid .game-card')).toHaveCount(1);
+  expect(errors).toEqual([]);
+});
 test('search, categories, and no-results state work',async ({page})=>{
   const errors=collectErrors(page);
   await ready(page);

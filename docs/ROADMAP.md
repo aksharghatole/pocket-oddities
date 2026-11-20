@@ -15,7 +15,8 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 
 ## v1.2 — usability and polish
 - [ ] Playtest all 21 games end-to-end on small Android and iPhone screens
-- [ ] Fix any inconsistent instructions, taps, balance or timeouts
+- [x] Stop timer progression while browsing the achievement Cabinet
+- [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all games
 - [ ] Favorites, recent games and continue playing
 - [ ] Better accessible text, haptics and independent sound preferences
 - [ ] Original icon, splash screen and store screenshots for both OSes
@@ -23,7 +24,9 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 
 ## v1.3 — replayability and retention
 - [ ] Daily rotating challenges from existing games
-- [ ] Achievement badges and collection milestones
+- [x] Persistent medals, collection milestones and earned badges
+- [x] Four hidden interconnected game threads with collectible cosmetic relics
+- [x] Echo Tiles sequence-preview and mobile gameplay polish
 - [ ] More game packs; prioritize quality over sheer count
 - [ ] Per-game tuning profiles and difficulty settings
 - [ ] In-app feedback and game popularity signals, privacy-conscious

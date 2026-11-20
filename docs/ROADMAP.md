@@ -27,7 +27,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Optional on-device player name and avatar, carried in progress backups
 - [x] In-app reduced-motion control plus system reduced-motion support
 - [x] Screen-reader announcements for game instructions and round outcomes
-- [ ] Haptics tuning
+- [x] Brief, distinct win and loss vibration cues with off-by-default preference
 - [ ] Original icon, splash screen and store screenshots for both OSes
 - [ ] Native Android internal-testing release and iOS TestFlight release
 

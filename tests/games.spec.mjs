@@ -51,6 +51,17 @@ test('Moon Mail Sorter is registered and launches with touch-sized controls',asy
   await expect(page.locator('#play-screen')).toBeVisible();
   expect(errors).toEqual([]);
 });
+test('Oddity Passport displays a stamp for every game and reflects saved clears',async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('oddities-wins',JSON.stringify({0:true,1:true})));
+  await ready(page);
+  await page.locator('#cabinet-trigger').click();
+  const stamps=page.locator('#cabinet-passport .passport-stamp');
+  await expect(stamps).toHaveCount(titles.length);
+  await expect(stamps.nth(0)).toHaveClass(/collected/);
+  await expect(stamps.nth(1)).toHaveClass(/collected/);
+  await expect(stamps.nth(2)).not.toHaveClass(/collected/);
+  await expect(page.locator('#cabinet-passport-count')).toHaveText('2 / '+titles.length+' stamps collected');
+});
 test('completed and unfinished shelves follow saved game progress',async ({page})=>{
   await page.addInitScript(()=>localStorage.setItem('oddities-wins',JSON.stringify({0:true,1:true})));
   await ready(page);

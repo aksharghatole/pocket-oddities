@@ -175,7 +175,7 @@ const extensionAPI=Object.freeze({
   art:Object.freeze({base,R,O,S,L,T,wrap,panel,meter}),
   helpers:Object.freeze({clamp,rnd,irnd,dist,choose,shuffle}),
   colors:Object.freeze(U),
-  controls,addScore,finish,beep,width:W,height:H
+  controls,addScore,finish,beep,vibrate,width:W,height:H
 });
 window.PocketOddities=Object.freeze({
   register(metadata,factory){

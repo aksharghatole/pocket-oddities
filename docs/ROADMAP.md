@@ -44,6 +44,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Common-to-Legendary and Secret medal rarity labels with a full-collection milestone
 - [x] Six hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
+- [x] Echo Tiles offers Calm, Classic, and Rapid pacing with optional haptic preview cues
 - [x] Expansion packs #21–32: Echo Tiles, Moon Mail Sorter, Circuit Garden, Fossil Forecast, Ghost Gallery, Fossil Field, Orbit Locksmith, Pocket Elevator, Lantern Logic, Cloud Shepherd, Ink Tide, and Potion Scale
 - [x] Fossil Forecast’s three fixed nonograms and sixth hidden relic thread
 - [ ] More game packs; prioritize quality over sheer count
@@ -59,7 +60,6 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 
 ## Ideas to refine next
 - Tiny Traffic God: broaden intersections and safer collision logic
-- Echo Tiles: add animation during preview, vibration cues and 3 difficulty options
 
 ## Definition of done for each game
 - Opens on web and native test device

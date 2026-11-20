@@ -138,10 +138,25 @@ for(let index=0;index<titles.length;index++){
     await expect(page.locator('#play-screen')).toBeHidden();
   });
 }
+test('Speedruns lists the fastest successful personal clears first',async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('oddities-fastest-clears',JSON.stringify({
+    'The Button Has Feelings':{seconds:12.3,score:5,date:'2026-11-20'},
+    'Circuit Garden':{seconds:40.5,score:25,date:'2026-11-20'}
+  })));
+  await ready(page);
+  await page.locator('[data-view="speedrun"]').click();
+  const cards=page.locator('#game-grid .game-card');
+  await expect(cards).toHaveCount(titles.length);
+  await expect(cards.nth(0).locator('h3')).toHaveText('The Button Has Feelings');
+  await expect(cards.nth(0)).toContainText('12.3s');
+  await expect(cards.nth(1).locator('h3')).toHaveText('Circuit Garden');
+  await expect(page.locator('#completion')).toHaveText('2 personal bests');
+});
 test('winning, local high score, and restart work for a strategy game',async ({page})=>{
   const errors=collectErrors(page);
   await ready(page);
   await page.getByRole('button',{name:/One Minute Villain/}).click();
+  await page.waitForTimeout(120);
   const glitch=page.locator('#game-controls .control-btn').filter({hasText:'GLITCH'});
   await expect(glitch).toBeVisible();
   for(let i=0;i<5;i++){
@@ -151,10 +166,14 @@ test('winning, local high score, and restart work for a strategy game',async ({p
   await expect(page.locator('#game-overlay')).toBeVisible();
   await expect(page.locator('#overlay-title')).toHaveText('You did it!');
   await expect(page.locator('#score')).not.toHaveText('0');
+  const clears=await page.evaluate(()=>JSON.parse(localStorage.getItem('oddities-fastest-clears')||'{}'));
+  expect(clears['One Minute Villain'].seconds).toBeGreaterThan(0);
   await page.locator('#restart-btn').click();
   await expect(page.locator('#game-overlay')).toBeHidden();
   await expect(page.locator('#score')).toHaveText('0');
   await expect(page.locator('#best')).not.toHaveText('0');
+  const clear=await page.evaluate(()=>JSON.parse(localStorage.getItem('oddities-fastest-clears'))?.['One Minute Villain']);
+  expect(clear?.seconds).toBeGreaterThan(0);
   expect(errors).toEqual([]);
 });
 test('losing after eight turns shows a retry path',async ({page})=>{

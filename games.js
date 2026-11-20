@@ -19,6 +19,10 @@ function controls(arr){const root=$('game-controls');root.replaceChildren();arr.
 function storeGet(k,def){try{return JSON.parse(localStorage.getItem(k))??def}catch{return def}}
 function storeSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 let highs=storeGet('oddities-highs',{}),beaten=storeGet('oddities-wins',{}),sound=storeGet('oddities-sound',false);
+let recentlyPlayed=storeGet('oddities-recent',[]),favorites=storeGet('oddities-favorites',[]);
+if(!Array.isArray(recentlyPlayed))recentlyPlayed=[];if(!Array.isArray(favorites))favorites=[];
+let libraryView='discover';
+const QUICK_PLAY_NAMES=new Set(['The Button Has Feelings','You Are the Notification',"Don't Wake the Planet",'One Finger Orchestra','Wrong Answers Only','One Minute Villain']);
 let game=null,idx=-1,m=null,last=performance.now();
 let audioCtx=null;
 function beep(freq=490){if(!sound)return;try{audioCtx??=new (window.AudioContext||window.webkitAudioContext)();let osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(.07,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.09);osc.connect(gain).connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.1)}catch{}}
@@ -94,7 +98,7 @@ window.PocketOddities=Object.freeze({
 function finish(win,message=''){if(!m||m.ended)return;m.ended=true;m.win=win;if(win){beaten[idx]=true;storeSet('oddities-wins',beaten);beep(750)}else beep(170);if(m.score>(highs[idx]||0)){highs[idx]=m.score;storeSet('oddities-highs',highs)}$('overlay-icon').textContent=win?'✦':'☄';$('overlay-title').textContent=win?'You did it!':'Round over';$('overlay-message').textContent=message|| (win?'Another strange victory for your collection.':'Try again — every oddity takes practice.');$('game-overlay').classList.remove('hidden');refreshHud();renderHome();window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{name:info[idx]?.[0],category:info[idx]?.[1],index:idx,won:!!win,score:m.score,elapsed:m.elapsed}}))}
 function addScore(n=1){m.score+=n;beep(480+Math.min(400,m.score*25))}
 function refreshHud(){$('score').textContent=m?m.score:0;$('clock').textContent=m&&m.t!=null?Math.max(0,Math.ceil(m.t))+'s':'—';$('best').textContent=highs[idx]||0;$('level-pill').textContent='ROUND '+String(m?.level||1).padStart(2,'0')}
-function openGame(i){idx=i;game=games[i];m={score:0,t:null,level:1,ended:false,elapsed:0};$('home-screen').classList.add('hidden');$('play-screen').classList.remove('hidden');$('game-overlay').classList.add('hidden');$('game-title').textContent=info[i][0];$('game-category').textContent=info[i][1].toUpperCase()+' · MINI GAME '+String(i+1).padStart(2,'0');$('game-description').textContent=info[i][3];$('instruction').textContent=info[i][4];controls([]);game.init();refreshHud();window.scrollTo({top:0,behavior:'instant'});window.dispatchEvent(new CustomEvent('oddities:game-start',{detail:{name:info[i][0],category:info[i][1],index:i}}))}
+function openGame(i){idx=i;game=games[i];recentlyPlayed=[info[i][0],...recentlyPlayed.filter(name=>name!==info[i][0])].slice(0,12);storeSet('oddities-recent',recentlyPlayed);m={score:0,t:null,level:1,ended:false,elapsed:0};$('home-screen').classList.add('hidden');$('play-screen').classList.remove('hidden');$('game-overlay').classList.add('hidden');$('game-title').textContent=info[i][0];$('game-category').textContent=info[i][1].toUpperCase()+' · MINI GAME '+String(i+1).padStart(2,'0');$('game-description').textContent=info[i][3];$('instruction').textContent=info[i][4];controls([]);game.init();refreshHud();window.scrollTo({top:0,behavior:'instant'});window.dispatchEvent(new CustomEvent('oddities:game-start',{detail:{name:info[i][0],category:info[i][1],index:i}}))}
 function showHome(){game=null;m=null;idx=-1;$('play-screen').classList.add('hidden');$('home-screen').classList.remove('hidden');renderHome();window.scrollTo({top:0,behavior:'instant'})}
 function act(action){if(!m||m.ended)return;game.action?.(action)}
 function point(e){const b=C.getBoundingClientRect();return{x:(e.clientX-b.left)*W/b.width,y:(e.clientY-b.top)*H/b.height}}
@@ -102,17 +106,43 @@ C.addEventListener('pointerdown',e=>{if(!m||m.ended)return;e.preventDefault();C.
 C.addEventListener('pointermove',e=>{if(!m||m.ended||!(e.buttons||e.pointerType==='touch'))return;e.preventDefault();const p=point(e);game.move?.(p.x,p.y)});
 C.addEventListener('pointerup',e=>{if(!m||m.ended)return;game.up?.()});C.addEventListener('pointercancel',()=>{game?.up?.()});
 window.addEventListener('keydown',e=>{if(!m||m.ended||e.repeat)return;const key={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',' ':'go',Enter:'go'}[e.key];if(key){e.preventDefault();act(key)}});
-function renderHome(filter='all'){const grid=$('game-grid');const selected=document.querySelector('.filter.active')?.dataset.filter||filter;grid.replaceChildren();info.forEach(([name,category,emoji,desc],i)=>{if(selected!=='all'&&category!==selected)return;const term=$('game-search').value.trim().toLowerCase();if(term&&!(`${name} ${category} ${desc}`).toLowerCase().includes(term))return;const b=document.createElement('button');b.className='game-card';b.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span>${category}</span><span class="${beaten[i]?'card-beat':''}">${beaten[i]?'★ BEATEN':'PLAY →'}</span></div>`;b.onclick=()=>openGame(i);grid.appendChild(b)});$('completion').textContent=Object.keys(beaten).filter(k=>beaten[k]).length+' / '+info.length+' beaten';
-$('game-count-tagline').textContent=info.length+' tiny strange worlds';
-$('hero-count').textContent=info.length;
-$('hero-game-count').textContent='✦ '+info.length+' playable games';
-$('all-filter').textContent='All '+info.length;
-document.title='Pocket Oddities · '+info.length+' Mini-Games';
-if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent='No games match your search. Try another name or category.';grid.appendChild(p)}
-window.dispatchEvent(new CustomEvent('oddities:catalog-render'));
+function renderHome(filter='all'){
+  const grid=$('game-grid');
+  const selected=document.querySelector('.filter.active')?.dataset.filter||filter;
+  const term=$('game-search').value.trim().toLowerCase();
+  let catalog=info.map(([name,category,emoji,desc],i)=>({name,category,emoji,desc,index:i}));
+  if(libraryView==='quick')catalog=catalog.filter(item=>QUICK_PLAY_NAMES.has(item.name));
+  if(libraryView==='recent')catalog=recentlyPlayed.map(name=>catalog.find(item=>item.name===name)).filter(Boolean);
+  if(libraryView==='favorites')catalog=catalog.filter(item=>favorites.includes(item.name));
+  if(selected!=='all')catalog=catalog.filter(item=>item.category===selected);
+  if(term)catalog=catalog.filter(item=>(`${item.name} ${item.category} ${item.desc}`).toLowerCase().includes(term));
+  grid.replaceChildren();
+  catalog.forEach(({name,category,emoji,desc,index:i})=>{
+    const card=document.createElement('article');card.className='game-card';
+    const launch=document.createElement('button');launch.type='button';launch.className='game-launch';launch.setAttribute('aria-label','Play '+name);
+    launch.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span>${category}</span><span class="${beaten[i]?'card-beat':''}">${beaten[i]?'★ BEATEN':'PLAY →'}</span></div>`;
+    launch.onclick=()=>openGame(i);
+    const favorite=document.createElement('button');favorite.type='button';favorite.className='favorite-toggle';favorite.setAttribute('aria-pressed',String(favorites.includes(name)));favorite.setAttribute('aria-label',(favorites.includes(name)?'Remove ':'Add ')+name+(favorites.includes(name)?' from':' to')+' favorites');favorite.textContent=favorites.includes(name)?'★':'☆';
+    favorite.onclick=event=>{event.stopPropagation();favorites=favorites.includes(name)?favorites.filter(item=>item!==name):[...favorites,name];storeSet('oddities-favorites',favorites);renderHome()};
+    card.append(launch,favorite);grid.appendChild(card);
+  });
+  $('completion').textContent=Object.keys(beaten).filter(k=>beaten[k]).length+' / '+info.length+' beaten';
+  $('game-count-tagline').textContent=info.length+' tiny strange worlds';$('hero-count').textContent=info.length;
+  $('hero-game-count').textContent='✦ '+info.length+' playable games';$('all-filter').textContent='All '+info.length;
+  const heading=libraryView==='quick'?'Quick Play':libraryView==='recent'?'Recently Played':libraryView==='favorites'?'Favorites':'The collection';
+  document.querySelector('.section-heading h2').textContent=heading;
+  document.title='Pocket Oddities · '+info.length+' Mini-Games';
+  if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent=libraryView==='recent'?'Games you play will appear here.':libraryView==='favorites'?'Tap ☆ on a game to save it here.':'No games match your search. Try another name or category.';grid.appendChild(p)}
+  window.dispatchEvent(new CustomEvent('oddities:catalog-render'));
 }
 $('game-search').addEventListener('input',()=>renderHome());
-$('filter-row').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelectorAll('.filter').forEach(f=>f.classList.toggle('active',f===b));renderHome(b.dataset.filter)});
+$('collection-tabs').addEventListener('click',event=>{
+  const tab=event.target.closest('[data-view]');if(!tab)return;
+  libraryView=tab.dataset.view;
+  document.querySelectorAll('.collection-tab').forEach(item=>{const active=item===tab;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active))});
+  document.querySelectorAll('.filter').forEach(item=>item.classList.toggle('active',item.dataset.filter==='all'));
+  renderHome();
+});
 $('back-btn').onclick=$('overlay-home').onclick=showHome;$('restart-btn').onclick=()=>openGame(idx);$('next-btn').onclick=()=>openGame((idx+1)%games.length);
 
 // 01 — Emotional survival. The button gets upset if tapped too much or ignored.

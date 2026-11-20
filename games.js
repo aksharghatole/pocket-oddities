@@ -504,7 +504,7 @@ define({
     S(m.x,m.y,22,'#c8e3ff',3);
     T('✦',m.x,m.y,18,'#2b2a50');
     T('BLUE = YOU   ·   RED = ECHO',180,36,13,U.white);
-    T('FAINT DOTS = YOUR LAST 1.2 SECONDS',180,57,11,U.muted);
+    T('TRAIL DOTS = YOUR LAST 1.2 SECONDS',180,57,11,U.muted);
     T('♥ '.repeat(m.hp)+'  ·  ORBS '+m.score+'/10',180,424,14,U.muted);
   }
 });

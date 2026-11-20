@@ -57,6 +57,20 @@
         <button id="cabinet-close" class="cabinet-close" type="button" aria-label="Close achievement cabinet">✕</button>
       </div>
       <div id="cabinet-stats" class="cabinet-stats"></div>
+      <section class="cabinet-player-profile" aria-labelledby="cabinet-player-profile-title">
+        <div class="cabinet-player-heading">
+          <span id="cabinet-player-avatar" class="cabinet-player-avatar" aria-hidden="true">✳</span>
+          <div><h3 id="cabinet-player-profile-title">Local player profile</h3><p id="cabinet-player-name">Pocket Player</p></div>
+        </div>
+        <label class="cabinet-player-label" for="cabinet-player-name-input">Player name</label>
+        <div class="cabinet-player-name-row">
+          <input id="cabinet-player-name-input" type="text" maxlength="18" autocomplete="nickname" placeholder="Pocket Player">
+          <button id="cabinet-player-name-save" type="button">Save</button>
+        </div>
+        <p class="cabinet-player-label">Choose an avatar</p>
+        <div id="cabinet-player-avatars" class="cabinet-player-avatars" role="group" aria-label="Choose player avatar"></div>
+        <p class="cabinet-player-note">This profile stays on this device and is included in your progress backup.</p>
+      </section>
       <div class="cabinet-section-head"><h3>Oddity Passport</h3><p id="cabinet-passport-count">0 stamps collected</p></div>
       <div id="cabinet-passport" class="cabinet-passport" aria-label="Game completion stamps"></div>
       <div class="cabinet-section-head"><h3>Earned medals</h3><p>Little victories add up.</p></div>

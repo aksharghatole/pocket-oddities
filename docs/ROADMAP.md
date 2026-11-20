@@ -24,8 +24,9 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [ ] Native Android internal-testing release and iOS TestFlight release
 
 ## v1.3 — replayability and retention
-- [ ] Daily rotating challenges from existing games
+- [x] Daily rotating challenges from existing games
 - [x] Persistent medals, collection milestones and earned badges
+- [x] Local Oddity Score, player levels, and Daily Rush records
 - [x] Four hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
 - [ ] More game packs; prioritize quality over sheer count

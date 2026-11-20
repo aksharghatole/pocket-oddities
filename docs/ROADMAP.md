@@ -14,7 +14,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] PWA install affordance and generated raster icons
 
 ## v1.2 — usability and polish
-- [ ] Playtest all 27 games end-to-end on small Android and iPhone screens
+- [ ] Playtest all 32 games end-to-end on small Android and iPhone screens
 - [x] Stop timer progression while browsing the achievement Cabinet
 - [x] First gameplay pass: Shadow Thief light readability and cooldown; Tiny Traffic God lane pause/resume, crossing logic and collision lives; Invisible Maze guaranteed routes, breadcrumbs, and improved peek feedback
 - [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all remaining games
@@ -29,7 +29,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Screen-reader announcements for game instructions and round outcomes
 - [x] Brief, distinct win and loss vibration cues with off-by-default preference
 - [x] The Game Is Lying explains its false-statement mechanic and tests all ten counterexamples
-- [x] Ghost Gallery and Fossil Field win/fail/restart paths tested on compact touch screens
+- [x] Targeted win/fail/restart coverage for Pocket Elevator, Orbit Locksmith, Lantern Logic, Cloud Shepherd, Ink Tide, Potion Scale, Ghost Gallery, and Fossil Field
 - [ ] Original icon, splash screen and store screenshots for both OSes
 - [ ] Native Android internal-testing release and iOS TestFlight release
 
@@ -42,7 +42,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Common-to-Legendary and Secret medal rarity labels with a full-collection milestone
 - [x] Six hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
-- [x] Expansion packs #21–27: Echo Tiles, Moon Mail Sorter, Circuit Garden, Fossil Forecast, Ghost Gallery, Fossil Field, and Orbit Locksmith
+- [x] Expansion packs #21–32: Echo Tiles, Moon Mail Sorter, Circuit Garden, Fossil Forecast, Ghost Gallery, Fossil Field, Orbit Locksmith, Pocket Elevator, Lantern Logic, Cloud Shepherd, Ink Tide, and Potion Scale
 - [x] Fossil Forecast’s three fixed nonograms and sixth hidden relic thread
 - [ ] More game packs; prioritize quality over sheer count
 - [ ] Per-game tuning profiles and difficulty settings

@@ -27,7 +27,7 @@ test('Potion Scale fails after three overflows and supports restart',async ({pag
   await page.locator('#game-search').fill('Potion Scale');
   await page.locator('#game-grid .game-card').click();
   const five=page.locator('#game-controls .control-btn').filter({hasText:'+5 drops'});
-  await five.click();await five.click();await five.click();
+  await five.click();await five.click();await five.click();await five.click();
   await expect(page.locator('#game-overlay')).toBeVisible();
   await expect(page.locator('#overlay-title')).toHaveText('Round over');
   await page.locator('#restart-btn').click();

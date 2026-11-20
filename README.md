@@ -99,14 +99,14 @@ The first 20 games are built into the shared engine. Games 21–32 are independe
 22. Moon Mail Sorter — sort cosmic parcels into matching mailboxes.
 23. Circuit Garden — rotate wires to carry light from seed to flower.
 24. Fossil Forecast — solve three 5×5 nonograms to uncover tiny fossils.
-25. Ghost Gallery — inspect strange portraits and spot the ghostly changes.
-26. Fossil Field — search a fossil site and uncover buried discoveries.
-27. Orbit Locksmith — align orbital pieces to open a path through space.
-28. Pocket Elevator — guide a tiny elevator through its floors and hazards.
-29. Lantern Logic — use lantern clues to solve a compact logic puzzle.
-30. Cloud Shepherd — guide drifting clouds while avoiding stormy hazards.
-31. Ink Tide — shape spreading ink to reach the goal.
-32. Potion Scale — balance potion ingredients against a target weight.
+25. Ghost Gallery — photograph 10 glowing ghosts across museum rooms; avoid the living visitor.
+26. Fossil Field — excavate five fossils at each of three dig sites without breaking fragile crystals.
+27. Orbit Locksmith — time taps at the glowing gate to align three rings and open five orbital locks.
+28. Pocket Elevator — deliver eight passengers to their requested floors before time runs out.
+29. Lantern Logic — flip lanterns and their neighbors to light 16 lamps across three patterns.
+30. Cloud Shepherd — water three gardens with a rain cloud while keeping mushrooms dry.
+31. Ink Tide — spread matching ink across three 5×5 sheets within the move limits.
+32. Potion Scale — measure exact potion recipes with limited pours, undo, and reset.
 
 ## How to customize
 

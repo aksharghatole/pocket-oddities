@@ -5,3 +5,6 @@
 .search-label{display:block;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:1.7px;margin-bottom:6px}.game-search{display:block;width:min(100%,540px);background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:13px 16px;font:inherit;margin-bottom:16px;outline:none}.game-search:focus{border-color:var(--mint);box-shadow:0 0 0 2px #79f2c333}.game-search::placeholder{color:#9faacb}.no-results{grid-column:1/-1;color:var(--muted);padding:30px 0}
 
 footer a{display:inline-block;margin-left:12px;color:var(--mint);text-decoration:none}footer a:hover{text-decoration:underline}@media(max-width:590px){footer a{display:block;margin:10px 0 0}}
+
+/* Browser install affordance (native Capacitor apps hide it). */
+[hidden]{display:none!important}.install-btn{border:1px solid var(--mint);background:#244d4a;color:var(--mint);font-weight:850;font-size:12px;padding:9px 13px;border-radius:12px}.install-btn:hover{background:#315c54}@media(max-width:590px){.offline-pill{display:none}.install-btn{padding:8px 10px;font-size:11px}}

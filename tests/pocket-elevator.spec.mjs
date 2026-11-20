@@ -10,7 +10,10 @@ test('Pocket Elevator launches and accepts touch and floor-button dispatch',asyn
   await expect(page.locator('#instruction')).toContainText('Deliver 8 passengers');
   await page.getByRole('button',{name:'Floor 3'}).click();
   await page.waitForTimeout(1900);
-  await page.locator('#arena').click({position:{x:300,y:248}});
+  const canvas=page.locator('#arena');
+  const box=await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  await page.touchscreen.tap(box.x+300*box.width/360,box.y+248*box.height/450);
   await page.waitForTimeout(1200);
   await expect(page.locator('#game-overlay')).toHaveClass(/hidden/);
   await page.getByRole('button',{name:'All games'}).first().click();

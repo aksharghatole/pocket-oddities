@@ -17,6 +17,19 @@ A dependency-free, original HTML5 arcade built for mobile portrait screens. All 
 
 **Keep growing the library:** See [Adding Games](docs/ADDING-GAMES.md), the [Living Roadmap](docs/ROADMAP.md), and [Android/iOS release guidance](docs/ANDROID-IOS.md). New games go in separate `game-packs/*.js` files and register themselves with the arcade; the game count and search update automatically. Existing game progress uses local storage and is not synced across devices.
 
+## The Oddity Cabinet: achievements and hidden connections
+
+Play the same arcade, but now victories matter across games. Tap **◈ Cabinet** to see medals, total progress, and four hidden story threads:
+
+- **The Night Circuit:** Shadow Thief · The Last Light Switch · Invisible Maze
+- **A Borrowed Galaxy:** Don't Wake the Planet · Pocket Black Hole · Unfinished Universe
+- **The Lost Frequency:** You Are the Notification · One Finger Orchestra · Echo Tiles
+- **The Unlikely Clock:** The Clock Is Hungry · Gravity Is Shy · The Button Has Feelings
+
+The Cabinet only reveals **riddle clues** for missing fragments. Winning all three connected games uncovers a secret relic and unlocks a **cosmetic theme** that can be equipped or reset. Achievements and rewards are stored entirely on the player's device. Existing beaten games count toward the threads automatically; older scores are not reset.
+
+For maintainers: medal definitions, connected-game clues, and theme unlocks are in `achievements.js`. Keep original game titles and win tracking stable so players retain the cross-game progression.
+
 ## Play it immediately
 
 1. Open `index.html` in a desktop browser (some PWA features need an HTTP server).

@@ -15,17 +15,18 @@
   <div class="backdrop" aria-hidden="true"></div>
   <div id="app">
     <header class="topbar">
-      <div class="brand"><span class="brand-glyph" aria-hidden="true">✳</span><div><strong>Pocket Oddities</strong><small>20 tiny strange worlds</small></div></div>
+      <div class="brand"><span class="brand-glyph" aria-hidden="true">✳</span><div><strong>Pocket Oddities</strong><small id="game-count-tagline">20 tiny strange worlds</small></div></div>
       <div class="top-actions"><span class="offline-pill">● WORKS OFFLINE</span><button id="sound-toggle" class="icon-btn" aria-label="Toggle sound" title="Toggle sound">♫</button></div>
     </header>
     <main>
       <section id="home-screen" class="home-screen">
         <div class="hero">
-          <div class="hero-copy"><span class="eyebrow">THE WEIRD LITTLE ARCADE</span><h1>Twenty games.<br><em>Zero ordinary.</em></h1><p>Quick puzzles, tiny disasters, suspicious buttons, and pocket-sized chaos. All playable with one finger.</p><div class="hero-meta"><span>✦ 20 playable games</span><span>◷ 1–3 min rounds</span><span>↯ No account needed</span></div></div>
+          <div class="hero-copy"><span class="eyebrow">THE WEIRD LITTLE ARCADE</span><h1><span id="hero-count">20</span> games.<br><em>Zero ordinary.</em></h1><p>Quick puzzles, tiny disasters, suspicious buttons, and pocket-sized chaos. All playable with one finger.</p><div class="hero-meta"><span id="hero-game-count">✦ 20 playable games</span><span>◷ 1–3 min rounds</span><span>↯ No account needed</span></div></div>
           <div class="hero-art" aria-hidden="true"><span class="orbit orbit-a">👁</span><span class="orbit orbit-b">☄</span><div class="planet"><span>ಠ‿ಠ</span></div><span class="orbit orbit-c">★</span><span class="orbit orbit-d">◈</span></div>
         </div>
         <div class="section-heading"><div><span class="eyebrow">PICK YOUR NEXT OBSESSION</span><h2>The collection</h2></div><div class="completion" id="completion">0 / 20 beaten</div></div>
-        <div class="filter-row" id="filter-row" role="group" aria-label="Filter games"><button class="filter active" data-filter="all">All 20</button><button class="filter" data-filter="reflex">Reflex</button><button class="filter" data-filter="puzzle">Puzzles</button><button class="filter" data-filter="strategy">Strategy</button><button class="filter" data-filter="weird">Weird</button></div>
+        <label class="search-label" for="game-search">FIND A GAME</label><input id="game-search" class="game-search" type="search" placeholder="Search the arcade…" autocomplete="off" aria-label="Search games">
+        <div class="filter-row" id="filter-row" role="group" aria-label="Filter games"><button class="filter active" data-filter="all" id="all-filter">All 20</button><button class="filter" data-filter="reflex">Reflex</button><button class="filter" data-filter="puzzle">Puzzles</button><button class="filter" data-filter="strategy">Strategy</button><button class="filter" data-filter="weird">Weird</button></div>
         <div id="game-grid" class="game-grid"></div>
         <footer>Made for small screens, short breaks, and curious fingers. ♡</footer>
       </section>
@@ -43,5 +44,6 @@
     </main>
   </div>
   <script src="./games.js" defer></script>
+  <script src="./game-packs/echo-tiles.js" defer></script>
 </body>
 </html>

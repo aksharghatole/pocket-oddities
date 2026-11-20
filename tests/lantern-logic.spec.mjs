@@ -13,7 +13,7 @@ function createGame(randomCells){
   const sequence=[...randomCells];
   const api={
     state,
-    colors:{mint:'#fff',yellow:'#fff,',muted:'#fff',white:'#fff'},
+    colors:{mint:'#fff',yellow:'#fff',muted:'#fff',white:'#fff'},
     helpers:{irnd(min,max){const value=sequence.shift();if(value===undefined||value<min||value>max)throw Error('Unexpected random draw');return value;}},
     art:{base(){},R(){},O(){},T(){}},
     controls(){},

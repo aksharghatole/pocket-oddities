@@ -8,8 +8,10 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Dynamic game count and search by name or category
 - [x] Extension-game API and Echo Tiles (game #21)
 - [x] Offline-first installation
-- [x] Android debug APK build workflow (configuration committed; actual build success must be checked)
+- [x] Android debug APK build workflow — first successful artifact confirmed
 - [x] Development and QA guidance
+- [x] iOS simulator build workflow — first successful artifact confirmed
+- [x] PWA install affordance and generated raster icons
 
 ## v1.2 — usability and polish
 - [ ] Playtest all 21 games end-to-end on small Android and iPhone screens

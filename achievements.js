@@ -82,7 +82,7 @@
     {id:'streak', icon:'✴', title:'Three in a Row', desc:'Win three rounds without losing.', rarity:'Epic', unlock:c=>c.bestStreak>=3},
     {id:'lunar-courier', icon:'📮', title:'Lunar Courier', desc:'Beat Moon Mail Sorter.', rarity:'Uncommon', unlock:c=>c.uniqueWins.has('Moon Mail Sorter')},
     {id:'first-thread', icon:'◐', title:'Thread Collector', desc:'Uncover your first hidden connection.', rarity:'Rare', unlock:c=>c.completeThreads>=1},
-    {id:'all-threads', icon:'✳', title:'Keeper of Secrets', desc:'Uncover all five hidden connections.', rarity:'Secret', unlock:c=>c.completeThreads===threads.length},
+    {id:'all-threads', icon:'✳', title:'Keeper of Secrets', desc:'Uncover all six hidden connections.', rarity:'Secret', unlock:c=>c.completeThreads===threads.length},
     {id:'all-games', icon:'♛', title:'The Whole Oddity', desc:'Beat every registered game.', rarity:'Legendary', unlock:c=>c.uniqueWins.size===c.catalog.length}
   ];
   const byTitle = new Map(threads.flatMap(t => t.parts.map(p => [p[0],t])));

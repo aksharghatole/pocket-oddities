@@ -23,6 +23,23 @@ test('reduced motion setting applies and survives reload',async ({page})=>{
   await expect(page.locator('#reduced-motion-toggle')).toBeChecked();
   await expect(page.locator('html')).toHaveAttribute('data-reduced-motion','true');
 });
+test('local player name and avatar persist after reload',async ({page})=>{
+  await page.goto('/');
+  await openCabinet(page);
+  await page.locator('#cabinet-player-name-input').fill('  Quick   Fox  ');
+  await page.locator('#cabinet-player-name-save').click();
+  await expect(page.locator('#cabinet-player-name')).toHaveText('Quick Fox');
+  await page.locator('[data-player-avatar="🐙"]').click();
+  await expect(page.locator('#cabinet-player-avatar')).toHaveText('🐙');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('oddities-cabinet-v1')));
+  expect(saved.playerName).toBe('Quick Fox');
+  expect(saved.playerAvatar).toBe('🐙');
+  await page.reload();
+  await openCabinet(page);
+  await expect(page.locator('#cabinet-player-name')).toHaveText('Quick Fox');
+  await expect(page.locator('#cabinet-player-name-input')).toHaveValue('Quick Fox');
+  await expect(page.locator('#cabinet-player-avatar')).toHaveText('🐙');
+});
 test('Cabinet shows achievements and five hidden cross-game threads',async ({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));

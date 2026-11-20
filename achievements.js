@@ -81,7 +81,11 @@
     try { const value=JSON.parse(localStorage.getItem(key));return value&&typeof value==='object'&&!Array.isArray(value)?value:fallback; }
     catch {return fallback;}
   }
+  const PLAYER_DEFAULT_NAME='Pocket Player';
+  const PLAYER_AVATARS=['✳','😈','👽','🐙','🌙','🤖','🦊','🐸'];
   const data = safeRead(KEY,{});
+  data.playerName=typeof data.playerName==='string'&&data.playerName.trim()?data.playerName.trim().replace(/\s+/g,' ').slice(0,18):PLAYER_DEFAULT_NAME;
+  data.playerAvatar=PLAYER_AVATARS.includes(data.playerAvatar)?data.playerAvatar:PLAYER_AVATARS[0];
   data.plays = data.plays && typeof data.plays==='object' ? data.plays : {};
   data.earned = data.earned && typeof data.earned==='object' ? data.earned : {};
   data.found = data.found && typeof data.found==='object' ? data.found : {};
@@ -175,6 +179,10 @@
     currentCabinet.completedRounds=Math.max(0,Number(currentCabinet.completedRounds)||0,Number(importedCabinet.completedRounds)||0);
     const validThemes=new Set(['default',...threads.map(thread=>thread.id)]);
     if((!validThemes.has(currentCabinet.theme)||currentCabinet.theme==='default')&&validThemes.has(importedCabinet.theme)){currentCabinet.theme=importedCabinet.theme;changed=true}
+    const currentName=typeof currentCabinet.playerName==='string'?currentCabinet.playerName.trim():PLAYER_DEFAULT_NAME;
+    const importedName=typeof importedCabinet.playerName==='string'?importedCabinet.playerName.trim().replace(/\s+/g,' ').slice(0,18):'';
+    if((!currentName||currentName===PLAYER_DEFAULT_NAME)&&importedName){currentCabinet.playerName=importedName;changed=true}
+    if((!PLAYER_AVATARS.includes(currentCabinet.playerAvatar)||currentCabinet.playerAvatar===PLAYER_AVATARS[0])&&PLAYER_AVATARS.includes(importedCabinet.playerAvatar)&&importedCabinet.playerAvatar!==PLAYER_AVATARS[0]){currentCabinet.playerAvatar=importedCabinet.playerAvatar;changed=true}
     if(data[KEY]&&writeLocal(KEY,currentCabinet))changed=true;
 
   }
@@ -263,6 +271,20 @@
     const count=medals.filter(m=>data.earned[m.id]).length;
     $('cabinet-count').textContent=count+'/'+medals.length;
     $('cabinet-subtitle').textContent=c.oddityScore+' Oddity Score · Level '+c.level+' · '+count+' / '+medals.length+' achievements · '+c.completeThreads+' / '+threads.length+' threads connected';
+    $('cabinet-player-name').textContent=data.playerName;
+    $('cabinet-player-avatar').textContent=data.playerAvatar;
+    const nameInput=$('cabinet-player-name-input');
+    if(document.activeElement!==nameInput)nameInput.value=data.playerName;
+    const avatarChoices=$('cabinet-player-avatars');
+    avatarChoices.replaceChildren();
+    for(const avatar of PLAYER_AVATARS){
+      const choice=el('button','cabinet-player-avatar-choice',avatar);
+      choice.type='button';
+      choice.dataset.playerAvatar=avatar;
+      choice.setAttribute('aria-label','Use '+avatar+' avatar');
+      choice.setAttribute('aria-pressed',String(data.playerAvatar===avatar));
+      avatarChoices.append(choice);
+    }
     const stats=$('cabinet-stats');
     stats.replaceChildren();
     const profileScore=el('div','cabinet-stat cabinet-stat-score');
@@ -355,6 +377,16 @@
     sync();$('cabinet-dialog').showModal();
   });
   $('cabinet-close').addEventListener('click',()=>$('cabinet-dialog').close());
+  $('cabinet-player-name-save').addEventListener('click',()=>{
+    data.playerName=$('cabinet-player-name-input').value.trim().replace(/\s+/g,' ').slice(0,18)||PLAYER_DEFAULT_NAME;
+    sync();notify('✦ Player name saved on this device.');
+  });
+  $('cabinet-player-avatars').addEventListener('click',event=>{
+    const choice=event.target.closest('[data-player-avatar]');
+    if(!choice)return;
+    data.playerAvatar=PLAYER_AVATARS.includes(choice.dataset.playerAvatar)?choice.dataset.playerAvatar:PLAYER_AVATARS[0];
+    sync();notify('✦ Player avatar updated.');
+  });
   $('cabinet-dialog').addEventListener('click',event=>{
     if(event.target===$('cabinet-dialog'))$('cabinet-dialog').close();
     const button=event.target.closest('[data-equip]');

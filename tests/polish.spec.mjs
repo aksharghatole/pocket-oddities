@@ -57,6 +57,18 @@ test('Tiny Traffic God: lane buttons prevent the first intersection collision',a
   await expect.poll(async()=>Number(await page.locator('#score').textContent()),{timeout:6000}).toBeGreaterThanOrEqual(1);
   expect(errors).toEqual([]);
 });
+test('The Other Cursor explains its trail and draws a visible echo tether',async ({page})=>{
+  await page.setViewportSize({width:360,height:740});
+  await page.goto('/');
+  await launch(page,'The Other Cursor');
+  await expect(page.locator('#instruction')).toContainText('1.2 seconds later');
+  await page.waitForTimeout(120);
+  const pixel=await page.locator('#arena').evaluate(canvas=>{
+    return Array.from(canvas.getContext('2d').getImageData(180,145,1,1).data);
+  });
+  expect(pixel[0]).toBeGreaterThan(70);
+  expect(pixel[1]).toBeLessThan(100);
+});
 test('Invisible Maze: both generated stages always contain a winning path',async ({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));

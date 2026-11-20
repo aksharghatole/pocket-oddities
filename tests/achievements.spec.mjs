@@ -12,9 +12,12 @@ test('Cabinet shows achievements and five hidden cross-game threads',async ({pag
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/');
-  await expect(page.locator('#cabinet-count')).toHaveText('0/13');
+  await expect(page.locator('#cabinet-count')).toHaveText('0/14');
   await openCabinet(page);
-  await expect(page.locator('.cabinet-medal')).toHaveCount(13);
+  await expect(page.locator('.cabinet-medal')).toHaveCount(14);
+  await expect(page.locator('[data-achievement="first-spark"]')).toContainText('Common');
+  await expect(page.locator('[data-achievement="all-games"]')).toContainText('Legendary');
+  await expect(page.locator('[data-achievement="all-threads"]')).toContainText('Secret');
   await expect(page.locator('.cabinet-thread')).toHaveCount(5);
   await expect(page.locator('[data-thread="night"] .cabinet-thread-part')).toHaveCount(3);
   await expect(page.locator('#cabinet-theme')).toHaveText('Original arcade glow');
@@ -36,14 +39,14 @@ test('earning a win awards the first medal and it survives reload',async ({page}
   await expect(page.locator('#overlay-title')).toHaveText('You did it!');
   await openCabinet(page);
   await expect(page.locator('[data-achievement="first-spark"]')).toHaveClass(/earned/);
-  await expect(page.locator('#cabinet-count')).toHaveText('1/13');
+  await expect(page.locator('#cabinet-count')).toHaveText('1/14');
   await expect(page.locator('#cabinet-stats')).toContainText('Games beaten');
   await expect(page.locator('[data-profile-score]')).toHaveAttribute('data-profile-score','150');
   await expect(page.locator('[data-profile-score]')).toContainText('Level 1');
   await page.reload();
   await openCabinet(page);
   await expect(page.locator('[data-achievement="first-spark"]')).toHaveClass(/earned/);
-  await expect(page.locator('#cabinet-count')).toHaveText('1/13');
+  await expect(page.locator('#cabinet-count')).toHaveText('1/14');
   expect(errors).toEqual([]);
 });
 test('existing wins unlock a hidden relic and equipped theme survives reload',async ({page})=>{

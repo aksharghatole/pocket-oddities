@@ -23,6 +23,15 @@ for(const name of packNames){
 }
 const builtIn=(engine.match(/\bdefine\(\{/g)||[]).length;
 const count=builtIn+registered;
+const fallbackCountMarkup=[
+  `<title>Pocket Oddities · ${count} Mini-Games</title>`,
+  `id="game-count-tagline">${count} tiny strange worlds`,
+  `id="hero-count">${count}</span> games.`,
+  `id="hero-game-count">✦ ${count} playable games`,
+  `id="completion">0 / ${count} beaten`,
+  `id="all-filter">All ${count}`
+];
+assert.ok(fallbackCountMarkup.every(markup=>html.includes(markup)),'Static launcher fallback counts must match the registered game catalog');
 assert.ok(count>=21,'Expected 20 original games + the expansion');
 assert.ok(css.includes('.game-search'));
 assert.ok(worker.includes('CACHE='));

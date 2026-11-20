@@ -318,13 +318,13 @@ test('The Game Is Lying rejects a wrong choice and accepts all ten counterexampl
   // LEFT is the tempting but false answer to the first claim.
   await controls.filter({hasText:'LEFT'}).click();
   await expect(controls).toHaveCount(choices[0].length);
-  await expect(controls.allTextContents()).resolves.toEqual(choices[0]);
+  await expect(controls).toHaveText(choices[0]);
 
   for(let index=0;index<answers.length;index++){
     await controls.filter({hasText:answers[index]}).click();
     if(index<answers.length-1){
       await expect(controls).toHaveCount(choices[index+1].length);
-      await expect(controls.allTextContents()).resolves.toEqual(choices[index+1]);
+      await expect(controls).toHaveText(choices[index+1]);
     }
   }
   await expect(page.locator('#game-overlay')).toBeVisible();

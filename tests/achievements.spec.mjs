@@ -86,3 +86,30 @@ test('Cabinet pauses an active game clock',async ({page})=>{
   const resumed=await page.locator('#clock').textContent();
   expect(parseInt(resumed)).toBeLessThanOrEqual(parseInt(paused));
 });
+
+test('The Game Is Lying has a complete fair ten-question victory path',async ({page})=>{
+  const errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  await start(page,'The Game Is Lying');
+  for(const answer of ['RIGHT','MOON','8','1','PURPLE','FIRST','CHAIR','ROCK','DOWN','STOP']){
+    await page.locator('#game-controls button').filter({hasText:new RegExp('^'+answer+'$')}).click();
+  }
+  await expect(page.locator('#overlay-title')).toHaveText('You did it!');
+  await expect(page.locator('#score')).toHaveText('10');
+  expect(errors).toEqual([]);
+});
+test('Echo Tiles previews a signal then accepts a memorized sequence',async ({page})=>{
+  // Deterministic first signal: the top-left diamond flashes three times.
+  await page.addInitScript(()=>{Math.random=()=>0;});
+  await start(page,'Echo Tiles');
+  await expect(page.locator('#level-pill')).toHaveText('ROUND 01');
+  await page.waitForTimeout(3600);
+  const canvas=page.locator('#arena');
+  await canvas.scrollIntoViewIfNeeded();
+  for(let i=0;i<3;i++){
+    const b=await canvas.boundingBox();
+    await page.touchscreen.tap(b.x+b.width*(103/360),b.y+b.height*(181/450));
+  }
+  await expect(page.locator('#score')).toHaveText('3');
+  await expect(page.locator('#level-pill')).toHaveText('ROUND 02');
+});

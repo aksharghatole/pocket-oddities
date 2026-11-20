@@ -1,7 +1,7 @@
 {
-  "name": "Pocket Oddities — 20 Strange Mini-Games",
+  "name": "Pocket Oddities — Growing Mini-Game Arcade",
   "short_name": "Oddities",
-  "description": "Twenty playable, offline mini-games for curious fingers.",
+  "description": "An expandable collection of original bite-sized mobile games, available offline.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -15,5 +15,6 @@
       "type": "image/svg+xml",
       "purpose": "any"
     }
-  ]
+  ],
+  "id": "./"
 }

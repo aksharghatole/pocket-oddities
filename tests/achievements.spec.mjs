@@ -153,6 +153,8 @@ test('Echo Tiles previews a signal then accepts a memorized sequence',async ({pa
   // Deterministic first signal: the top-left diamond flashes three times.
   await page.addInitScript(()=>{Math.random=()=>0;});
   await start(page,'Echo Tiles');
+  await expect(page.locator('#game-controls button')).toHaveCount(3);
+  await page.locator('#game-controls button').filter({hasText:'CLASSIC'}).click();
   await expect(page.locator('#level-pill')).toHaveText('ROUND 01');
   await page.waitForTimeout(3600);
   const canvas=page.locator('#arena');

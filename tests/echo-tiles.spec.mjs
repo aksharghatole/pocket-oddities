@@ -33,6 +33,7 @@ function createGame(randomValues=[]){
   result.game=factory(api);
   result.state=state;
   result.buttons=()=>buttons;
+  result.result=result;
   return result;
 }
 

@@ -50,9 +50,9 @@
     }
   ];
   const medals = [
-    {id:'first-spark', icon:'✦', title:'First Spark', desc:'Beat your first game.', unlock:c=>c.uniqueWins>=1},
-    {id:'curious', icon:'◈', title:'Curious Collector', desc:'Beat five different games.', unlock:c=>c.uniqueWins>=5},
-    {id:'archivist', icon:'✺', title:'Oddity Archivist', desc:'Beat ten different games.', unlock:c=>c.uniqueWins>=10},
+    {id:'first-spark', icon:'✦', title:'First Spark', desc:'Beat your first game.', unlock:c=>c.uniqueWins.size>=1},
+    {id:'curious', icon:'◈', title:'Curious Collector', desc:'Beat five different games.', unlock:c=>c.uniqueWins.size>=5},
+    {id:'archivist', icon:'✺', title:'Oddity Archivist', desc:'Beat ten different games.', unlock:c=>c.uniqueWins.size>=10},
     {id:'explorer', icon:'◇', title:'Wandering Finger', desc:'Try ten different games.', unlock:c=>c.visited>=10},
     {id:'reflex', icon:'⚡', title:'Lightning Hands', desc:'Beat three reflex games.', unlock:c=>c.categoryWins.reflex>=3},
     {id:'puzzle', icon:'🗝', title:'Puzzle Whisperer', desc:'Beat three puzzle games.', unlock:c=>c.categoryWins.puzzle>=3},

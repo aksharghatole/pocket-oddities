@@ -54,6 +54,8 @@ test('Moon Mail Sorter is registered and launches with touch-sized controls',asy
 test('progress backup exports local records and merges an import without replacing progress',async ({page})=>{
   const initialDate='2026-11-19';
   await page.addInitScript(date=>{
+    if(localStorage.getItem('__backup-test-seeded'))return;
+    localStorage.setItem('__backup-test-seeded','yes');
     localStorage.setItem('oddities-wins',JSON.stringify({0:true}));
     localStorage.setItem('oddities-highs',JSON.stringify({0:7}));
     localStorage.setItem('oddities-favorites',JSON.stringify(['The Button Has Feelings']));

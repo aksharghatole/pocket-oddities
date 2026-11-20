@@ -1,4 +1,6 @@
 name: Build Android test app
+# The debug APK is a test build, not a signed Play Store release.
+# Native builds run manually after game changes, avoiding expensive per-push builds.
 on:
   workflow_dispatch:
   push:

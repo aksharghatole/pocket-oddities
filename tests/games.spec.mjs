@@ -55,14 +55,14 @@ test('completed and unfinished shelves follow saved game progress',async ({page}
   await expect(unfinished.filter({has:page.locator('h3',{hasText:titles[0]})})).toHaveCount(0);
   await expect(page.locator('#completion')).toHaveText((titles.length-2)+' games to discover');
 });
-test('Daily Rush offers a stable three-game route and records a completed local run',async ({page})=>{
+test('Daily Rush offers a stable five-game route and records a completed local run',async ({page})=>{
   const errors=collectErrors(page);
   await ready(page);
   await page.locator('[data-view="daily"]').click();
   const route=page.locator('.daily-rush-route li');
-  await expect(route).toHaveCount(3);
+  await expect(route).toHaveCount(5);
   const titles=await route.allTextContents();
-  expect(new Set(titles).size).toBe(3);
+  expect(new Set(titles).size).toBe(5);
   const indexes=await route.evaluateAll(items=>items.map(item=>Number(item.dataset.gameIndex)));
   await page.reload();
   await page.locator('[data-view="daily"]').click();
@@ -73,15 +73,21 @@ test('Daily Rush offers a stable three-game route and records a completed local 
     await page.evaluate(({index,won})=>{document.querySelector('#game-overlay').classList.remove('hidden');window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{index,won,score:5,elapsed:10}}))},{index:indexes[position],won:true});
     if(position<indexes.length-1){
       await expect(page.locator('#rush-next')).toBeVisible();
-      await page.locator('#rush-next').click();
-      await expect(page.locator('#game-title')).toHaveText(titles[position+1].replace(/^\d+\s*/, '').trim());
+      if(position===0){
+        await expect(page.locator('#game-title')).toHaveText(titles[position+1].replace(/^\d+\s*/, '').trim(),{timeout:5000});
+      }else{
+        await page.locator('#rush-next').click();
+        await expect(page.locator('#game-title')).toHaveText(titles[position+1].replace(/^\d+\s*/, '').trim());
+      }
     }
   }
   await expect(page.locator('#overlay-title')).toHaveText('Daily Rush complete!');
   await page.locator('#overlay-home').click();
   await page.locator('[data-view="daily"]').click();
-  await expect(page.locator('.daily-rush-stats')).toContainText('30.0s');
+  await expect(page.locator('.daily-rush-stats')).toContainText('50.0s');
   await expect(page.locator('.daily-rush-stats')).toContainText('1');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('oddities-daily-records')||'{}'));
+  expect(saved[Object.keys(saved)[0]].splits).toHaveLength(5);
   expect(errors).toEqual([]);
 });
 test('Quick Play, recent games, and favorites are easy to reach and persist',async ({page})=>{

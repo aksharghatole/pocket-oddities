@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1023">
-  <meta name="description" content="Pocket Oddities: 20 wonderfully weird bite-sized games, playable offline on your phone.">
+  <meta name="description" content="Pocket Oddities: a growing arcade with achievements, hidden threads, unlockable relics, and mobile mini-games.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="stylesheet" href="./styles.css">
@@ -18,7 +18,7 @@
   <div id="app">
     <header class="topbar">
       <div class="brand"><span class="brand-glyph" aria-hidden="true">✳</span><div><strong>Pocket Oddities</strong><small id="game-count-tagline">20 tiny strange worlds</small></div></div>
-      <div class="top-actions"><span class="offline-pill">● WORKS OFFLINE</span><button id="install-app" class="install-btn" type="button" hidden>Install</button><button id="sound-toggle" class="icon-btn" aria-label="Toggle sound" title="Toggle sound">♫</button></div>
+      <div class="top-actions"><span class="offline-pill">● WORKS OFFLINE</span><button id="cabinet-trigger" class="cabinet-trigger" type="button" aria-haspopup="dialog" aria-controls="cabinet-dialog">◈ Cabinet <span id="cabinet-count">0/12</span></button><button id="install-app" class="install-btn" type="button" hidden>Install</button><button id="sound-toggle" class="icon-btn" aria-label="Toggle sound" title="Toggle sound">♫</button></div>
     </header>
     <main>
       <section id="home-screen" class="home-screen">
@@ -45,7 +45,24 @@
       </section>
     </main>
   </div>
+  <dialog id="cabinet-dialog" class="cabinet-dialog" aria-labelledby="cabinet-title">
+    <div class="cabinet-inner">
+      <div class="cabinet-top">
+        <div><span class="eyebrow">THE STRANGE COLLECTION</span><h2 id="cabinet-title">The Oddity Cabinet</h2><p id="cabinet-subtitle">Your secrets and achievements, kept on this device.</p></div>
+        <button id="cabinet-close" class="cabinet-close" type="button" aria-label="Close achievement cabinet">✕</button>
+      </div>
+      <div id="cabinet-stats" class="cabinet-stats"></div>
+      <div class="cabinet-section-head"><h3>Earned medals</h3><p>Little victories add up.</p></div>
+      <div id="cabinet-medals" class="cabinet-medals"></div>
+      <div class="cabinet-section-head"><h3>The hidden threads</h3><p>Some games know about each other. Beat related games to piece together their secrets.</p></div>
+      <div id="cabinet-threads" class="cabinet-threads"></div>
+      <div class="cabinet-theme-row"><span>Current theme: <strong id="cabinet-theme">Original arcade glow</strong></span><button id="cabinet-default" type="button">Use original</button></div>
+      <p class="cabinet-footnote">Achievements and relics are saved locally. Clearing app data or uninstalling may erase them.</p>
+    </div>
+  </dialog>
+  <div id="oddities-toast" class="oddities-toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <script src="./games.js" defer></script>
   <script src="./game-packs/echo-tiles.js" defer></script>
+  <script src="./achievements.js" defer></script>
 </body>
 </html>

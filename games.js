@@ -86,13 +86,15 @@ window.PocketOddities=Object.freeze({
     const def=factory(extensionAPI);
     if(!def||typeof def.init!=='function'||typeof def.draw!=='function')throw Error('A mini-game needs init() and draw()');
     info.push(metadata);define(def);renderHome();
+    window.dispatchEvent(new CustomEvent('oddities:catalog'));
   },
-  get count(){return info.length}
+  get count(){return info.length},
+  get catalog(){return info.map(([name,category])=>({name,category}));}
 });
-function finish(win,message=''){if(!m||m.ended)return;m.ended=true;m.win=win;if(win){beaten[idx]=true;storeSet('oddities-wins',beaten);beep(750)}else beep(170);if(m.score>(highs[idx]||0)){highs[idx]=m.score;storeSet('oddities-highs',highs)}$('overlay-icon').textContent=win?'✦':'☄';$('overlay-title').textContent=win?'You did it!':'Round over';$('overlay-message').textContent=message|| (win?'Another strange victory for your collection.':'Try again — every oddity takes practice.');$('game-overlay').classList.remove('hidden');refreshHud();renderHome()}
+function finish(win,message=''){if(!m||m.ended)return;m.ended=true;m.win=win;if(win){beaten[idx]=true;storeSet('oddities-wins',beaten);beep(750)}else beep(170);if(m.score>(highs[idx]||0)){highs[idx]=m.score;storeSet('oddities-highs',highs)}$('overlay-icon').textContent=win?'✦':'☄';$('overlay-title').textContent=win?'You did it!':'Round over';$('overlay-message').textContent=message|| (win?'Another strange victory for your collection.':'Try again — every oddity takes practice.');$('game-overlay').classList.remove('hidden');refreshHud();renderHome();window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{name:info[idx]?.[0],category:info[idx]?.[1],index:idx,won:!!win,score:m.score,elapsed:m.elapsed}}))}
 function addScore(n=1){m.score+=n;beep(480+Math.min(400,m.score*25))}
 function refreshHud(){$('score').textContent=m?m.score:0;$('clock').textContent=m&&m.t!=null?Math.max(0,Math.ceil(m.t))+'s':'—';$('best').textContent=highs[idx]||0;$('level-pill').textContent='ROUND '+String(m?.level||1).padStart(2,'0')}
-function openGame(i){idx=i;game=games[i];m={score:0,t:null,level:1,ended:false,elapsed:0};$('home-screen').classList.add('hidden');$('play-screen').classList.remove('hidden');$('game-overlay').classList.add('hidden');$('game-title').textContent=info[i][0];$('game-category').textContent=info[i][1].toUpperCase()+' · MINI GAME '+String(i+1).padStart(2,'0');$('game-description').textContent=info[i][3];$('instruction').textContent=info[i][4];controls([]);game.init();refreshHud();window.scrollTo({top:0,behavior:'instant'})}
+function openGame(i){idx=i;game=games[i];m={score:0,t:null,level:1,ended:false,elapsed:0};$('home-screen').classList.add('hidden');$('play-screen').classList.remove('hidden');$('game-overlay').classList.add('hidden');$('game-title').textContent=info[i][0];$('game-category').textContent=info[i][1].toUpperCase()+' · MINI GAME '+String(i+1).padStart(2,'0');$('game-description').textContent=info[i][3];$('instruction').textContent=info[i][4];controls([]);game.init();refreshHud();window.scrollTo({top:0,behavior:'instant'});window.dispatchEvent(new CustomEvent('oddities:game-start',{detail:{name:info[i][0],category:info[i][1],index:i}}))}
 function showHome(){game=null;m=null;idx=-1;$('play-screen').classList.add('hidden');$('home-screen').classList.remove('hidden');renderHome();window.scrollTo({top:0,behavior:'instant'})}
 function act(action){if(!m||m.ended)return;game.action?.(action)}
 function point(e){const b=C.getBoundingClientRect();return{x:(e.clientX-b.left)*W/b.width,y:(e.clientY-b.top)*H/b.height}}
@@ -107,6 +109,7 @@ $('hero-game-count').textContent='✦ '+info.length+' playable games';
 $('all-filter').textContent='All '+info.length;
 document.title='Pocket Oddities · '+info.length+' Mini-Games';
 if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent='No games match your search. Try another name or category.';grid.appendChild(p)}
+window.dispatchEvent(new CustomEvent('oddities:catalog-render'));
 }
 $('game-search').addEventListener('input',()=>renderHome());
 $('filter-row').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelectorAll('.filter').forEach(f=>f.classList.toggle('active',f===b));renderHome(b.dataset.filter)});
@@ -120,20 +123,18 @@ define({init(){m.t=36;m.lane=1;m.remaining=9;m.active=null;m.scanner=180;control
 
 // 03 — Ten deception riddles.
 const lies=[
-['Tap the LEFT button. (The instruction is lying.)',['LEFT','RIGHT','MIDDLE'],1],
-['The correct answer is NOT the moon.',['SUN','MOON','STAR'],1],
-['Choose the number that IS NOT even.',['2','4','7'],1],
-['The word below this one is spelled backwards.',['FORWARD','DRAWKCAB','STRAIGHT'],0],
-['The smallest number is the biggest.',['1','9','4'],0],
-['Nothing here is purple.',['PURPLE','GREEN','ORANGE'],0],
-['Tap the last option.',['FIRST','SECOND','THIRD'],0],
-['Every option below is a fruit.',['APPLE','CHAIR','PEAR'],1],
-['Choose something that cannot fly.',['ROCK','BIRD','PLANE'],1],
-['The middle option is not the answer.',['UP','DOWN','LEFT'],1],
-['Avoid the word STOP.',['GO','STOP','WAIT'],1],
-['This is your first puzzle.',['FIRST','LAST','TWELFTH'],2]
+['Only LEFT will work.',['LEFT','RIGHT'],1],
+['Never tap MOON.',['SUN','MOON'],1],
+['An even number is forbidden.',['8','7'],0],
+['The LARGEST number is safe.',['1','9'],0],
+['PURPLE is the wrong color.',['PURPLE','GREEN'],0],
+['The FIRST button is a trap.',['FIRST','LAST'],0],
+['All three are fruits. Find the impostor.',['APPLE','CHAIR','PEAR'],1],
+['Things that fly are safe.',['ROCK','BIRD'],0],
+['The MIDDLE is definitely incorrect.',['UP','DOWN','LEFT'],1],
+['STOP will cause failure.',['STOP','GO'],0]
 ];
-define({init(){m.level=1;m.lives=3;m.t=null;controls(lies[0][1].map((s,i)=>[s,'c'+i,i===1]))},action(a){if(!a.startsWith('c'))return;const q=lies[m.level-1],sel=+a.slice(1);if(sel===q[2]){addScore(1);m.level++;if(m.level>10){finish(true,'You outsmarted ten deliberately dishonest puzzles.');return}}else{m.lives--;beep(180);if(m.lives<=0){finish(false,'The lies got you. Read the instructions twice.');return}}const ans=lies[m.level-1];controls(ans[1].map((s,i)=>[s,'c'+i,i===1]))},draw(){base('#22203b');T('RULE #'+m.level,180,48,13,U.mint);heartBar(m.lives,3,90);panel(25,136,310,185,'#323553');wrap(lies[Math.min(m.level-1,9)][0],180,218,270,26,18);T('Look closely. Something is off.',180,367,14,U.pink);T('Survive ten tricks',180,409,13,U.muted)}});
+define({init(){m.level=1;m.lives=3;m.t=null;m.lastFeedback='Every instruction is suspicious.';controls(lies[0][1].map((s,i)=>[s,'c'+i,false]))},action(a){if(!a.startsWith('c'))return;const q=lies[m.level-1],sel=+a.slice(1);if(sel===q[2]){m.lastFeedback='YOU FOUND THE LIE!';addScore(1);m.level++;if(m.level>10){finish(true,'You outsmarted ten deliberately dishonest puzzles.');return}}else{m.lives--;m.lastFeedback='THE GAME TRICKED YOU. TRY AGAIN.';beep(180);if(m.lives<=0){finish(false,'The lies got you. Read the instructions twice.');return}}const ans=lies[m.level-1];controls(ans[1].map((s,i)=>[s,'c'+i,false]))},draw(){base('#22203b');T('RULE #'+m.level,180,48,13,U.mint);heartBar(m.lives,3,90);panel(25,136,310,185,'#323553');wrap(lies[Math.min(m.level-1,9)][0],180,218,270,26,18);T(m.lastFeedback,180,367,13,U.pink);T('Survive ten tricks',180,409,13,U.muted)}});
 
 // 04 — Zone commands, including no-movement and movement commands.
 const rules=['STAY LEFT','STAY RIGHT','STAY CENTER','DO NOT MOVE','MOVE AT LEAST ONCE'];
@@ -205,7 +206,7 @@ define({init(){m.t=78;m.stage=0;m.x=0;m.y=6;m.walls=makeInvisibleMaze(0);m.peek=
 define({init(){m.t=null;m.turn=1;m.chaos=0;m.heat=12;m.level=1;controls([['🎈 PRANK','prank'],['⚡ GLITCH','glitch'],['🕶 DECOY','decoy'],['🌙 HIDE','hide',true]])},action(a){if(a==='prank'){m.chaos+=16;m.heat+=9}else if(a==='glitch'){m.chaos+=27;m.heat+=23}else if(a==='decoy'){m.chaos+=5;m.heat-=17}else if(a==='hide'){m.chaos=Math.max(0,m.chaos-5);m.heat-=28}else return;m.heat=clamp(m.heat-2,0,110);if(m.heat>=100){finish(false,'The city detectives caught you! Keep HEAT below 100.');return}addScore(1);if(m.chaos>=100){finish(true,'Maximum cartoon chaos achieved without getting caught!');return}if(m.turn>=8){finish(false,'Eight turns are up. Reach 100 chaos while staying stealthy.');return}m.turn++;m.level=m.turn},draw(){base('#241a38');T('EVIL MASTER PLAN',180,45,21,U.pink);T('TURN '+m.turn+' / 8',180,75,12,U.muted);for(let i=0;i<7;i++){let h=50+(i*47)%104;R(12+i*50,268-h,38,h,'#35365d',4);for(let q=0;q<3;q++)R(20+i*50,280-h+q*25,8,12,'#f4d69188',2)}R(0,268,360,7,'#435273');meter('CHAOS (TARGET 100)',m.chaos,100,41,328,U.mint,278);meter('HEAT (STAY UNDER 100)',m.heat,100,41,389,U.red,278);T('Choose your next evil decision below',180,435,11,U.muted)}});
 
 // Lifecycle. Each game uses the shared mobile-friendly canvas and optional tap controls.
-function frame(now){let dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;if(m&&game){if(!m.ended){m.elapsed+=dt;game.update?.(dt);if(!m.ended&&m.t!=null){m.t-=dt;if(m.t<=0){m.t=0;if(game.timeout)game.timeout();else finish(false,'The timer ran out. Give it another go!')}}}try{ctx.clearRect(0,0,W,H);game.draw()}catch(err){console.error('Game rendering error',err);base();T('This round needs a restart.',180,225,16,U.pink)}refreshHud()}requestAnimationFrame(frame)}
+function frame(now){let dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;if(m&&game){if(!m.ended&&!$('cabinet-dialog').open){m.elapsed+=dt;game.update?.(dt);if(!m.ended&&m.t!=null){m.t-=dt;if(m.t<=0){m.t=0;if(game.timeout)game.timeout();else finish(false,'The timer ran out. Give it another go!')}}}try{ctx.clearRect(0,0,W,H);game.draw()}catch(err){console.error('Game rendering error',err);base();T('This round needs a restart.',180,225,16,U.pink)}refreshHud()}requestAnimationFrame(frame)}
 renderHome();requestAnimationFrame(frame);
 if('serviceWorker' in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 })();

@@ -38,6 +38,11 @@ function dailyRoute(date=todayUTC()){
   for(let i=pool.length-1;i>0;i--){seed=(Math.imul(seed,1664525)+1013904223)|0;const j=(seed>>>0)%(i+1);[pool[i],pool[j]]=[pool[j],pool[i]]}
   return pool.slice(0,Math.min(5,pool.length));
 }
+function gameOfTheDayIndex(date=todayUTC()){
+  let seed=0;
+  for(const char of date)seed=(Math.imul(seed,31)+char.charCodeAt(0))|0;
+  return (seed>>>0)%info.length;
+}
 function dailyStreak(){
   let date=new Date(todayUTC()+'T00:00:00Z');
   if(!dailyRecords[date.toISOString().slice(0,10)])date.setUTCDate(date.getUTCDate()-1);
@@ -194,6 +199,16 @@ C.addEventListener('pointermove',e=>{if(!m||m.ended||!(e.buttons||e.pointerType=
 C.addEventListener('pointerup',e=>{if(!m||m.ended)return;game.up?.()});C.addEventListener('pointercancel',()=>{game?.up?.()});
 window.addEventListener('keydown',e=>{if(!m||m.ended||e.repeat)return;const key={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',' ':'go',Enter:'go'}[e.key];if(key){e.preventDefault();act(key)}});
 function renderHome(filter='all'){
+  const dayIndex=gameOfTheDayIndex(),day=info[dayIndex],spotlight=$('game-of-day');
+  spotlight.hidden=libraryView!=='discover';
+  spotlight.dataset.gameIndex=String(dayIndex);
+  $('game-of-day-title').textContent=day[0];
+  $('game-of-day-description').textContent=day[3];
+  $('game-of-day-label').textContent='TODAY’S PICK · '+todayUTC();
+  $('game-of-day-art').textContent=day[2];
+  $('game-of-day-play').setAttribute('aria-label','Play Game of the Day: '+day[0]);
+  $('game-of-day-play').onclick=()=>openGame(dayIndex);
+
   const grid=$('game-grid');
   const selected=document.querySelector('.filter.active')?.dataset.filter||filter;
   const term=$('game-search').value.trim().toLowerCase();
@@ -229,6 +244,12 @@ function renderHome(filter='all'){
   if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent=libraryView==='recent'?'Games you play will appear here.':libraryView==='favorites'?'Tap ☆ on a game to save it here.':libraryView==='completed'?'Beat a game and it will be saved here.':libraryView==='unfinished'?'You have cleared every game in the collection!':'No games match your search. Try another name or category.';grid.appendChild(p)}
   window.dispatchEvent(new CustomEvent('oddities:catalog-render'));
 }
+$('surprise-me').addEventListener('click',()=>{
+  const unseen=info.map((row,index)=>({name:row[0],index})).filter(item=>!recentlyPlayed.includes(item.name));
+  const choices=unseen.length?unseen:info.map((row,index)=>({name:row[0],index}));
+  const pick=choices[Math.floor(Math.random()*choices.length)];
+  openGame(pick.index);
+});
 $('game-search').addEventListener('input',()=>renderHome());
 $('collection-tabs').addEventListener('click',event=>{
   const tab=event.target.closest('[data-view]');if(!tab)return;

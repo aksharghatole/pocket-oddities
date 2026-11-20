@@ -51,6 +51,21 @@ test('Moon Mail Sorter is registered and launches with touch-sized controls',asy
   await expect(page.locator('#play-screen')).toBeVisible();
   expect(errors).toEqual([]);
 });
+test('Game of the Day is stable and Surprise Me avoids recent games',async ({page})=>{
+  await page.addInitScript(names=>localStorage.setItem('oddities-recent',JSON.stringify(names)),titles.slice(0,-1));
+  await ready(page);
+  const featured=page.locator('#game-of-day');
+  const featuredTitle=await page.locator('#game-of-day-title').textContent();
+  const featuredIndex=await featured.getAttribute('data-game-index');
+  await page.reload();
+  await expect(page.locator('#game-of-day-title')).toHaveText(featuredTitle);
+  await expect(page.locator('#game-of-day')).toHaveAttribute('data-game-index',featuredIndex);
+  await page.locator('#surprise-me').click();
+  await expect(page.locator('#game-title')).toHaveText(titles[titles.length-1]);
+  await page.locator('#back-btn').click();
+  await page.locator('#game-of-day-play').click();
+  await expect(page.locator('#game-title')).toHaveText(featuredTitle);
+});
 test('Oddity Passport displays a stamp for every game and reflects saved clears',async ({page})=>{
   await page.addInitScript(()=>localStorage.setItem('oddities-wins',JSON.stringify({0:true,1:true})));
   await ready(page);

@@ -1,0 +1,41 @@
+name: Build iOS simulator test app
+# Unsigned iOS Simulator .app; a real-device/TestFlight IPA needs Apple signing.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ios-simulator.yml'
+permissions:
+  contents: read
+jobs:
+  ios-simulator:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate game library
+        run: npm test
+      - name: Build web assets
+        run: npm run build:web
+      - name: Generate iOS project
+        run: npx cap add ios
+      - name: Sync iOS project
+        run: npx cap sync ios
+      - name: Build unsigned iOS Simulator app
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App             -sdk iphonesimulator -configuration Debug             -destination 'generic/platform=iOS Simulator'             -derivedDataPath ios-build CODE_SIGNING_ALLOWED=NO build
+      - name: Upload simulator application
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocket-oddities-ios-simulator-app
+          path: ios-build/Build/Products/Debug-iphonesimulator/App.app
+          if-no-files-found: error
+          retention-days: 30

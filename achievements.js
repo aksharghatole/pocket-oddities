@@ -47,6 +47,16 @@
         ['Gravity Is Shy', 'Let gravity change its mind'],
         ['The Button Has Feelings', 'Be kind to the thing that starts it all']
       ]
+    },
+    {
+      id: 'lunar-mail', title: 'The Moon’s Unclaimed Mail', glyph: '✉', relic: 'Moonpost',
+      story: 'Some letters cross impossible distances without a sender.',
+      completion: 'The parcel was sorted, the message was unmasked, and the reply found its rhythm. The Moonpost glow is yours.',
+      parts: [
+        ['Moon Mail Sorter', 'Deliver the parcel with a star address'],
+        ['The Game Is Lying', 'Read the instructions printed on the wrong envelope'],
+        ['One Finger Orchestra', 'Send the reply through a perfect rhythm']
+      ]
     }
   ];
   const medals = [
@@ -60,8 +70,9 @@
     {id:'weird', icon:'☻', title:'Certified Oddity', desc:'Beat two weird games.', unlock:c=>c.categoryWins.weird>=2},
     {id:'return', icon:'↻', title:'One More Round', desc:'Start any game three times.', unlock:c=>c.maxAttempts>=3},
     {id:'streak', icon:'✴', title:'Three in a Row', desc:'Win three rounds without losing.', unlock:c=>c.bestStreak>=3},
+    {id:'lunar-courier', icon:'📮', title:'Lunar Courier', desc:'Beat Moon Mail Sorter.', unlock:c=>c.uniqueWins.has('Moon Mail Sorter')},
     {id:'first-thread', icon:'◐', title:'Thread Collector', desc:'Uncover your first hidden connection.', unlock:c=>c.completeThreads>=1},
-    {id:'all-threads', icon:'✳', title:'Keeper of Secrets', desc:'Uncover all four hidden connections.', unlock:c=>c.completeThreads===threads.length}
+    {id:'all-threads', icon:'✳', title:'Keeper of Secrets', desc:'Uncover all five hidden connections.', unlock:c=>c.completeThreads===threads.length}
   ];
   const byTitle = new Map(threads.flatMap(t => t.parts.map(p => [p[0],t])));
 

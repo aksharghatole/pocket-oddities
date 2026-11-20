@@ -57,6 +57,16 @@ test('Tiny Traffic God: lane buttons prevent the first intersection collision',a
   await expect.poll(async()=>Number(await page.locator('#score').textContent()),{timeout:6000}).toBeGreaterThanOrEqual(1);
   expect(errors).toEqual([]);
 });
+test('Tiny Traffic God alternates paired and staggered arrivals without false crashes',async ({page})=>{
+  const errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await launch(page,'Tiny Traffic God');
+  // The opening paired wave is intentionally left alone; the next wave is staggered
+  // and both vehicles should clear safely without requiring a lane hold.
+  await expect.poll(async()=>Number(await page.locator('#score').textContent()),{timeout:12500}).toBeGreaterThanOrEqual(2);
+  await expect(page.locator('#game-overlay')).toBeHidden();
+  expect(errors).toEqual([]);
+});
 test('The Other Cursor explains its trail and draws a visible echo tether',async ({page})=>{
   await page.setViewportSize({width:360,height:740});
   await page.goto('/');

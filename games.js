@@ -160,7 +160,7 @@ const info=[
 ['Wrong Answers Only','weird','🙃','Score points by refusing to give the right answer.','Pick any answer except the correct one.'],
 ['The Last Light Switch','puzzle','💡','Navigate a dark maze using tiny flashes of light.','Use flashes to spot the walls.'],
 ['Gravity Is Shy','reflex','🪂','Guide a drifting ball through gravity-bending gates.','Hold to rise, release to fall.'],
-['Tiny Traffic God','strategy','🚦','Stop and release tiny cars before they crash.','Tap cars to pause or resume them.'],
+['Tiny Traffic God','strategy','🚦','Manage paired and staggered cars through a busy intersection.','Tap cars or use a lane button to pause traffic. Some waves arrive one lane at a time.'],
 ['The Clock Is Hungry','reflex','⏰','Feed a clock time snacks before time runs out.','Collect green seconds, avoid red ones.'],
 ['Unfinished Universe','puzzle','✨','Restore missing stars to make galaxies symmetrical.','Mirror every star across the center line.'],
 ['The Other Cursor','reflex','🖱️','Collect green orbs while a red echo follows your path 1.2 seconds later.','Drag the blue cursor to green orbs. The red echo follows 1.2 seconds later; avoid it. Pale dots show your recent path.'],
@@ -387,7 +387,7 @@ define({init(){m.t=47;m.y=220;m.v=0;m.held=false;m.gates=[];m.spawn=.9;m.gateNo=
 // 15 — A readable traffic-control puzzle with pause/resume and recoverable crashes.
 define({
   init(){
-    m.t=72;m.spawn=.35;m.cars=[];m.total=0;m.lives=3;
+    m.t=72;m.spawn=.35;m.cars=[];m.total=0;m.lives=3;m.wave=0;m.pendingAxis=null;
     m.note='Pause one lane so the other can pass.';
     controls([['Ⅱ HORIZONTAL','pause-h',true],['Ⅱ VERTICAL','pause-v',true]]);
   },
@@ -412,10 +412,21 @@ define({
   },
   update(dt){
     m.spawn-=dt;
-    if(m.spawn<=0&&m.total<16){
-      m.cars.push({axis:'h',pos:-26,held:false,counted:false});
-      m.cars.push({axis:'v',pos:-26,held:false,counted:false});
-      m.total+=2;m.spawn=4.8;
+    if(m.spawn<=0&&(m.total<16||m.pendingAxis)){
+      const addCar=axis=>{m.cars.push({axis,pos:-26,held:false,counted:false});m.total++};
+      if(m.pendingAxis){
+        addCar(m.pendingAxis);m.pendingAxis=null;m.wave++;m.spawn=3.2;
+      }else{
+        const pattern=m.wave%3;
+        if(pattern===0){
+          addCar('h');addCar('v');m.wave++;m.spawn=4.8;
+        }else{
+          const first=pattern===1?'h':'v';
+          const second=first==='h'?'v':'h';
+          addCar(first);m.pendingAxis=second;m.spawn=1.6;
+          m.note=first==='h'?'Staggered wave: horizontal first.':'Staggered wave: vertical first.';
+        }
+      }
     }
     for(const c of m.cars)if(!c.held)c.pos+=110*dt;
     const h=m.cars.find(c=>c.axis==='h'&&Math.abs(c.pos-180)<27);

@@ -120,3 +120,14 @@ footer a{display:inline-block;margin-left:12px;color:var(--mint);text-decoration
 .cabinet-backup-actions button{min-height:42px;padding:0 14px;border:1px solid #657291;border-radius:12px;background:#242e49;color:#f0f3ff;font:700 13px/1 system-ui;cursor:pointer}
 .cabinet-backup-actions button:active{transform:translateY(1px)}
 .progress-backup-status{min-height:20px;margin:4px 0 10px;color:#8fe6c3;font-size:12px}
+
+/* Medal rarity tiers */
+.cabinet-medal.rarity-common{--medal-rarity:#b6c2d8}
+.cabinet-medal.rarity-uncommon{--medal-rarity:#7de8c0}
+.cabinet-medal.rarity-rare{--medal-rarity:#8eb9ff}
+.cabinet-medal.rarity-epic{--medal-rarity:#c4a0ff}
+.cabinet-medal.rarity-legendary{--medal-rarity:#ffe18d}
+.cabinet-medal.rarity-secret{--medal-rarity:#f491d2}
+.cabinet-medal.rarity-common,.cabinet-medal.rarity-uncommon,.cabinet-medal.rarity-rare,.cabinet-medal.rarity-epic,.cabinet-medal.rarity-legendary,.cabinet-medal.rarity-secret{border-color:var(--medal-rarity)}
+.cabinet-medal-icon{color:var(--medal-rarity,#b6c2d8)}
+.cabinet-medal-rarity{color:var(--medal-rarity,#b6c2d8)!important;font-size:9px!important;font-weight:850;letter-spacing:.09em;text-transform:uppercase}

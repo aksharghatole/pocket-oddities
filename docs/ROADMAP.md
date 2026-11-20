@@ -34,6 +34,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Persistent medals, collection milestones and earned badges
 - [x] Local Oddity Score, player levels, and Daily Rush records
 - [x] Oddity Passport stamps for every cleared game
+- [x] Common-to-Legendary and Secret medal rarity labels with a full-collection milestone
 - [x] Five hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
 - [x] Moon Mail Sorter added as game #22 with offline precaching and Android-sized launch coverage

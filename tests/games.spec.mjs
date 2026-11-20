@@ -40,6 +40,17 @@ test('the library shows all registered games with a dynamic count',async ({page}
   await expect(page.locator('#game-grid .game-card')).toHaveCount(titles.length);
   expect(errors).toEqual([]);
 });
+test('Moon Mail Sorter is registered and launches with touch-sized controls',async ({page})=>{
+  const errors=collectErrors(page);
+  await ready(page);
+  await expect(page.locator('#game-grid')).toContainText('Moon Mail Sorter');
+  await page.getByRole('button',{name:/Moon Mail Sorter/}).click();
+  await expect(page.locator('#game-title')).toHaveText('Moon Mail Sorter');
+  await expect(page.locator('#game-controls .control-btn')).toHaveCount(3);
+  await page.locator('#game-controls .control-btn').first().click();
+  await expect(page.locator('#play-screen')).toBeVisible();
+  expect(errors).toEqual([]);
+});
 test('completed and unfinished shelves follow saved game progress',async ({page})=>{
   await page.addInitScript(()=>localStorage.setItem('oddities-wins',JSON.stringify({0:true,1:true})));
   await ready(page);

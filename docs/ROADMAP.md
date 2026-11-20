@@ -32,6 +32,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Local Oddity Score, player levels, and Daily Rush records
 - [x] Four hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
+- [x] Moon Mail Sorter added as game #22 with offline precaching and Android-sized launch coverage
 - [ ] More game packs; prioritize quality over sheer count
 - [ ] Per-game tuning profiles and difficulty settings
 - [ ] In-app feedback and game popularity signals, privacy-conscious

@@ -19,6 +19,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] First gameplay pass: Shadow Thief light readability and cooldown; Tiny Traffic God lane pause/resume, crossing logic and collision lives; Invisible Maze guaranteed routes, breadcrumbs, and improved peek feedback
 - [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all remaining games
 - [x] Favorites, recent games and continue playing
+- [x] Completed and unfinished game shelves tied to saved progress
 - [x] Per-game fastest successful clear records and Speedruns shelf
 - [ ] Better accessible text, haptics and independent sound preferences
 - [ ] Original icon, splash screen and store screenshots for both OSes

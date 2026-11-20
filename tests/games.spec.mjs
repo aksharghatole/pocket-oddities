@@ -40,6 +40,21 @@ test('the library shows all registered games with a dynamic count',async ({page}
   await expect(page.locator('#game-grid .game-card')).toHaveCount(titles.length);
   expect(errors).toEqual([]);
 });
+test('completed and unfinished shelves follow saved game progress',async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('oddities-wins',JSON.stringify({0:true,1:true})));
+  await ready(page);
+  await page.locator('[data-view="completed"]').click();
+  const completed=page.locator('#game-grid .game-card');
+  await expect(completed).toHaveCount(2);
+  await expect(completed.nth(0).locator('h3')).toHaveText(titles[0]);
+  await expect(completed.nth(1).locator('h3')).toHaveText(titles[1]);
+  await expect(page.locator('#completion')).toHaveText('2 completed games');
+  await page.locator('[data-view="unfinished"]').click();
+  const unfinished=page.locator('#game-grid .game-card');
+  await expect(unfinished).toHaveCount(titles.length-2);
+  await expect(unfinished.filter({has:page.locator('h3',{hasText:titles[0]})})).toHaveCount(0);
+  await expect(page.locator('#completion')).toHaveText((titles.length-2)+' games to discover');
+});
 test('Daily Rush offers a stable three-game route and records a completed local run',async ({page})=>{
   const errors=collectErrors(page);
   await ready(page);

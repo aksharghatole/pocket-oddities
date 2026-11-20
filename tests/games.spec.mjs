@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {readFileSync,readdirSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 
 const root=new URL('../',import.meta.url);
@@ -7,8 +7,10 @@ const core=readFileSync(new URL('games.js',root),'utf8');
 const listMatch=core.match(/const info=\[([\s\S]*?)\];\s*const games=/);
 if(!listMatch)throw new Error('Cannot find the built-in game catalog');
 const builtIn=vm.runInNewContext('['+listMatch[1]+']',{}, {timeout:1000}).map(entry=>entry[0]);
+const indexHtml=readFileSync(new URL('index.html',root),'utf8');
+const extensionFiles=[...indexHtml.matchAll(/<script[^>]+src=["']\.\/game-packs\/([^"']+\.js)["']/g)].map(match=>match[1]);
 const expansions=[];
-for(const file of readdirSync(new URL('game-packs/',root)).filter(p=>p.endsWith('.js'))){
+for(const file of extensionFiles){
   const content=readFileSync(new URL('game-packs/'+file,root),'utf8');
   const names=content.matchAll(/PocketOddities\.register\(\s*\[\s*(['"])(.*?)\1/g);
   for(const m of names)expansions.push(m[2]);
@@ -36,6 +38,35 @@ test('the library shows all registered games with a dynamic count',async ({page}
   await expect(page.locator('#all-filter')).toContainText(String(titles.length));
   await expect(page.locator('#completion')).toContainText('/ '+titles.length+' beaten');
   await expect(page.locator('#game-grid .game-card')).toHaveCount(titles.length);
+  expect(errors).toEqual([]);
+});
+test('Daily Rush offers a stable three-game route and records a completed local run',async ({page})=>{
+  const errors=collectErrors(page);
+  await ready(page);
+  await page.locator('[data-view="daily"]').click();
+  const route=page.locator('.daily-rush-route li');
+  await expect(route).toHaveCount(3);
+  const titles=await route.allTextContents();
+  expect(new Set(titles).size).toBe(3);
+  const indexes=await route.evaluateAll(items=>items.map(item=>Number(item.dataset.gameIndex)));
+  await page.reload();
+  await page.locator('[data-view="daily"]').click();
+  await expect(page.locator('.daily-rush-route li')).toHaveText(titles);
+  await page.locator('#daily-rush-start').click();
+  await expect(page.locator('#game-title')).toHaveText(titles[0].replace(/^\d+\s*/, '').trim());
+  for(let position=0;position<indexes.length;position++){
+    await page.evaluate(({index,won})=>window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{index,won,score:5,elapsed:10}})),{index:indexes[position],won:true});
+    if(position<indexes.length-1){
+      await expect(page.locator('#rush-next')).toBeVisible();
+      await page.locator('#rush-next').click();
+      await expect(page.locator('#game-title')).toHaveText(titles[position+1].replace(/^\d+\s*/, '').trim());
+    }
+  }
+  await expect(page.locator('#overlay-title')).toHaveText('Daily Rush complete!');
+  await page.locator('#overlay-home').click();
+  await page.locator('[data-view="daily"]').click();
+  await expect(page.locator('.daily-rush-stats')).toContainText('30.0s');
+  await expect(page.locator('.daily-rush-stats')).toContainText('1');
   expect(errors).toEqual([]);
 });
 test('Quick Play, recent games, and favorites are easy to reach and persist',async ({page})=>{

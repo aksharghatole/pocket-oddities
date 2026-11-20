@@ -47,6 +47,24 @@ const info=[
 ];
 const games=[];
 function define(def){games.push(def)}
+// Expansion API: keep existing game indices stable and register new games in separate packs.
+const extensionAPI=Object.freeze({
+  get state(){return m},
+  art:Object.freeze({base,R,O,S,L,T,wrap,panel,meter}),
+  helpers:Object.freeze({clamp,rnd,irnd,dist,choose,shuffle}),
+  colors:Object.freeze(U),
+  controls,addScore,finish,beep,width:W,height:H
+});
+window.PocketOddities=Object.freeze({
+  register(metadata,factory){
+    if(!Array.isArray(metadata)||metadata.length!==5||typeof metadata[0]!=='string'||!['reflex','puzzle','strategy','weird'].includes(metadata[1]))throw Error('Invalid mini-game metadata');
+    if(info.some(row=>row[0]===metadata[0]))throw Error('Duplicate game name: '+metadata[0]);
+    const def=factory(extensionAPI);
+    if(!def||typeof def.init!=='function'||typeof def.draw!=='function')throw Error('A mini-game needs init() and draw()');
+    info.push(metadata);define(def);renderHome();
+  },
+  get count(){return info.length}
+});
 function finish(win,message=''){if(!m||m.ended)return;m.ended=true;m.win=win;if(win){beaten[idx]=true;storeSet('oddities-wins',beaten);beep(750)}else beep(170);if(m.score>(highs[idx]||0)){highs[idx]=m.score;storeSet('oddities-highs',highs)}$('overlay-icon').textContent=win?'✦':'☄';$('overlay-title').textContent=win?'You did it!':'Round over';$('overlay-message').textContent=message|| (win?'Another strange victory for your collection.':'Try again — every oddity takes practice.');$('game-overlay').classList.remove('hidden');refreshHud();renderHome()}
 function addScore(n=1){m.score+=n;beep(480+Math.min(400,m.score*25))}
 function refreshHud(){$('score').textContent=m?m.score:0;$('clock').textContent=m&&m.t!=null?Math.max(0,Math.ceil(m.t))+'s':'—';$('best').textContent=highs[idx]||0;$('level-pill').textContent='ROUND '+String(m?.level||1).padStart(2,'0')}
@@ -58,7 +76,15 @@ C.addEventListener('pointerdown',e=>{if(!m||m.ended)return;e.preventDefault();C.
 C.addEventListener('pointermove',e=>{if(!m||m.ended||!(e.buttons||e.pointerType==='touch'))return;e.preventDefault();const p=point(e);game.move?.(p.x,p.y)});
 C.addEventListener('pointerup',e=>{if(!m||m.ended)return;game.up?.()});C.addEventListener('pointercancel',()=>{game?.up?.()});
 window.addEventListener('keydown',e=>{if(!m||m.ended||e.repeat)return;const key={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',' ':'go',Enter:'go'}[e.key];if(key){e.preventDefault();act(key)}});
-function renderHome(filter='all'){const grid=$('game-grid');const selected=document.querySelector('.filter.active')?.dataset.filter||filter;grid.replaceChildren();info.forEach(([name,category,emoji,desc],i)=>{if(selected!=='all'&&category!==selected)return;const b=document.createElement('button');b.className='game-card';b.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span>${category}</span><span class="${beaten[i]?'card-beat':''}">${beaten[i]?'★ BEATEN':'PLAY →'}</span></div>`;b.onclick=()=>openGame(i);grid.appendChild(b)});$('completion').textContent=Object.keys(beaten).filter(k=>beaten[k]).length+' / 20 beaten'}
+function renderHome(filter='all'){const grid=$('game-grid');const selected=document.querySelector('.filter.active')?.dataset.filter||filter;grid.replaceChildren();info.forEach(([name,category,emoji,desc],i)=>{if(selected!=='all'&&category!==selected)return;const term=$('game-search').value.trim().toLowerCase();if(term&&!(`${name} ${category} ${desc}`).toLowerCase().includes(term))return;const b=document.createElement('button');b.className='game-card';b.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span>${category}</span><span class="${beaten[i]?'card-beat':''}">${beaten[i]?'★ BEATEN':'PLAY →'}</span></div>`;b.onclick=()=>openGame(i);grid.appendChild(b)});$('completion').textContent=Object.keys(beaten).filter(k=>beaten[k]).length+' / '+info.length+' beaten';
+$('game-count-tagline').textContent=info.length+' tiny strange worlds';
+$('hero-count').textContent=info.length;
+$('hero-game-count').textContent='✦ '+info.length+' playable games';
+$('all-filter').textContent='All '+info.length;
+document.title='Pocket Oddities · '+info.length+' Mini-Games';
+if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent='No games match your search. Try another name or category.';grid.appendChild(p)}
+}
+$('game-search').addEventListener('input',()=>renderHome());
 $('filter-row').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelectorAll('.filter').forEach(f=>f.classList.toggle('active',f===b));renderHome(b.dataset.filter)});
 $('back-btn').onclick=$('overlay-home').onclick=showHome;$('restart-btn').onclick=()=>openGame(idx);$('next-btn').onclick=()=>openGame((idx+1)%games.length);
 

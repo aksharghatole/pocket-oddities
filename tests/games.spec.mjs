@@ -55,7 +55,7 @@ test('Daily Rush offers a stable three-game route and records a completed local 
   await page.locator('#daily-rush-start').click();
   await expect(page.locator('#game-title')).toHaveText(titles[0].replace(/^\d+\s*/, '').trim());
   for(let position=0;position<indexes.length;position++){
-    await page.evaluate(({index,won})=>window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{index,won,score:5,elapsed:10}})),{index:indexes[position],won:true});
+    await page.evaluate(({index,won})=>{document.querySelector('#game-overlay').classList.remove('hidden');window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{index,won,score:5,elapsed:10}}))},{index:indexes[position],won:true});
     if(position<indexes.length-1){
       await expect(page.locator('#rush-next')).toBeVisible();
       await page.locator('#rush-next').click();

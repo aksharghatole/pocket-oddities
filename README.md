@@ -17,6 +17,10 @@ A dependency-free, original HTML5 arcade built for mobile portrait screens. All 
 
 **Keep growing the library:** See [Adding Games](docs/ADDING-GAMES.md), the [Living Roadmap](docs/ROADMAP.md), and [Android/iOS release guidance](docs/ANDROID-IOS.md). New games go in separate `game-packs/*.js` files and register themselves with the arcade; the game count and search update automatically. Existing game progress uses local storage and is not synced across devices.
 
+## Speedruns and personal bests
+
+The **Speedruns** shelf sorts games by each player’s fastest successful clear and displays unplayed games after recorded clears. Personal bests are stored on the device and can be replayed or improved; they are not submitted to a global leaderboard.
+
 ## Player progress: Oddity Score and Daily Rush
 
 The Cabinet now shows your **Oddity Score**, level, unique game wins, medals, hidden threads, completed Daily Rushes, fastest Daily Rush, and best win streak. Score comes from one-time progress milestones: unique wins, earned medals, completed story threads, and one Rush clear per UTC date. Replaying a game or challenge does not farm points. Profile data and records remain on this device; global rankings and cross-device sync are not connected yet.

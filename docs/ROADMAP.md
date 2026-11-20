@@ -1,0 +1,50 @@
+# Pocket Oddities — living roadmap
+
+This is a growing arcade, one app containing many original mini-games. Each new game or substantial refinement should have an issue, a small scope, and hands-on gameplay testing.
+
+## v1.1 — scalable library and Android testing
+- [x] Original 20 mini-games in a single library
+- [x] Online deployment through GitHub Pages
+- [x] Dynamic game count and search by name or category
+- [x] Extension-game API and Echo Tiles (game #21)
+- [x] Offline-first installation
+- [x] Android debug APK build workflow (configuration committed; actual build success must be checked)
+- [x] Development and QA guidance
+
+## v1.2 — usability and polish
+- [ ] Playtest all 21 games end-to-end on small Android and iPhone screens
+- [ ] Fix any inconsistent instructions, taps, balance or timeouts
+- [ ] Favorites, recent games and continue playing
+- [ ] Better accessible text, haptics and independent sound preferences
+- [ ] Original icon, splash screen and store screenshots for both OSes
+- [ ] Native Android internal-testing release and iOS TestFlight release
+
+## v1.3 — replayability and retention
+- [ ] Daily rotating challenges from existing games
+- [ ] Achievement badges and collection milestones
+- [ ] More game packs; prioritize quality over sheer count
+- [ ] Per-game tuning profiles and difficulty settings
+- [ ] In-app feedback and game popularity signals, privacy-conscious
+
+## v2 — store-ready arcade
+- [ ] Signed Android AAB, permanently defined package ID and Play Console submission
+- [ ] Signed iOS archive, permanently defined bundle ID and App Store submission
+- [ ] Privacy policy and age-rating review
+- [ ] Performance test, crash handling and offline regression tests
+- [ ] Optional sync/profiles only if clearly useful and privacy requirements are addressed
+
+## Ideas to refine next
+- The Game Is Lying: clarify ambiguous riddles and add 10 tested puzzles
+- Shadow Thief: improve distinction between lit and dark tiles
+- Tiny Traffic God: broaden intersections and safer collision logic
+- The Other Cursor: make the trail feel clearer
+- Echo Tiles: add animation during preview, vibration cues and 3 difficulty options
+
+## Definition of done for each game
+- Opens on web and native test device
+- Understandable instructions in under 10 seconds
+- Complete success and failure paths
+- Retry and exit never trap the player
+- Controls fit a narrow mobile display
+- No uncaught errors or broken offline assets
+- Score saved correctly (when applicable)

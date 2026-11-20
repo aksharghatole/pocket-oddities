@@ -1,6 +1,6 @@
 # Pocket Oddities — a growing mobile mini-game arcade
 
-A dependency-free, original HTML5 arcade built for mobile portrait screens. All **22 mini-games** are playable with tap, drag, or on-screen buttons. Includes a responsive game library with a UTC-stable Game of the Day, a Surprise Me shortcut, completed and unfinished shelves, scores saved locally, sound toggle, offline PWA caching, and a Capacitor starter configuration for Android/iOS packaging. GitHub Actions deploys the project to GitHub Pages once Pages is enabled under Settings → Pages → Build and deployment → Source: GitHub Actions.
+A dependency-free, original HTML5 arcade built for mobile portrait screens. All **22 mini-games** are playable with tap, drag, or on-screen buttons. Includes a responsive game library with a UTC-stable Game of the Day, a Surprise Me shortcut, completed and unfinished shelves, scores saved locally, independent sound and optional vibration toggles, offline PWA caching, and a Capacitor starter configuration for Android/iOS packaging. GitHub Actions deploys the project to GitHub Pages once Pages is enabled under Settings → Pages → Build and deployment → Source: GitHub Actions.
 
 **Important:** This is a working **MVP**, not twenty polished commercial games or finished App Store / Play Store binaries. It needs playtesting, screenshots, store assets, privacy policy and native signing before release.
 

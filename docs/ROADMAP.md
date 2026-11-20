@@ -16,7 +16,8 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 ## v1.2 — usability and polish
 - [ ] Playtest all 21 games end-to-end on small Android and iPhone screens
 - [x] Stop timer progression while browsing the achievement Cabinet
-- [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all games
+- [x] First gameplay pass: Shadow Thief light readability and cooldown; Tiny Traffic God lane pause/resume, crossing logic and collision lives; Invisible Maze guaranteed routes, breadcrumbs, and improved peek feedback
+- [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all remaining games
 - [ ] Favorites, recent games and continue playing
 - [ ] Better accessible text, haptics and independent sound preferences
 - [ ] Original icon, splash screen and store screenshots for both OSes

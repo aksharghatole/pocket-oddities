@@ -58,6 +58,16 @@
         ['One Finger Orchestra', 'Send the reply through a perfect rhythm']
       ]
     }
+    {
+      id: 'buried-signal', title: 'The Buried Signal', glyph: '⌖', relic: 'Fossil Glow',
+      story: 'Something beneath the arcade has been trying to send a message.',
+      completion: 'The fossil, the moon parcel, and the living circuit reveal the first signal. The Fossil Glow is yours.',
+      parts: [
+        ['Fossil Forecast', 'A pattern buried before the first broadcast'],
+        ['Moon Mail Sorter', 'A parcel with an origin older than the moon'],
+        ['Circuit Garden', 'Follow a living path that predates its seed']
+      ]
+    },
   ];
   const medals = [
     {id:'first-spark', icon:'✦', title:'First Spark', desc:'Beat your first game.', rarity:'Common', unlock:c=>c.uniqueWins.size>=1},

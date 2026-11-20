@@ -27,7 +27,7 @@ The Cabinet now shows your **Oddity Score**, level, a per-game **Oddity Passport
 
 ## The Oddity Cabinet: achievements and hidden connections
 
-Play the same arcade, but now victories matter across games. Tap **◈ Cabinet** to see medals, total progress, and four hidden story threads:
+Play the same arcade, but now victories matter across games. Tap **◈ Cabinet** to see medals, total progress, and five hidden story threads:
 
 - **The Night Circuit:** Shadow Thief · The Last Light Switch · Invisible Maze
 - **A Borrowed Galaxy:** Don't Wake the Planet · Pocket Black Hole · Unfinished Universe

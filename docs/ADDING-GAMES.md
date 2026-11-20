@@ -44,3 +44,9 @@ Canvas is 360 x 450 game units. All touch coordinates are mapped to this fixed c
 - `tools/build-web.mjs` — builds `www/` for Pages and Capacitor
 - `sw.js` — offline cache and fresh-update fetch
 - `capacitor.config.json` — native app ID/name, update before store launch
+
+## Cross-game achievements and secret threads
+
+The shared lifecycle emits `oddities:game-start`, `oddities:game-finish`, and `oddities:catalog-render` events. New games receive medal and visited-game tracking automatically. To include a new game in a story thread, edit the `threads` table in `achievements.js`. Reference the *exact* game name, so the discovery can be reconciled from the existing `oddities-wins` collection. If you rename or reorder existing games, provide a migration first; game-title and index stability currently preserve saves.
+
+Run the browser tests (`npm run test:games`) to confirm medals, legacy migration, thread discovery, theme selection, and pause behavior. Cross-game rewards should stay optional and cosmetic; never block access to existing games behind a new achievement.

@@ -122,7 +122,7 @@ function renderHome(filter='all'){
     const launch=document.createElement('button');launch.type='button';launch.className='game-launch';launch.setAttribute('aria-label','Play '+name);
     launch.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span>${category}</span><span class="${beaten[i]?'card-beat':''}">${beaten[i]?'★ BEATEN':'PLAY →'}</span></div>`;
     launch.onclick=()=>openGame(i);
-    const favorite=document.createElement('button');favorite.type='button';favorite.className='favorite-toggle';favorite.setAttribute('aria-pressed',String(favorites.includes(name)));favorite.setAttribute('aria-label',(favorites.includes(name)?'Remove ':'Add ')+name+(favorites.includes(name)?' from':' to')+' favorites');favorite.textContent=favorites.includes(name)?'★':'☆';
+    const favorite=document.createElement('button');favorite.type='button';favorite.className='favorite-toggle';favorite.setAttribute('aria-pressed',String(favorites.includes(name)));favorite.setAttribute('aria-label',favorites.includes(name)?'Remove from favorites':'Add to favorites');favorite.title=(favorites.includes(name)?'Remove '+name+' from':'Add '+name+' to')+' favorites';favorite.textContent=favorites.includes(name)?'★':'☆';
     favorite.onclick=event=>{event.stopPropagation();favorites=favorites.includes(name)?favorites.filter(item=>item!==name):[...favorites,name];storeSet('oddities-favorites',favorites);renderHome()};
     card.append(launch,favorite);grid.appendChild(card);
   });
@@ -143,6 +143,7 @@ $('collection-tabs').addEventListener('click',event=>{
   document.querySelectorAll('.filter').forEach(item=>item.classList.toggle('active',item.dataset.filter==='all'));
   renderHome();
 });
+$('filter-row').addEventListener('click',event=>{const button=event.target.closest('[data-filter]');if(!button)return;document.querySelectorAll('.filter').forEach(item=>item.classList.toggle('active',item===button));renderHome(button.dataset.filter)});
 $('back-btn').onclick=$('overlay-home').onclick=showHome;$('restart-btn').onclick=()=>openGame(idx);$('next-btn').onclick=()=>openGame((idx+1)%games.length);
 
 // 01 — Emotional survival. The button gets upset if tapped too much or ignored.

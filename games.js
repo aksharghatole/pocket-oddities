@@ -163,7 +163,7 @@ const info=[
 ['Tiny Traffic God','strategy','🚦','Stop and release tiny cars before they crash.','Tap cars to pause or resume them.'],
 ['The Clock Is Hungry','reflex','⏰','Feed a clock time snacks before time runs out.','Collect green seconds, avoid red ones.'],
 ['Unfinished Universe','puzzle','✨','Restore missing stars to make galaxies symmetrical.','Mirror every star across the center line.'],
-['The Other Cursor','reflex','🖱️','Collect energy while a delayed ghost chases your finger.','Drag to collect orbs; avoid your echo.'],
+['The Other Cursor','reflex','🖱️','Collect green orbs while a red echo follows your path 1.2 seconds later.','Drag the blue cursor to green orbs. Avoid the red echo; pale dots show your recent path.'],
 ['Invisible Maze','puzzle','🫥','Escape a maze whose walls appear only briefly.','Peek, remember, then navigate.'],
 ['One Minute Villain','strategy','🦹','Create mischief without getting caught.','Build chaos while keeping your heat down.']
 ];
@@ -462,7 +462,52 @@ const constellations=[[[0,0],[2,1],[1,2],[0,4],[2,5]],[[1,0],[0,1],[2,2],[0,3],[
 define({init(){m.t=82;m.stage=0;m.placed=new Set();m.mistakes=0;controls([])},tap(x,y){let col=Math.floor((x-40)/40),row=Math.floor((y-102)/43);if(col<4||col>6||row<0||row>5)return;const key=col+','+row;if(m.placed.has(key))return;let expected=constellations[m.stage].some(([a,b])=>6-a===col&&b===row);if(expected){m.placed.add(key);addScore();if(m.placed.size===5){m.stage++;m.level=m.stage+1;if(m.stage===3)finish(true,'All three impossible galaxies are whole again.');else m.placed=new Set()}}else{m.mistakes++;beep(175);if(m.mistakes>=5)finish(false,'Too many misplaced stars. Look at the mirror line.')}},draw(){base('#10142a');T('MIRROR THE CONSTELLATION',180,49,16,U.yellow);L(180,91,180,376,'#f2d994a6',2);for(let r=0;r<6;r++)for(let c=0;c<7;c++){let x=60+c*40,y=124+r*43;O(x,y,2,'#8291b044')}constellations[Math.min(m.stage,2)].forEach(([c,r])=>{let x=60+c*40,y=124+r*43;S(x,y,12,U.blue,2);O(x,y,5,U.white)});for(let key of m.placed){const [col,row]=key.split(',').map(Number);const x=60+col*40,y=124+row*43;S(x,y,12,U.pink,2);O(x,y,5,U.white)}T('LEFT: TEMPLATE     RIGHT: YOUR CANVAS',180,399,11,U.muted);T('MISTAKES: '+m.mistakes+' / 5',180,424,12,U.pink)}});
 
 // 18 — Chase orbs while your ghost follows your movements with a delay.
-define({init(){m.t=43;m.x=65;m.y=200;m.ghostX=295;m.ghostY=90;m.hist=[];m.inv=2;m.hp=3;m.orb={x:270,y:300};controls([])},move(x,y){m.x=clamp(x,18,342);m.y=clamp(y,65,411)},tap(x,y){this.move(x,y)},update(dt){m.hist.push({x:m.x,y:m.y,t:m.elapsed});while(m.hist.length>200)m.hist.shift();const trail=m.hist.findLast(p=>p.t<=m.elapsed-1.2);if(trail){m.ghostX+=clamp(trail.x-m.ghostX,-300*dt,300*dt);m.ghostY+=clamp(trail.y-m.ghostY,-300*dt,300*dt)}m.inv=Math.max(0,m.inv-dt);if(dist(m.x,m.y,m.ghostX,m.ghostY)<30&&m.inv<=0){m.hp--;m.inv=2;beep(170);if(!m.hp)finish(false,'Your delayed echo caught up three times.')}if(dist(m.x,m.y,m.orb.x,m.orb.y)<24){addScore();m.orb={x:rnd(35,325),y:rnd(98,393)};if(m.score>=10)finish(true,'Ten orbs claimed. The other cursor never caught you.')}},draw(){base('#181931');m.hist.filter((_,i)=>i%8===0).forEach((p,i)=>O(p.x,p.y,2+i*.05,'#8aa0d24a'));O(m.orb.x,m.orb.y,14,U.mint);S(m.orb.x,m.orb.y,21,'#9cf6d67b',2);O(m.ghostX,m.ghostY,19,U.red);T('☹',m.ghostX,m.ghostY,17,'#34263f');O(m.x,m.y,16,m.inv>0&&Math.floor(m.elapsed*7)%2?U.white:U.blue);T('✦',m.x,m.y,18,'#2b2a50');T('YOUR ECHO IS 1.2s BEHIND',180,38,13,U.pink);T('♥ '.repeat(m.hp)+'  ·  ORBS '+m.score+'/10',180,424,14,U.muted)}});
+define({
+  init(){m.t=43;m.x=65;m.y=200;m.ghostX=295;m.ghostY=90;m.hist=[];m.inv=2;m.hp=3;m.orb={x:270,y:300};controls([])},
+  move(x,y){m.x=clamp(x,18,342);m.y=clamp(y,65,411)},
+  tap(x,y){this.move(x,y)},
+  update(dt){
+    m.hist.push({x:m.x,y:m.y,t:m.elapsed});
+    while(m.hist.length>200)m.hist.shift();
+    const target=m.hist.findLast(p=>p.t<=m.elapsed-1.2);
+    if(target){
+      m.ghostX+=clamp(target.x-m.ghostX,-300*dt,300*dt);
+      m.ghostY+=clamp(target.y-m.ghostY,-300*dt,300*dt);
+    }
+    m.inv=Math.max(0,m.inv-dt);
+    if(dist(m.x,m.y,m.ghostX,m.ghostY)<30&&m.inv<=0){
+      m.hp--;m.inv=2;beep(170);
+      if(!m.hp)finish(false,'Your delayed echo caught up three times.');
+    }
+    if(dist(m.x,m.y,m.orb.x,m.orb.y)<24){
+      addScore();m.orb={x:rnd(35,325),y:rnd(98,393)};
+      if(m.score>=10)finish(true,'Ten orbs claimed. The other cursor never caught you.');
+    }
+  },
+  draw(){
+    base('#181931');
+    L(m.x,m.y,m.ghostX,m.ghostY,'#ff6b8c55',2);
+    const trail=m.hist.filter(p=>p.t>=m.elapsed-1.2);
+    if(trail.length){
+      const step=Math.max(1,Math.ceil(trail.length/18));
+      for(let i=0;i<trail.length;i+=step){
+        const strength=(i+1)/trail.length;
+        O(trail[i].x,trail[i].y,2+strength*2,`rgba(167,216,255,${0.12+strength*0.7})`);
+      }
+    }
+    O(m.orb.x,m.orb.y,14,U.mint);
+    S(m.orb.x,m.orb.y,21,'#9cf6d67b',2);
+    O(m.ghostX,m.ghostY,19,U.red);
+    S(m.ghostX,m.ghostY,25,'#ffc1cc',3);
+    T('☹',m.ghostX,m.ghostY,17,'#34263f');
+    O(m.x,m.y,16,m.inv>0&&Math.floor(m.elapsed*7)%2?U.white:U.blue);
+    S(m.x,m.y,22,'#c8e3ff',3);
+    T('✦',m.x,m.y,18,'#2b2a50');
+    T('BLUE = YOU   ·   RED = ECHO',180,36,13,U.white);
+    T('FAINT DOTS = YOUR LAST 1.2 SECONDS',180,57,11,U.muted);
+    T('♥ '.repeat(m.hp)+'  ·  ORBS '+m.score+'/10',180,424,14,U.muted);
+  }
+});
 
 // 19 — Two solvable hidden mazes with breadcrumbs, fair peeks, and feedback.
 const invisibleRoutes=[

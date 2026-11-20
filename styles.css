@@ -114,3 +114,9 @@ footer a{display:inline-block;margin-left:12px;color:var(--mint);text-decoration
 /* Optional vibration control */
 #haptic-toggle[aria-pressed="true"]{color:#8ef1c7;border-color:#65d6ae;background:#1f3940}
 #haptic-toggle{touch-action:manipulation}
+
+/* Local progress backup controls */
+.cabinet-backup-actions{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.cabinet-backup-actions button{min-height:42px;padding:0 14px;border:1px solid #657291;border-radius:12px;background:#242e49;color:#f0f3ff;font:700 13px/1 system-ui;cursor:pointer}
+.cabinet-backup-actions button:active{transform:translateY(1px)}
+.progress-backup-status{min-height:20px;margin:4px 0 10px;color:#8fe6c3;font-size:12px}

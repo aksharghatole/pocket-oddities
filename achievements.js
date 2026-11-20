@@ -78,6 +78,101 @@
   data.bestStreak = Math.max(0,Number(data.bestStreak)||0);
   data.completedRounds = Math.max(0,Number(data.completedRounds)||0);
   function persist(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch{}}
+  const BACKUP_FORMAT='pocket-oddities-progress';
+  const BACKUP_VERSION=1;
+  const BACKUP_KEYS=['oddities-wins','oddities-highs','oddities-recent','oddities-favorites','oddities-fastest-clears','oddities-daily-records',KEY];
+  function asObject(value){return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}
+  function readArray(key){try{const value=JSON.parse(localStorage.getItem(key));return Array.isArray(value)?value:[]}catch{return[]}}
+  function writeLocal(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch{return false}}
+  function exportProgress(){
+    const stored={};
+    for(const key of BACKUP_KEYS){try{const value=JSON.parse(localStorage.getItem(key));if(value!==null)stored[key]=value}catch{}}
+    const backup={format:BACKUP_FORMAT,version:BACKUP_VERSION,exportedAt:new Date().toISOString(),data:stored};
+    const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob),link=document.createElement('a');
+    link.href=url;link.download='pocket-oddities-progress-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    $('progress-backup-status').textContent='Backup downloaded. Keep the file somewhere safe.';
+  }
+  function mergeProgress(incoming){
+    const data=asObject(incoming),names=new Set(api.catalog.map(game=>game.name));
+    if(!BACKUP_KEYS.some(key=>Object.hasOwn(data,key)))throw new Error('This backup has no Pocket Oddities progress data.');
+    let changed=false;
+    const wins=safeRead('oddities-wins',{});
+    for(const [key,value] of Object.entries(asObject(data['oddities-wins']))){
+      if(/^\d+$/.test(key)&&Number(key)<api.catalog.length&&value===true&&!wins[key]){wins[key]=true;changed=true}
+    }
+    if(changed)writeLocal('oddities-wins',wins);
+    changed=false;
+    const highs=safeRead('oddities-highs',{});
+    for(const [key,value] of Object.entries(asObject(data['oddities-highs']))){
+      const score=Number(value);
+      if(/^\d+$/.test(key)&&Number(key)<api.catalog.length&&Number.isFinite(score)&&score>=0&&score>Number(highs[key]||0)){highs[key]=score;changed=true}
+    }
+    if(changed)writeLocal('oddities-highs',highs);
+    for(const key of ['oddities-favorites','oddities-recent']){
+      const current=readArray(key).filter(name=>typeof name==='string'&&names.has(name));
+      const imported=Array.isArray(data[key])?data[key].filter(name=>typeof name==='string'&&names.has(name)):[];
+      const combined=[...new Set([...current,...imported])],result=key==='oddities-recent'?combined.slice(0,12):combined;
+      if(result.length!==current.length||result.some((name,index)=>name!==current[index])){writeLocal(key,result);changed=true}
+    }
+    changed=false;
+    const fastest=safeRead('oddities-fastest-clears',{});
+    for(const [name,record] of Object.entries(asObject(data['oddities-fastest-clears']))){
+      const seconds=Number(record?.seconds),previous=Number(fastest[name]?.seconds);
+      if(names.has(name)&&Number.isFinite(seconds)&&seconds>0&&(!Number.isFinite(previous)||previous<=0||seconds<previous)){
+        fastest[name]={seconds:Number(seconds.toFixed(3)),score:Math.max(0,Number(record.score)||0),date:/^\d{4}-\d{2}-\d{2}$/.test(record.date||'')?record.date:''};changed=true
+      }
+    }
+    if(changed)writeLocal('oddities-fastest-clears',fastest);
+    changed=false;
+    const daily=safeRead('oddities-daily-records',{}),dailyInput=asObject(data['oddities-daily-records']);
+    for(const [date,record] of Object.entries(dailyInput)){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||record?.completed!==true)continue;
+      const seconds=Number(record.seconds);
+      if(!Number.isFinite(seconds)||seconds<=0)continue;
+      const previous=daily[date],previousSeconds=Number(previous?.seconds);
+      const better=!previous||!Number.isFinite(previousSeconds)||previousSeconds<=0||seconds<previousSeconds;
+      daily[date]={date,seconds:better?seconds:previousSeconds,score:Math.max(0,Number(previous?.score)||0,Number(record.score)||0),attempts:Math.max(0,Number(previous?.attempts)||0,Number(record.attempts)||0),completed:true,splits:better&&Array.isArray(record.splits)?record.splits:(previous?.splits||[])};
+      changed=true;
+    }
+    if(changed)writeLocal('oddities-daily-records',daily);
+    changed=false;
+    const currentCabinet=safeRead(KEY,{}),importedCabinet=asObject(data[KEY]);
+    currentCabinet.plays=asObject(currentCabinet.plays);
+    for(const [name,count] of Object.entries(asObject(importedCabinet.plays))){
+      const plays=Number(count);
+      if(names.has(name)&&Number.isFinite(plays)&&plays>Number(currentCabinet.plays[name]||0)){currentCabinet.plays[name]=plays;changed=true}
+    }
+    const validIds=new Set([...medals.map(medal=>medal.id),...threads.map(thread=>thread.id)]);
+    for(const property of ['earned','found']){
+      currentCabinet[property]=asObject(currentCabinet[property]);
+      for(const [id,time] of Object.entries(asObject(importedCabinet[property]))){
+        const stamp=Number(time);
+        if(validIds.has(id)&&Number.isFinite(stamp)&&!currentCabinet[property][id]){currentCabinet[property][id]=stamp;changed=true}
+      }
+    }
+    currentCabinet.bestStreak=Math.max(0,Number(currentCabinet.bestStreak)||0,Number(importedCabinet.bestStreak)||0);
+    currentCabinet.completedRounds=Math.max(0,Number(currentCabinet.completedRounds)||0,Number(importedCabinet.completedRounds)||0);
+    const validThemes=new Set(['default',...threads.map(thread=>thread.id)]);
+    if((!validThemes.has(currentCabinet.theme)||currentCabinet.theme==='default')&&validThemes.has(importedCabinet.theme)){currentCabinet.theme=importedCabinet.theme;changed=true}
+    if(data[KEY]&&writeLocal(KEY,currentCabinet))changed=true;
+
+  }
+  async function importProgress(event){
+    const input=event.target,file=input.files?.[0];input.value='';
+    if(!file)return;
+    const status=$('progress-backup-status');
+    if(file.size>1024*1024){status.textContent='Backup file is too large. Choose a file under 1 MB.';return}
+    try{
+      const backup=JSON.parse(await file.text());
+      if(backup?.format!==BACKUP_FORMAT||backup?.version!==BACKUP_VERSION||!asObject(backup.data))throw new Error('This backup format is not supported.');
+      mergeProgress(backup.data);
+      status.textContent='Progress merged. Reloading your Cabinet…';
+      window.location.reload();
+    }catch(error){status.textContent=error.message||'Could not read that backup file.'}
+  }
+
 
   function context(){
     const catalog = api.catalog;
@@ -250,6 +345,9 @@
     }
   });
   $('cabinet-default').addEventListener('click',()=>{data.theme='default';sync();notify('✦ Original arcade glow restored.');});
+  $('progress-export').addEventListener('click',exportProgress);
+  $('progress-import').addEventListener('click',()=>$('progress-import-file').click());
+  $('progress-import-file').addEventListener('change',importProgress);
   window.addEventListener('oddities:game-start',event=>{
     const title=event.detail?.name;
     if(!title)return;

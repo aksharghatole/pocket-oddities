@@ -34,7 +34,7 @@ Play the same arcade, but now victories matter across games. Tap **◈ Cabinet**
 - **The Lost Frequency:** You Are the Notification · One Finger Orchestra · Echo Tiles
 - **The Unlikely Clock:** The Clock Is Hungry · Gravity Is Shy · The Button Has Feelings
 
-The Cabinet only reveals **riddle clues** for missing fragments. Winning all three connected games uncovers a secret relic and unlocks a **cosmetic theme** that can be equipped or reset. Achievements and rewards are stored entirely on the player's device. Existing beaten games count toward the threads automatically; older scores are not reset.
+The Cabinet only reveals **riddle clues** for missing fragments. Winning all three connected games uncovers a secret relic and unlocks a **cosmetic theme** that can be equipped or reset. Medals display Common, Uncommon, Rare, Epic, Legendary, or Secret rarity; beating every registered game earns the Legendary full-collection medal. Achievements and rewards are stored entirely on the player's device. Existing beaten games count toward the threads automatically; older scores are not reset.
 
 For maintainers: medal definitions, connected-game clues, and theme unlocks are in `achievements.js`. Keep original game titles and win tracking stable so players retain the cross-game progression.
 

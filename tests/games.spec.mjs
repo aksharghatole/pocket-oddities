@@ -136,6 +136,19 @@ test('Game of the Day is stable and Surprise Me avoids recent games',async ({pag
   await page.locator('#game-of-day-play').click();
   await expect(page.locator('#game-title')).toHaveText(featuredTitle);
 });
+test('Moon Mail Sorter connects a new hidden thread and achievement',async ({page})=>{
+  const names=['Moon Mail Sorter','The Game Is Lying','One Finger Orchestra'];
+  const wins=Object.fromEntries(names.map(name=>[titles.indexOf(name),true]));
+  expect(Object.values(wins)).toHaveLength(3);
+  await page.addInitScript(value=>localStorage.setItem('oddities-wins',JSON.stringify(value)),wins);
+  await ready(page);
+  await page.locator('#cabinet-trigger').click();
+  const thread=page.locator('[data-thread="lunar-mail"]');
+  await expect(thread).toHaveClass(/completed/);
+  await expect(thread).toContainText('Moonpost');
+  await expect(page.locator('[data-achievement="lunar-courier"]')).toHaveClass(/earned/);
+  await expect(page.locator('#cabinet-subtitle')).toContainText('1 / 5 threads connected');
+});
 test('Oddity Passport displays a stamp for every game and reflects saved clears',async ({page})=>{
   await page.addInitScript(()=>localStorage.setItem('oddities-wins',JSON.stringify({0:true,1:true})));
   await ready(page);

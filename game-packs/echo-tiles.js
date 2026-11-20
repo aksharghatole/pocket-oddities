@@ -87,7 +87,7 @@
             R(47,422,266,5,'#5b6685',3);
             R(47,422,Math.max(3,266*(m.previewTime/m.previewLength)),5,U.mint,3);
           }else T('MATCHED '+m.step+'/'+m.pattern.length+'  ·  LEVEL '+m.level+'/5',180,414,14,U.white);
-          T('♥ '.repeat(m.lives)+'  '+m.note,180,448,11,U.muted);
+          T('♥ '.repeat(m.lives)+'  '+m.note,180,442,11,U.muted);
         }
       };
     }

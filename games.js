@@ -150,7 +150,7 @@ const info=[
 ['You Are the Notification','reflex','📨','Sneak notifications past a scrolling finger.','Pick a lane, then time your ping.'],
 ['The Game Is Lying','puzzle','🤥','Spot the false claim in ten quick trick questions.','Every statement is false; tap a choice that proves it wrong.'],
 ['One Room, 100 Rules','reflex','🚪','Survive a room where the rule changes every few seconds.','Follow each rule before the timer expires.'],
-['Shadow Thief','puzzle','🌘','Cross a grid while avoiding pools of light.','Move to neighboring dark tiles.'],
+['Shadow Thief','puzzle','🌘','Cross a grid while avoiding pools of light.','Avoid gold suns; move through neighboring blue star tiles.'],
 ["Don't Wake the Planet",'reflex','🪐','Quietly stop asteroids before the planet wakes.','Tap asteroids, but manage your noise.'],
 ['Tiny Apocalypse Manager','strategy','☢️','Keep survivors alive for eight chaotic days.','Balance food, walls and morale.'],
 ['Reverse Hide and Seek','puzzle','👀','Find blinking mimics hiding among ordinary shapes.','Watch for suspicious little blinks.'],
@@ -294,7 +294,7 @@ define({
   init(){
     m.t=80;m.x=0;m.y=5;m.phase=0;m.lives=4;
     m.shifts=0;m.shiftCooldown=0;m.visited=new Set(['0,5']);
-    m.note='Tap a neighboring dark tile.';
+    m.note='Tap a neighboring blue star tile.';
     controls([['↻ SHIFT THE LIGHT','shift',true]]);
   },
   lit(x,y){return (x+2*y+m.phase)%4===0},
@@ -310,7 +310,7 @@ define({
     if(col<0||col>5||row<0||row>5)return;
     if(Math.abs(col-m.x)+Math.abs(row-m.y)!==1){m.note='Move only one tile at a time.';return}
     if(this.lit(col,row)){
-      m.lives--;m.note='Too bright! Shift the light or choose another tile.';
+      m.lives--;m.note='Spotlight! Shift it or choose a blue star tile.';
       beep(165);
       if(m.lives<=0)finish(false,'The spotlights found you four times. Follow the shadow tiles!');
       return;
@@ -324,13 +324,13 @@ define({
   draw(){
     base('#111629');
     T('SHADOW GALLERY',180,35,20,U.purple);
-    T('DARK = SAFE   ·   GOLD = SPOTLIGHT',180,64,11,U.muted);
+    T('☀ GOLD = DANGER   ·   ✦ BLUE = SAFE',180,64,13,U.white);
     for(let y=0;y<6;y++)for(let x=0;x<6;x++){
       const px=30+x*50,py=82+y*50,lit=this.lit(x,y);
       const visited=m.visited.has(x+','+y);
-      R(px+2,py+2,46,46,lit?'#a98c60':visited?'#344f5b':'#25324c',7);
-      if(lit){O(px+25,py+25,11,'#f7d8a04d');S(px+25,py+25,15,'#f2c98b',2)}
-      else if(Math.abs(x-m.x)+Math.abs(y-m.y)===1)S(px+25,py+25,13,U.mint,2);
+      R(px+2,py+2,46,46,lit?'#f4c84a':visited?'#28505b':'#142742',7);
+      if(lit){O(px+25,py+25,12,'#fff0a344');S(px+25,py+25,16,'#fff0b8',2);T('☀',px+25,py+27,19,'#704200')}
+      else{T(visited?'•':'✦',px+25,py+27,visited?12:10,visited?'#a8e7e2':'#8fb3d7');if(Math.abs(x-m.x)+Math.abs(y-m.y)===1)S(px+25,py+25,16,'#57f5ca',3)}
       if(visited&&!(m.x===x&&m.y===y))O(px+25,py+25,3,U.blue);
     }
     T('★',305,107,23,U.mint);

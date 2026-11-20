@@ -163,7 +163,7 @@ const info=[
 ['Tiny Traffic God','strategy','🚦','Stop and release tiny cars before they crash.','Tap cars to pause or resume them.'],
 ['The Clock Is Hungry','reflex','⏰','Feed a clock time snacks before time runs out.','Collect green seconds, avoid red ones.'],
 ['Unfinished Universe','puzzle','✨','Restore missing stars to make galaxies symmetrical.','Mirror every star across the center line.'],
-['The Other Cursor','reflex','🖱️','Collect green orbs while a red echo follows your path 1.2 seconds later.','Drag the blue cursor to green orbs. Avoid the red echo; pale dots show your recent path.'],
+['The Other Cursor','reflex','🖱️','Collect green orbs while a red echo follows your path 1.2 seconds later.','Drag the blue cursor to green orbs. The red echo follows 1.2 seconds later; avoid it. Pale dots show your recent path.'],
 ['Invisible Maze','puzzle','🫥','Escape a maze whose walls appear only briefly.','Peek, remember, then navigate.'],
 ['One Minute Villain','strategy','🦹','Create mischief without getting caught.','Build chaos while keeping your heat down.']
 ];

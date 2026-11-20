@@ -42,8 +42,8 @@
         <div class="game-heading"><div><div class="eyebrow" id="game-category"></div><h2 id="game-title"></h2><p id="game-description"></p></div><div id="level-pill" class="level-pill">ROUND 01</div></div>
         <div class="arena-shell">
           <div class="hud"><div><small>SCORE</small><strong id="score">0</strong></div><div><small>TIME</small><strong id="clock">—</strong></div><div><small>BEST</small><strong id="best">0</strong></div></div>
-          <div class="canvas-wrap"><canvas id="arena" width="360" height="450" aria-label="Game arena"></canvas><div id="game-overlay" class="game-overlay hidden"><div id="overlay-icon" class="overlay-icon">✦</div><h3 id="overlay-title"></h3><p id="overlay-message"></p><button id="restart-btn" class="primary-btn">Play again ↻</button><button id="rush-next" class="primary-btn hidden" type="button">Continue Daily Rush →</button><button id="overlay-home" class="secondary-btn">All games</button></div></div>
-          <div class="instruction" id="instruction"></div>
+          <div class="canvas-wrap"><canvas id="arena" width="360" height="450" aria-label="Game arena" aria-describedby="instruction"></canvas><div id="game-overlay" class="game-overlay hidden"><div id="overlay-icon" class="overlay-icon">✦</div><h3 id="overlay-title"></h3><p id="overlay-message" role="status" aria-live="polite" aria-atomic="true"></p><button id="restart-btn" class="primary-btn">Play again ↻</button><button id="rush-next" class="primary-btn hidden" type="button">Continue Daily Rush →</button><button id="overlay-home" class="secondary-btn">All games</button></div></div>
+          <div class="instruction" id="instruction" role="status" aria-live="polite" aria-atomic="true"></div>
           <div class="game-controls" id="game-controls"></div>
         </div>
         <div class="below-game"><span>✦ Each game saves your best score locally.</span><button id="next-btn">Try another game →</button></div>

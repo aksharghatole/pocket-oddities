@@ -24,9 +24,10 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Per-game fastest successful clear records and Speedruns shelf
 - [x] Optional vibration feedback and separate persisted sound/vibration controls
 - [x] Local progress export and merge-only import
-- [x] Optional on-device player name and avatar, carried in progress backups backup
+- [x] Optional on-device player name and avatar, carried in progress backups
 - [x] In-app reduced-motion control plus system reduced-motion support
-- [ ] Better accessible text and haptics tuning
+- [x] Screen-reader announcements for game instructions and round outcomes
+- [ ] Haptics tuning
 - [ ] Original icon, splash screen and store screenshots for both OSes
 - [ ] Native Android internal-testing release and iOS TestFlight release
 

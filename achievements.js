@@ -90,6 +90,13 @@
   data.bestStreak = Math.max(0,Number(data.bestStreak)||0);
   data.completedRounds = Math.max(0,Number(data.completedRounds)||0);
   function persist(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch{}}
+  let reducedMotion=false;
+  try{reducedMotion=localStorage.getItem('oddities-reduced-motion')==='true'}catch{}
+  function applyReducedMotion(){
+    document.documentElement.dataset.reducedMotion=String(reducedMotion);
+    $('reduced-motion-toggle').checked=reducedMotion;
+  }
+
   const BACKUP_FORMAT='pocket-oddities-progress';
   const BACKUP_VERSION=1;
   const BACKUP_KEYS=['oddities-wins','oddities-highs','oddities-recent','oddities-favorites','oddities-fastest-clears','oddities-daily-records',KEY];
@@ -357,6 +364,7 @@
     }
   });
   $('cabinet-default').addEventListener('click',()=>{data.theme='default';sync();notify('✦ Original arcade glow restored.');});
+  $('reduced-motion-toggle').addEventListener('change',event=>{reducedMotion=event.target.checked;try{localStorage.setItem('oddities-reduced-motion',String(reducedMotion))}catch{}applyReducedMotion()});
   $('progress-export').addEventListener('click',exportProgress);
   $('progress-import').addEventListener('click',()=>$('progress-import-file').click());
   $('progress-import-file').addEventListener('change',importProgress);
@@ -375,5 +383,6 @@
   });
   window.addEventListener('oddities:catalog-render',()=>decorateCards(context()));
   window.addEventListener('oddities:catalog',()=>sync());
+  applyReducedMotion();
   sync();
 })();

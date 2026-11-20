@@ -148,7 +148,7 @@ window.addEventListener('appinstalled',()=>{installButton.hidden=true});
 const info=[
 ['The Button Has Feelings','weird','😳','Keep a very sensitive button emotionally balanced.','Tap, compliment or ignore it.'],
 ['You Are the Notification','reflex','📨','Sneak notifications past a scrolling finger.','Pick a lane, then time your ping.'],
-['The Game Is Lying','puzzle','🤥','Ignore suspicious instructions in trick questions.','Read carefully; the instructions lie.'],
+['The Game Is Lying','puzzle','🤥','Spot the false claim in ten quick trick questions.','Every statement is false; tap a choice that proves it wrong.'],
 ['One Room, 100 Rules','reflex','🚪','Survive a room where the rule changes every few seconds.','Follow each rule before the timer expires.'],
 ['Shadow Thief','puzzle','🌘','Cross a grid while avoiding pools of light.','Move to neighboring dark tiles.'],
 ["Don't Wake the Planet",'reflex','🪐','Quietly stop asteroids before the planet wakes.','Tap asteroids, but manage your noise.'],
@@ -278,12 +278,12 @@ const lies=[
 ['The LARGEST number is safe.',['1','9'],0],
 ['PURPLE is the wrong color.',['PURPLE','GREEN'],0],
 ['The FIRST button is a trap.',['FIRST','LAST'],0],
-['All three are fruits. Find the impostor.',['APPLE','CHAIR','PEAR'],1],
+['APPLE, CHAIR, and PEAR are all fruits.',['APPLE','CHAIR','PEAR'],1],
 ['Things that fly are safe.',['ROCK','BIRD'],0],
 ['The MIDDLE is definitely incorrect.',['UP','DOWN','LEFT'],1],
 ['STOP will cause failure.',['STOP','GO'],0]
 ];
-define({init(){m.level=1;m.lives=3;m.t=null;m.lastFeedback='Every instruction is suspicious.';controls(lies[0][1].map((s,i)=>[s,'c'+i,false]))},action(a){if(!a.startsWith('c'))return;const q=lies[m.level-1],sel=+a.slice(1);if(sel===q[2]){m.lastFeedback='YOU FOUND THE LIE!';addScore(1);m.level++;if(m.level>10){finish(true,'You outsmarted ten deliberately dishonest puzzles.');return}}else{m.lives--;m.lastFeedback='THE GAME TRICKED YOU. TRY AGAIN.';beep(180);if(m.lives<=0){finish(false,'The lies got you. Read the instructions twice.');return}}const ans=lies[m.level-1];controls(ans[1].map((s,i)=>[s,'c'+i,false]))},draw(){base('#22203b');T('RULE #'+m.level,180,48,13,U.mint);heartBar(m.lives,3,90);panel(25,136,310,185,'#323553');wrap(lies[Math.min(m.level-1,9)][0],180,218,270,26,18);T(m.lastFeedback,180,367,13,U.pink);T('Survive ten tricks',180,409,13,U.muted)}});
+define({init(){m.level=1;m.lives=3;m.t=null;m.lastFeedback='Every statement is false. Pick its counterexample.';controls(lies[0][1].map((s,i)=>[s,'c'+i,false]))},action(a){if(!a.startsWith('c'))return;const q=lies[m.level-1],sel=+a.slice(1);if(sel===q[2]){m.lastFeedback='YOU FOUND THE LIE!';addScore(1);m.level++;if(m.level>10){finish(true,'You outsmarted ten deliberately dishonest puzzles.');return}}else{m.lives--;m.lastFeedback='THE GAME TRICKED YOU. TRY AGAIN.';beep(180);if(m.lives<=0){finish(false,'The lies got you. Read the instructions twice.');return}}const ans=lies[m.level-1];controls(ans[1].map((s,i)=>[s,'c'+i,false]))},draw(){base('#22203b');T('RULE #'+m.level,180,48,13,U.mint);heartBar(m.lives,3,90);panel(25,136,310,185,'#323553');wrap(lies[Math.min(m.level-1,9)][0],180,218,270,26,18);T(m.lastFeedback,180,367,13,U.pink);T('Survive ten tricks',180,409,13,U.muted)}});
 
 // 04 — Zone commands, including no-movement and movement commands.
 const rules=['STAY LEFT','STAY RIGHT','STAY CENTER','DO NOT MOVE','MOVE AT LEAST ONCE'];

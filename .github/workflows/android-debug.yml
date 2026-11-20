@@ -1,18 +1,32 @@
-name: Build Android test app
-# The debug APK is a test build, not a signed Play Store release.
-# Native builds run manually after game changes, avoiding expensive per-push builds.
+name: Build and test Android APK
+# Builds automatically when game/app files change, and on manual dispatch.
+# Requires only a private or public GitHub repo with Actions enabled.
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
+      - 'games.js'
+      - 'game-packs/**'
+      - 'index.html'
+      - 'styles.css'
+      - 'sw.js'
+      - 'manifest.webmanifest'
+      - 'assets/**'
+      - 'package.json'
+      - 'capacitor.config.json'
+      - 'tools/**'
       - '.github/workflows/android-debug.yml'
 permissions:
   contents: read
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   android-debug:
+    name: APK build + emulator install/launch/offline
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,8 +41,11 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Validate game library
-        run: npm test
+      - name: Verify code and game library
+        run: |
+          npm test
+          node --check games.js
+          for game in game-packs/*.js; do node --check "$game"; done
       - name: Build offline web assets
         run: npm run build:web
       - name: Generate Android project
@@ -37,10 +54,44 @@ jobs:
         run: npx cap sync android
       - name: Assemble debug APK
         run: cd android && chmod +x ./gradlew && ./gradlew assembleDebug --no-daemon --stacktrace
-      - name: Upload installable debug APK
+      - name: Enable Linux KVM acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install and smoke-test on actual Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          profile: pixel_5
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: bash tools/android-emulator-smoke.sh
+      - name: Upload APK for phone testing
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: pocket-oddities-android-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          retention-days: 30
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload emulator screenshots and logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pocket-oddities-android-emulator-report
+          path: test-results/android/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Summarize Android test
+        if: always()
+        run: |
+          echo "## Pocket Oddities Android app" >> "$GITHUB_STEP_SUMMARY"
+          echo "APK builds and emulator smoke checks run automatically after changes to games or app files." >> "$GITHUB_STEP_SUMMARY"
+          if [ -f test-results/android/process.txt ]; then
+            echo "✅ App installed and launched. See APK and emulator report artifacts." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "⚠️ Check the step logs and uploaded reports for build/emulator errors." >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -1,5 +1,5 @@
-const CACHE='pocket-oddities-v9';
-const PRECACHE=['./','./index.html','./styles.css','./games.js','./achievements.js','./game-packs/echo-tiles.js','./game-packs/circuit-garden.js','./game-packs/moon-mail-sorter.js','./game-packs/fossil-forecast.js','./manifest.webmanifest','./assets/icon.svg','./assets/icon-180.png','./assets/icon-192.png','./assets/icon-512.png'];
+const CACHE='pocket-oddities-v10';
+const PRECACHE=['./','./index.html','./styles.css','./games.js','./achievements.js','./game-packs/echo-tiles.js','./game-packs/circuit-garden.js','./game-packs/moon-mail-sorter.js','./game-packs/fossil-forecast.js','./game-packs/ghost-gallery.js','./manifest.webmanifest','./assets/icon.svg','./assets/icon-180.png','./assets/icon-192.png','./assets/icon-512.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(PRECACHE)));
   self.skipWaiting();

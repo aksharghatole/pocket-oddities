@@ -40,7 +40,7 @@ test('local player name and avatar persist after reload',async ({page})=>{
   await expect(page.locator('#cabinet-player-name-input')).toHaveValue('Quick Fox');
   await expect(page.locator('#cabinet-player-avatar')).toHaveText('🐙');
 });
-test('Cabinet shows achievements and five hidden cross-game threads',async ({page})=>{
+test('Cabinet shows achievements and six hidden cross-game threads',async ({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/');
@@ -50,7 +50,8 @@ test('Cabinet shows achievements and five hidden cross-game threads',async ({pag
   await expect(page.locator('[data-achievement="first-spark"]')).toContainText('Common');
   await expect(page.locator('[data-achievement="all-games"]')).toContainText('Legendary');
   await expect(page.locator('[data-achievement="all-threads"]')).toContainText('Secret');
-  await expect(page.locator('.cabinet-thread')).toHaveCount(5);
+  await expect(page.locator('.cabinet-thread')).toHaveCount(6);
+  await expect(page.locator('[data-thread="buried-signal"] .cabinet-thread-part')).toHaveCount(3);
   await expect(page.locator('[data-thread="night"] .cabinet-thread-part')).toHaveCount(3);
   await expect(page.locator('#cabinet-theme')).toHaveText('Original arcade glow');
   await expect(page.locator('[data-profile-score]')).toHaveAttribute('data-profile-score','0');
@@ -58,6 +59,17 @@ test('Cabinet shows achievements and five hidden cross-game threads',async ({pag
   await page.locator('#cabinet-close').click();
   await expect(page.locator('#cabinet-dialog')).toBeHidden();
   expect(errors).toEqual([]);
+});
+test('beating the buried-signal games unlocks its relic',async ({page})=>{
+  await page.addInitScript(()=>{
+    localStorage.setItem('oddities-wins',JSON.stringify({'21':true,'22':true,'23':true}));
+  });
+  await page.goto('/');
+  await openCabinet(page);
+  const thread=page.locator('[data-thread="buried-signal"]');
+  await expect(thread).toHaveClass(/completed/);
+  await expect(thread.locator('.cabinet-thread-part.discovered')).toHaveCount(3);
+  await expect(thread).toContainText('Fossil Glow');
 });
 test('earning a win awards the first medal and it survives reload',async ({page})=>{
   const errors=[];

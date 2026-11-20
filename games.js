@@ -23,6 +23,30 @@ let game=null,idx=-1,m=null,last=performance.now();
 let audioCtx=null;
 function beep(freq=490){if(!sound)return;try{audioCtx??=new (window.AudioContext||window.webkitAudioContext)();let osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(.07,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.09);osc.connect(gain).connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.1)}catch{}}
 $('sound-toggle').textContent=sound?'♫':'♪';$('sound-toggle').setAttribute('aria-pressed',String(sound));$('sound-toggle').onclick=()=>{sound=!sound;storeSet('oddities-sound',sound);$('sound-toggle').textContent=sound?'♫':'♪';$('sound-toggle').setAttribute('aria-pressed',String(sound));beep(660)};
+// Web installation: browsers decide whether native PWA prompting is available.
+const installButton=$('install-app');
+let pendingInstall=null;
+const isNative=!!window.Capacitor?.isNativePlatform?.();
+const isInstalled=window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone;
+const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+if(!isNative&&!isInstalled&&isMobile)installButton.hidden=false;
+window.addEventListener('beforeinstallprompt',event=>{
+  if(isNative||isInstalled)return;
+  event.preventDefault();
+  pendingInstall=event;installButton.hidden=false;
+});
+installButton.addEventListener('click',async()=>{
+  if(pendingInstall){
+    const prompt=pendingInstall;pendingInstall=null;await prompt.prompt();
+    const choice=await prompt.userChoice;
+    if(choice?.outcome==='accepted')installButton.hidden=true;
+  }else if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    alert('To install Pocket Oddities on iPhone: open this website in Safari, tap Share, then Add to Home Screen.');
+  }else if(/Android/i.test(navigator.userAgent)){
+    alert('Open your browser menu and choose Install app or Add to Home screen.');
+  }else alert('Use your browser’s Install app option to add Pocket Oddities.');
+});
+window.addEventListener('appinstalled',()=>{installButton.hidden=true});
 const info=[
 ['The Button Has Feelings','weird','😳','Keep a very sensitive button emotionally balanced.','Tap, compliment or ignore it.'],
 ['You Are the Notification','reflex','📨','Sneak notifications past a scrolling finger.','Pick a lane, then time your ping.'],

@@ -93,7 +93,15 @@
     const visited=Object.values(data.plays).filter(n=>Number(n)>0).length;
     const maxAttempts=Math.max(0,...Object.values(data.plays).map(n=>Number(n)||0));
     const completeThreads=threads.filter(t=>t.parts.every(([name])=>uniqueWins.has(name))).length;
-    return {catalog,uniqueWins,categoryWins,visited,maxAttempts,bestStreak:data.bestStreak,completeThreads};
+    const medalCount=medals.filter(medal=>data.earned[medal.id]).length;
+    const dailyRecords=safeRead('oddities-daily-records',{});
+    const completedDailyRuns=Object.values(dailyRecords).filter(record=>record?.completed).length;
+    const rushTimes=Object.values(dailyRecords).filter(record=>record?.completed&&Number.isFinite(Number(record.seconds))).map(record=>Number(record.seconds));
+    const fastestRush=rushTimes.length?Math.min(...rushTimes):null;
+    // Rewards are one-time milestones: unique wins, medals, hidden threads, and one daily clear per UTC date.
+    const oddityScore=uniqueWins.size*100+medalCount*50+completeThreads*100+completedDailyRuns*25;
+    const level=Math.floor(oddityScore/500)+1;
+    return {catalog,uniqueWins,categoryWins,visited,maxAttempts,bestStreak:data.bestStreak,completeThreads,medalCount,completedDailyRuns,fastestRush,oddityScore,level};
   }
   let toastTimer;
   function notify(message){
@@ -117,12 +125,13 @@
     if(data.theme!=='default'&&!data.found[data.theme])data.theme='default';
     persist();
     applyTheme();
-    draw(c);
+    const updated=context();
+    draw(updated);
     if(!quiet){
       if(newlyThreads.length)notify('◈ Hidden thread complete! '+newlyThreads[0].title+' — open the Cabinet.');
       else if(finishedName&&won&&byTitle.has(finishedName)){
         const thread=byTitle.get(finishedName);
-        notify('◈ A strange connection: '+thread.parts.filter(([name])=>c.uniqueWins.has(name)).length+'/3 echoes found in '+thread.title+'.');
+        notify('◈ A strange connection: '+thread.parts.filter(([name])=>updated.uniqueWins.has(name)).length+'/3 echoes found in '+thread.title+'.');
       }else if(newlyMedals.length)notify('✦ Achievement unlocked: '+newlyMedals[0].title);
     }
   }
@@ -139,10 +148,17 @@
   function draw(c){
     const count=medals.filter(m=>data.earned[m.id]).length;
     $('cabinet-count').textContent=count+'/'+medals.length;
-    $('cabinet-subtitle').textContent=count+' / '+medals.length+' achievements unlocked · '+c.completeThreads+' / '+threads.length+' threads connected';
+    $('cabinet-subtitle').textContent=c.oddityScore+' Oddity Score · Level '+c.level+' · '+count+' / '+medals.length+' achievements · '+c.completeThreads+' / '+threads.length+' threads connected';
     const stats=$('cabinet-stats');
     stats.replaceChildren();
-    for(const [number,title] of [[String(c.uniqueWins.size),'Games beaten'],[String(c.visited),'Games tried'],[String(data.completedRounds),'Rounds played'],[String(data.bestStreak),'Best streak']]){
+    const profileScore=el('div','cabinet-stat cabinet-stat-score');
+    profileScore.dataset.profileScore=String(c.oddityScore);
+    profileScore.setAttribute('aria-label','Oddity Score '+c.oddityScore+', Level '+c.level);
+    profileScore.append(el('strong',null,String(c.oddityScore)),el('small',null,'Oddity Score'));
+    profileScore.append(el('span','cabinet-stat-level','Level '+c.level));
+    stats.append(profileScore);
+    const fastestRush=c.fastestRush===null?'—':(c.fastestRush<60?c.fastestRush.toFixed(1)+'s':Math.floor(c.fastestRush/60)+'m '+Math.round(c.fastestRush%60)+'s');
+    for(const [number,title] of [[String(c.uniqueWins.size),'Games beaten'],[String(c.visited),'Games tried'],[String(data.completedRounds),'Rounds played'],[String(c.completedDailyRuns),'Daily Rushes'],[fastestRush,'Fastest Rush'],[String(data.bestStreak),'Best win streak']]){
       const item=el('div','cabinet-stat');
       item.append(el('strong',null,number),el('small',null,title));stats.append(item);
     }

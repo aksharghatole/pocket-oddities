@@ -23,7 +23,7 @@ The **Speedruns** shelf sorts games by each player’s fastest successful clear 
 
 ## Player progress: Oddity Score and Daily Rush
 
-The Cabinet now shows your **Oddity Score**, level, unique game wins, medals, hidden threads, completed Daily Rushes, fastest Daily Rush, and best win streak. Score comes from one-time progress milestones: unique wins, earned medals, completed story threads, and one Rush clear per UTC date. Replaying a game or challenge does not farm points. Profile data and records remain on this device; global rankings and cross-device sync are not connected yet.
+The Cabinet now shows your **Oddity Score**, level, unique game wins, medals, hidden threads, completed Daily Rushes, fastest Daily Rush, and best win streak. Score comes from one-time progress milestones: unique wins, earned medals, completed story threads, and one Rush clear per UTC date. Daily Oddity Rush now uses five games when available, starts with a short countdown, advances automatically between clears, and saves the best run’s individual splits locally. Replaying a game or challenge does not farm points. Profile data and records remain on this device; global rankings and cross-device sync are not connected yet.
 
 ## The Oddity Cabinet: achievements and hidden connections
 

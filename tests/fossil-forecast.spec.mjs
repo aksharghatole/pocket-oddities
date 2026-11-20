@@ -5,7 +5,9 @@ async function start(page){
 }
 
 async function tapCell(page,row,col){
-  await page.locator('#arena').click({position:{x:70+col*44+22,y:143+row*44+22}});
+  const arena=page.locator('#arena');
+  const bounds=await arena.boundingBox();
+  await arena.click({position:{x:(70+col*44+22)*bounds.width/360,y:(143+row*44+22)*bounds.height/450}});
 }
 
 test('Fossil Forecast accepts a solved board, supports correction, and can fail cleanly',async ({page})=>{

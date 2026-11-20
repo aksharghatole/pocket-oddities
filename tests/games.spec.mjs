@@ -51,6 +51,25 @@ test('Moon Mail Sorter is registered and launches with touch-sized controls',asy
   await expect(page.locator('#play-screen')).toBeVisible();
   expect(errors).toEqual([]);
 });
+test('vibration is an optional independent setting that persists',async ({page})=>{
+  await page.addInitScript(()=>{window.vibrationCalls=[];Object.defineProperty(navigator,'vibrate',{configurable:true,value:pattern=>{window.vibrationCalls.push(pattern);return true}})});
+  await ready(page);
+  const vibration=page.locator('#haptic-toggle');
+  const sound=page.locator('#sound-toggle');
+  await expect(vibration).toHaveAttribute('aria-pressed','false');
+  await expect(sound).toHaveAttribute('aria-pressed','false');
+  await vibration.click();
+  await expect(vibration).toHaveAttribute('aria-pressed','true');
+  expect(await page.evaluate(()=>localStorage.getItem('oddities-haptics'))).toBe('true');
+  expect(await page.evaluate(()=>localStorage.getItem('oddities-sound'))).toBeNull();
+  expect(await page.evaluate(()=>window.vibrationCalls.length)).toBe(1);
+  await page.reload();
+  await expect(page.locator('#haptic-toggle')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#sound-toggle')).toHaveAttribute('aria-pressed','false');
+  await sound.click();
+  await expect(page.locator('#sound-toggle')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#haptic-toggle')).toHaveAttribute('aria-pressed','true');
+});
 test('Game of the Day is stable and Surprise Me avoids recent games',async ({page})=>{
   await page.addInitScript(names=>localStorage.setItem('oddities-recent',JSON.stringify(names)),titles.slice(0,-1));
   await ready(page);

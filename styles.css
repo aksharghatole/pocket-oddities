@@ -110,3 +110,7 @@ footer a{display:inline-block;margin-left:12px;color:var(--mint);text-decoration
 .game-of-day-art{display:grid;place-items:center;flex:0 0 94px;width:94px;height:94px;border:1px solid #ffffff32;border-radius:28px;background:#ffffff10;color:#ffe18d;font-size:48px;box-shadow:inset 0 1px #ffffff1e}
 .game-of-day .primary-btn{min-height:42px;padding:0 16px}
 @media(max-width:620px){.game-of-day{gap:12px;margin-bottom:24px;padding:17px;border-radius:18px}.game-of-day-art{flex-basis:65px;width:65px;height:65px;border-radius:20px;font-size:35px}.game-of-day-copy p{font-size:13px}.surprise-btn{min-height:44px}}
+
+/* Optional vibration control */
+#haptic-toggle[aria-pressed="true"]{color:#8ef1c7;border-color:#65d6ae;background:#1f3940}
+#haptic-toggle{touch-action:manipulation}

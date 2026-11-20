@@ -293,27 +293,39 @@ test('Speedruns lists the fastest successful personal clears first',async ({page
   await expect(cards.nth(1).locator('h3')).toHaveText('Circuit Garden');
   await expect(page.locator('#completion')).toHaveText('2 personal bests');
 });
-test('The Game Is Lying clearly rejects a wrong choice and accepts all ten counterexamples',async ({page})=>{
+test('The Game Is Lying rejects a wrong choice and accepts all ten counterexamples',async ({page})=>{
   const errors=collectErrors(page);
   await page.setViewportSize({width:360,height:740});
   await ready(page);
   await page.getByRole('button',{name:/The Game Is Lying/}).click();
   await expect(page.locator('#game-title')).toHaveText('The Game Is Lying');
   const controls=page.locator('#game-controls .control-btn');
-  await expect(controls).toHaveCount(2);
-  await expect(page.locator('#arena')).toBeVisible();
+  const choices=[
+    ['LEFT','RIGHT'],
+    ['SUN','MOON'],
+    ['8','7'],
+    ['1','9'],
+    ['PURPLE','GREEN'],
+    ['FIRST','LAST'],
+    ['APPLE','CHAIR','PEAR'],
+    ['ROCK','BIRD'],
+    ['UP','DOWN','LEFT'],
+    ['STOP','GO']
+  ];
+  const answers=['RIGHT','MOON','8','1','PURPLE','FIRST','CHAIR','ROCK','DOWN','STOP'];
+  await expect(controls).toHaveCount(choices[0].length);
 
   // LEFT is the tempting but false answer to the first claim.
   await controls.filter({hasText:'LEFT'}).click();
-  await expect(page.locator('#arena')).toContainText('RULE #1');
-  await expect(page.locator('#arena')).toContainText('THE GAME TRICKED YOU');
-  await expect(page.locator('#arena')).toContainText('♥♥♡');
+  await expect(controls).toHaveCount(choices[0].length);
+  await expect(controls.allTextContents()).resolves.toEqual(choices[0]);
 
-  // Each intended answer contradicts its displayed statement.
-  const answers=['RIGHT','MOON','8','1','PURPLE','FIRST','CHAIR','ROCK','DOWN','STOP'];
   for(let index=0;index<answers.length;index++){
     await controls.filter({hasText:answers[index]}).click();
-    if(index<answers.length-1)await expect(page.locator('#arena')).toContainText('RULE #'+(index+2));
+    if(index<answers.length-1){
+      await expect(controls).toHaveCount(choices[index+1].length);
+      await expect(controls.allTextContents()).resolves.toEqual(choices[index+1]);
+    }
   }
   await expect(page.locator('#game-overlay')).toBeVisible();
   await expect(page.locator('#overlay-title')).toHaveText('You did it!');

@@ -1,0 +1,65 @@
+name: Test every Pocket Oddities game
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '20 3 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: arcade-browser-tests-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  game-tests:
+    name: 21+ games / Android mobile browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install real Chromium browser
+        run: npx playwright install --with-deps chromium
+      - name: Verify JavaScript and library structure
+        run: |
+          npm test
+          node --check games.js
+          for game in game-packs/*.js; do node --check "$game"; done
+      - name: Exercise every game on Android-sized screens
+        run: npm run test:games
+      - name: Publish mobile test summary
+        if: always()
+        run: |
+          echo "## Pocket Oddities Android mobile-browser tests" >> "$GITHUB_STEP_SUMMARY"
+          echo "Every discovered game is exercised at both Pixel 5 and compact Android screen sizes." >> "$GITHUB_STEP_SUMMARY"
+          if [ -f test-results/results.xml ]; then
+            python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root=ET.parse('test-results/results.xml').getroot()
+          print('Read JUnit results')
+          tests=int(root.attrib.get('tests','0'))
+          failures=int(root.attrib.get('failures','0'))
+          skipped=int(root.attrib.get('skipped','0'))
+          with open('/tmp/test-summary','w') as f:
+              f.write(f"Tests: **{tests}** · Failures: **{failures}** · Skipped: **{skipped}**\n")
+          PY
+            cat /tmp/test-summary >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Save screenshots, traces, and HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pocket-oddities-game-test-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14

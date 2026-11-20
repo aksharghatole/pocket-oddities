@@ -11,6 +11,10 @@ A dependency-free, original HTML5 arcade built for mobile portrait screens. All 
 
 **Android debug APK:** Open **Actions → Build Android test app → Run workflow**. After a successful build, download the `pocket-oddities-android-debug-apk` artifact; the APK inside is for testing only, not Play Store release.
 
+**Install from the browser:** Open the live arcade on your phone. Use the **Install** control when offered, or your browser's **Add to Home Screen** option. The web app can work offline after it has loaded and cached its resources.
+
+**iOS Simulator build:** Open **Actions → Build iOS simulator test app** and download the successful `pocket-oddities-ios-simulator-app` artifact. This is an unsigned simulator build, not an iPhone release.
+
 **Keep growing the library:** See [Adding Games](docs/ADDING-GAMES.md), the [Living Roadmap](docs/ROADMAP.md), and [Android/iOS release guidance](docs/ANDROID-IOS.md). New games go in separate `game-packs/*.js` files and register themselves with the arcade; the game count and search update automatically. Existing game progress uses local storage and is not synced across devices.
 
 ## Play it immediately

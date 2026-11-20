@@ -14,7 +14,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] PWA install affordance and generated raster icons
 
 ## v1.2 — usability and polish
-- [ ] Playtest all 21 games end-to-end on small Android and iPhone screens
+- [ ] Playtest all 24 games end-to-end on small Android and iPhone screens
 - [x] Stop timer progression while browsing the achievement Cabinet
 - [x] First gameplay pass: Shadow Thief light readability and cooldown; Tiny Traffic God lane pause/resume, crossing logic and collision lives; Invisible Maze guaranteed routes, breadcrumbs, and improved peek feedback
 - [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all remaining games
@@ -38,9 +38,10 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Local Oddity Score, player levels, and Daily Rush records
 - [x] Oddity Passport stamps for every cleared game
 - [x] Common-to-Legendary and Secret medal rarity labels with a full-collection milestone
-- [x] Five hidden interconnected game threads with collectible cosmetic relics
+- [x] Six hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
-- [x] Moon Mail Sorter added as game #22 with offline precaching and Android-sized launch coverage
+- [x] Expansion packs #21–24: Echo Tiles, Moon Mail Sorter, Circuit Garden, and Fossil Forecast
+- [x] Fossil Forecast’s three fixed nonograms and sixth hidden relic thread
 - [ ] More game packs; prioritize quality over sheer count
 - [ ] Per-game tuning profiles and difficulty settings
 - [ ] In-app feedback and game popularity signals, privacy-conscious

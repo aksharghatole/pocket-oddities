@@ -17,6 +17,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [ ] Playtest all 32 games end-to-end on small Android and iPhone screens
 - [x] Stop timer progression while browsing the achievement Cabinet
 - [x] First gameplay pass: Shadow Thief light readability and cooldown; Tiny Traffic God lane pause/resume, crossing logic and collision lives; Invisible Maze guaranteed routes, breadcrumbs, and improved peek feedback
+- [x] Shadow Thief uses high-contrast sun/star tile states, a clearer legend, and a pixel-level contrast regression test
 - [ ] Finish playtesting individual win/lose paths, difficulty and touch targets across all remaining games
 - [x] Favorites, recent games and continue playing
 - [x] Completed and unfinished game shelves tied to saved progress
@@ -56,7 +57,6 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [ ] Optional sync/profiles only if clearly useful and privacy requirements are addressed
 
 ## Ideas to refine next
-- Shadow Thief: improve distinction between lit and dark tiles
 - Tiny Traffic God: broaden intersections and safer collision logic
 - The Other Cursor: make the trail feel clearer
 - Echo Tiles: add animation during preview, vibration cues and 3 difficulty options

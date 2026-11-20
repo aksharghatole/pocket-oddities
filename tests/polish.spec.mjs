@@ -27,6 +27,23 @@ test('Shadow Thief: light blocks movement; a shift opens the route',async ({page
   await expect(page.locator('#game-overlay')).toBeHidden();
   expect(errors).toEqual([]);
 });
+test('Shadow Thief uses strong non-color contrast for danger and safe tiles',async ({page})=>{
+  await page.setViewportSize({width:360,height:740});
+  await page.goto('/');
+  await launch(page,'Shadow Thief');
+  await page.waitForTimeout(100);
+  const [spotlight,shadow]=await page.locator('#arena').evaluate(canvas=>{
+    const ctx=canvas.getContext('2d');
+    const sample=(x,y)=>Array.from(ctx.getImageData(x,y,1,1).data).slice(0,3);
+    return [sample(42,94),sample(92,94)];
+  });
+  const luminance=rgb=>{
+    const channels=rgb.map(v=>v/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4);
+    return 0.2126*channels[0]+0.7152*channels[1]+0.0722*channels[2];
+  };
+  const a=luminance(spotlight),b=luminance(shadow);
+  expect((Math.max(a,b)+0.05)/(Math.min(a,b)+0.05)).toBeGreaterThan(4.5);
+});
 test('Tiny Traffic God: lane buttons prevent the first intersection collision',async ({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));

@@ -120,3 +120,8 @@ footer a{display:inline-block;margin-left:12px;color:var(--mint);text-decoration
 .cabinet-backup-actions button{min-height:42px;padding:0 14px;border:1px solid #657291;border-radius:12px;background:#242e49;color:#f0f3ff;font:700 13px/1 system-ui;cursor:pointer}
 .cabinet-backup-actions button:active{transform:translateY(1px)}
 .progress-backup-status{min-height:20px;margin:4px 0 10px;color:#8fe6c3;font-size:12px}
+
+/* Optional in-app reduced motion preference */
+html[data-reduced-motion="true"] *,html[data-reduced-motion="true"] *::before,html[data-reduced-motion="true"] *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+.cabinet-motion-toggle{display:flex;align-items:center;gap:10px;margin:10px 0 18px;padding:13px 15px;border:1px solid #4a5573;border-radius:13px;background:#1b233b;color:#f1f4ff;font-size:13px;font-weight:700}
+.cabinet-motion-toggle input{width:19px;height:19px;accent-color:#79efc4}

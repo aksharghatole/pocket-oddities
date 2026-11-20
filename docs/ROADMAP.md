@@ -27,6 +27,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 
 ## v1.3 — replayability and retention
 - [x] Daily rotating challenges from existing games
+- [x] Five-game Daily Rush with countdown, automatic advance, and saved splits
 - [x] Persistent medals, collection milestones and earned badges
 - [x] Local Oddity Score, player levels, and Daily Rush records
 - [x] Four hidden interconnected game threads with collectible cosmetic relics

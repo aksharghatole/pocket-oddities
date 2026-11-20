@@ -18,6 +18,8 @@ test('Cabinet shows achievements and four hidden cross-game threads',async ({pag
   await expect(page.locator('.cabinet-thread')).toHaveCount(4);
   await expect(page.locator('[data-thread="night"] .cabinet-thread-part')).toHaveCount(3);
   await expect(page.locator('#cabinet-theme')).toHaveText('Original arcade glow');
+  await expect(page.locator('[data-profile-score]')).toHaveAttribute('data-profile-score','0');
+  await expect(page.locator('[data-profile-score]')).toContainText('Level 1');
   await page.locator('#cabinet-close').click();
   await expect(page.locator('#cabinet-dialog')).toBeHidden();
   expect(errors).toEqual([]);
@@ -36,6 +38,8 @@ test('earning a win awards the first medal and it survives reload',async ({page}
   await expect(page.locator('[data-achievement="first-spark"]')).toHaveClass(/earned/);
   await expect(page.locator('#cabinet-count')).toHaveText('1/12');
   await expect(page.locator('#cabinet-stats')).toContainText('Games beaten');
+  await expect(page.locator('[data-profile-score]')).toHaveAttribute('data-profile-score','150');
+  await expect(page.locator('[data-profile-score]')).toContainText('Level 1');
   await page.reload();
   await openCabinet(page);
   await expect(page.locator('[data-achievement="first-spark"]')).toHaveClass(/earned/);

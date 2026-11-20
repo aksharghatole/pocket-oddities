@@ -38,7 +38,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Local Oddity Score, player levels, and Daily Rush records
 - [x] Oddity Passport stamps for every cleared game
 - [x] Common-to-Legendary and Secret medal rarity labels with a full-collection milestone
-- [x] Five hidden interconnected game threads with collectible cosmetic relics
+- [x] Six hidden interconnected game threads with collectible cosmetic relics
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
 - [x] Expansion packs #21–24: Echo Tiles, Moon Mail Sorter, Circuit Garden, and Fossil Forecast
 - [x] Fossil Forecast’s three fixed nonograms and sixth hidden relic thread

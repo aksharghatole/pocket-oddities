@@ -176,6 +176,8 @@ function renderHome(filter='all'){
   let catalog=info.map(([name,category,emoji,desc],i)=>({name,category,emoji,desc,index:i}));
   if(libraryView==='quick')catalog=catalog.filter(item=>QUICK_PLAY_NAMES.has(item.name));
   if(libraryView==='speedrun')catalog.sort((a,b)=>{const at=Number(fastestClears[a.name]?.seconds),bt=Number(fastestClears[b.name]?.seconds);const av=Number.isFinite(at)&&at>0?at:Infinity,bv=Number.isFinite(bt)&&bt>0?bt:Infinity;return av-bv||a.name.localeCompare(b.name)});
+  if(libraryView==='completed')catalog=catalog.filter(item=>Boolean(beaten[item.index]));
+  if(libraryView==='unfinished')catalog=catalog.filter(item=>!beaten[item.index]);
   if(libraryView==='recent')catalog=recentlyPlayed.map(name=>catalog.find(item=>item.name===name)).filter(Boolean);
   if(libraryView==='favorites')catalog=catalog.filter(item=>favorites.includes(item.name));
   if(selected!=='all')catalog=catalog.filter(item=>item.category===selected);
@@ -194,13 +196,13 @@ function renderHome(filter='all'){
     favorite.onclick=event=>{event.stopPropagation();favorites=favorites.includes(name)?favorites.filter(item=>item!==name):[...favorites,name];storeSet('oddities-favorites',favorites);renderHome()};
     card.append(launch,favorite);grid.appendChild(card);
   });
-  $('completion').textContent=libraryView==='speedrun'?Object.keys(fastestClears).filter(name=>Number(fastestClears[name]?.seconds)>0).length+' personal bests':Object.keys(beaten).filter(k=>beaten[k]).length+' / '+info.length+' beaten';
+  $('completion').textContent=libraryView==='speedrun'?Object.keys(fastestClears).filter(name=>Number(fastestClears[name]?.seconds)>0).length+' personal bests':libraryView==='completed'?catalog.length+' completed games':libraryView==='unfinished'?catalog.length+' games to discover':info.filter((_,index)=>beaten[index]).length+' / '+info.length+' beaten';
   $('game-count-tagline').textContent=info.length+' tiny strange worlds';$('hero-count').textContent=info.length;
   $('hero-game-count').textContent='✦ '+info.length+' playable games';$('all-filter').textContent='All '+info.length;
-  const heading=libraryView==='quick'?'Quick Play':libraryView==='speedrun'?'Speedruns':libraryView==='recent'?'Recently Played':libraryView==='favorites'?'Favorites':libraryView==='daily'?'Daily Rush':'The collection';
+  const heading=libraryView==='quick'?'Quick Play':libraryView==='speedrun'?'Speedruns':libraryView==='completed'?'Completed':libraryView==='unfinished'?'Unfinished':libraryView==='recent'?'Recently Played':libraryView==='favorites'?'Favorites':libraryView==='daily'?'Daily Rush':'The collection';
   document.querySelector('.section-heading h2').textContent=heading;
   document.title='Pocket Oddities · '+info.length+' Mini-Games';
-  if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent=libraryView==='recent'?'Games you play will appear here.':libraryView==='favorites'?'Tap ☆ on a game to save it here.':'No games match your search. Try another name or category.';grid.appendChild(p)}
+  if(!grid.children.length){const p=document.createElement('p');p.className='no-results';p.textContent=libraryView==='recent'?'Games you play will appear here.':libraryView==='favorites'?'Tap ☆ on a game to save it here.':libraryView==='completed'?'Beat a game and it will be saved here.':libraryView==='unfinished'?'You have cleared every game in the collection!':'No games match your search. Try another name or category.';grid.appendChild(p)}
   window.dispatchEvent(new CustomEvent('oddities:catalog-render'));
 }
 $('game-search').addEventListener('input',()=>renderHome());

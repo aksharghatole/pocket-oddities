@@ -22,7 +22,8 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Completed and unfinished game shelves tied to saved progress
 - [x] UTC-stable Game of the Day and Surprise Me discovery shortcut
 - [x] Per-game fastest successful clear records and Speedruns shelf
-- [ ] Better accessible text, haptics and independent sound preferences
+- [x] Optional vibration feedback and separate persisted sound/vibration controls
+- [ ] Better accessible text and reduced-motion settings
 - [ ] Original icon, splash screen and store screenshots for both OSes
 - [ ] Native Android internal-testing release and iOS TestFlight release
 

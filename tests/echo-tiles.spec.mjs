@@ -60,7 +60,7 @@ test('Echo Tiles offers three paces, animates the preview, and wins each mode',(
     const activeIndex=()=>{
       const fill=run.result.draws.find(entry=>entry[0]==='R'&&entry[3]===130&&entry[4]===114&&entry[5]==='#fff8d9');
       if(!fill)return -1;
-      return centers.findIndex(([x,y])=>fill[2]===x-65&&fill[3]===y-57);
+      return centers.findIndex(([x,y])=>fill[1]===x-65&&fill[2]===y-57);
     };
     expect(activeIndex()).toBe(0);
     run.game.update(run.state.beat);

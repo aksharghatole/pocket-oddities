@@ -131,3 +131,8 @@ footer a{display:inline-block;margin-left:12px;color:var(--mint);text-decoration
 .cabinet-medal.rarity-common,.cabinet-medal.rarity-uncommon,.cabinet-medal.rarity-rare,.cabinet-medal.rarity-epic,.cabinet-medal.rarity-legendary,.cabinet-medal.rarity-secret{border-color:var(--medal-rarity)}
 .cabinet-medal-icon{color:var(--medal-rarity,#b6c2d8)}
 .cabinet-medal-rarity{color:var(--medal-rarity,#b6c2d8)!important;font-size:9px!important;font-weight:850;letter-spacing:.09em;text-transform:uppercase}
+
+/* Optional in-app reduced motion preference */
+html[data-reduced-motion="true"] *,html[data-reduced-motion="true"] *::before,html[data-reduced-motion="true"] *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+.cabinet-motion-toggle{display:flex;align-items:center;gap:10px;margin:10px 0 18px;padding:13px 15px;border:1px solid #4a5573;border-radius:13px;background:#1b233b;color:#f1f4ff;font-size:13px;font-weight:700}
+.cabinet-motion-toggle input{width:19px;height:19px;accent-color:#79efc4}

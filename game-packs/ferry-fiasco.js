@@ -107,6 +107,7 @@
           T('⛵ TAP HERE TO SAIL →',180,414,16,C.yellow);
           const pairs=level.pairs.map(([a,b])=>level.names[a]+' / '+level.names[b]);
           T('KEEP APART: '+pairs.slice(0,2).join(' · '),180,92,10,C.red);
+          if(pairs.length>2)T('ALSO: '+pairs.slice(2).join(' · '),180,356,10,C.red);
           T(s.note,180,445,10,C.white);
         }
       };

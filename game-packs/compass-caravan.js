@@ -48,7 +48,6 @@
       return {
         init(){const s=api.state;s.t=150;s.level=1;api.controls([['↶ Left','left',true],['↑ Forward','forward',true],['Right ↷','right',true]]);setup(s);},
         action:act,
-        tap(x,y){if(y>=374&&y<=435){const i=Math.floor((x-18)/108);if(i>=0&&i<3)act(['left','forward','right'][i]);}},
         timeout(){if(!api.state.ended)api.finish(false,'The expedition clock ran out.');},
         draw(){
           const s=api.state,m=maps[s.level-1],size=59,left=32,top=72;

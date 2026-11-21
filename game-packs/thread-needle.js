@@ -40,7 +40,7 @@
           s.level++;setup(s);s.note='Cloth '+s.level+' ready. Keep stitching!';api.beep(620);return;
         }
         s.path.push(target);s.used.push(index);
-        api.addScore(10);api.beep(370+index*35);
+        api.beep(370+index*35);
         s.note=s.used.length+'/'+s.pegs.length+' pegs sewn. '+(s.pegs.length-s.used.length)+' left.';
       }
       return {

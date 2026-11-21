@@ -8,10 +8,10 @@
       const palette=['#f4b67b','#83c5ff','#b6e58b','#e6a5e7'];
       const N=5, size=56, left=40, top=103;
       function fresh(s){
-        // Each column starts with a guaranteed adjacent pair; remaining colors vary.
+        // Each column starts with a guaranteed triple, so all 15 target stones are reachable.
         s.grid=Array.from({length:N},(_,row)=>Array.from({length:N},(_,col)=>{
           const pair=(col+s.level)%4;
-          return row>=3?pair:(row+col*2+s.level)%4;
+          return row>=2?pair:(row+col*2+s.level)%4;
         }));
         s.dug=0;s.note='Tap a matching cluster (2+ stones).';
       }

@@ -54,7 +54,7 @@
         tap(x,y){if(y>=352&&y<=418&&x>=20&&x<340)flood(Math.floor((x-20)/80));},
         timeout(){if(!api.state.ended)api.finish(false,'The paint dried before the last mosaic was finished.');},
         draw(){
-          const s=api.state,n=s.size,side=300/n,top=88,left=30;
+          const s=api.state,n=s.size,side=240/n,top=88,left=60;
           base('#111a31');
           T('PUDDLE PAINTER',180,32,23,U.mint);
           T('MOSAIC '+s.level+'/3   •   MOVES '+s.remaining,180,62,15,U.yellow);

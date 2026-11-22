@@ -19,6 +19,7 @@ for(const name of packNames){
   const code=await read(path);
   assert.match(code,/PocketOddities\.register\(/,'Pack must register games');
   assert.ok(html.includes('./'+path),'Pack not loaded in index.html: '+path);
+  assert.ok(worker.includes("'./"+path+"'") || worker.includes('"./'+path+'"'),'Pack missing from the offline cache: '+path);
   registered+=(code.match(/PocketOddities\.register\(/g)||[]).length;
 }
 const builtIn=(engine.match(/\bdefine\(\{/g)||[]).length;

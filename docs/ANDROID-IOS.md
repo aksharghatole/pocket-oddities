@@ -5,7 +5,7 @@ Pocket Oddities is currently an offline-first web arcade, and can also run insid
 ## Android — download a test APK
 
 1. Open the repository's **Actions** tab.
-2. Select **Build Android test app** in the left column.
+2. Select **Build and test Android APK** in the left column.
 3. Click **Run workflow** → `main`.
 4. When the Android build succeeds, open the workflow run and download the `pocket-oddities-android-debug-apk` artifact.
 5. Extract `app-debug.apk`, transfer it to an Android test device, and install it. Android might ask you to approve installations from that source.

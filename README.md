@@ -9,7 +9,7 @@ A dependency-free, original HTML5 arcade built for mobile portrait screens. All 
 
 **Play online:** https://aksharghatole.github.io/pocket-oddities/
 
-**Android debug APK:** Open **Actions → Build Android test app → Run workflow**. After a successful build, download the `pocket-oddities-android-debug-apk` artifact; the APK inside is for testing only, not Play Store release.
+**Android debug APK:** Open **Actions → Build and test Android APK → Run workflow**. After a successful build, download the `pocket-oddities-android-debug-apk` artifact; the APK inside is for testing only, not Play Store release.
 
 **Install from the browser:** Open the live arcade on your phone. Use the **Install** control when offered, or your browser's **Add to Home Screen** option. The web app can work offline after it has loaded and cached its resources.
 
@@ -44,7 +44,7 @@ For maintainers: medal definitions, connected-game clues, and theme unlocks are 
 
 1. Open `index.html` in a desktop browser (some PWA features need an HTTP server).
 2. For browsers on your phone and installable PWA behavior, serve this folder on a reachable HTTPS site such as **GitHub Pages**.
-3. Local server: `python3 -m http.server 4173` then visit `http://localhost:4173` on your computer.
+3. To preview the production bundle locally, run `npm run build:web && python3 -m http.server 4173 --directory www` and open `http://localhost:4173`.
 
 ## Publish for free with GitHub Pages
 

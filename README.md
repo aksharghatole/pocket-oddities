@@ -44,7 +44,25 @@ For maintainers: medal definitions, connected-game clues, and theme unlocks are 
 
 1. Open `index.html` in a desktop browser (some PWA features need an HTTP server).
 2. For browsers on your phone and installable PWA behavior, serve this folder on a reachable HTTPS site such as **GitHub Pages**.
-3. To preview the production bundle locally, run `npm run build:web && python3 -m http.server 4173 --directory www` and open `http://localhost:4173`.
+3. To preview the production bundle locally, run `npm start` and open `http://localhost:4173`.
+
+## Run and debug the tests
+
+Use Node 22 and Python 3. The library check and web build run without installing dependencies.
+
+```sh
+npm test
+npm run build:web
+npm install
+npx playwright install chromium
+npm run test:games
+```
+
+On a fresh Linux machine, use `npx playwright install --with-deps chromium` if Chromium needs system libraries. The browser suite builds and serves `www/` itself on port 4173, so stop any preview server first.
+
+- List the available tests with `npm run test:games:list`.
+- Run one test file on the 320-pixel profile with `npm run test:games -- tests/offline.spec.mjs --project=android-compact`.
+- Open the HTML report with `npx playwright show-report`. In GitHub Actions, download the `pocket-oddities-game-test-report` artifact for the HTML report, screenshots, and traces.
 
 ## Publish for free with GitHub Pages
 

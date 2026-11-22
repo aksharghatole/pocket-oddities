@@ -1,5 +1,5 @@
-const CACHE='pocket-oddities-v15';
-const PRECACHE=['./','./index.html','./styles.css','./games.js','./achievements.js','./game-packs/echo-tiles.js','./game-packs/circuit-garden.js','./game-packs/moon-mail-sorter.js','./game-packs/fossil-forecast.js','./game-packs/orbit-locksmith.js','./game-packs/fossil-field.js','./game-packs/ghost-gallery.js','./game-packs/lantern-logic.js','./game-packs/cloud-shepherd.js','./game-packs/ink-tide.js','./game-packs/potion-scale.js','./game-packs/pocket-elevator.js','./game-packs/star-cartographer.js','./manifest.webmanifest','./assets/icon.svg','./assets/icon-180.png','./assets/icon-192.png','./assets/icon-512.png'];
+const CACHE='pocket-oddities-v16';
+const PRECACHE=['./','./index.html','./styles.css','./games.js','./achievements.js','./game-packs/echo-tiles.js','./game-packs/circuit-garden.js','./game-packs/moon-mail-sorter.js','./game-packs/fossil-forecast.js','./game-packs/orbit-locksmith.js','./game-packs/fossil-field.js','./game-packs/ghost-gallery.js','./game-packs/lantern-logic.js','./game-packs/cloud-shepherd.js','./game-packs/ink-tide.js','./game-packs/potion-scale.js','./game-packs/pocket-elevator.js','./game-packs/star-cartographer.js','./game-packs/tea-timer-trio.js','./manifest.webmanifest','./assets/icon.svg','./assets/icon-180.png','./assets/icon-192.png','./assets/icon-512.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(PRECACHE)));
   self.skipWaiting();

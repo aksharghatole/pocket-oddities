@@ -1,17 +1,25 @@
-const CACHE='pocket-oddities-v15';
+const CACHE_PREFIX='pocket-oddities-v';
+const CACHE=CACHE_PREFIX+'16';
 const PRECACHE=['./','./index.html','./styles.css','./games.js','./achievements.js','./game-packs/echo-tiles.js','./game-packs/circuit-garden.js','./game-packs/moon-mail-sorter.js','./game-packs/fossil-forecast.js','./game-packs/orbit-locksmith.js','./game-packs/fossil-field.js','./game-packs/ghost-gallery.js','./game-packs/lantern-logic.js','./game-packs/cloud-shepherd.js','./game-packs/ink-tide.js','./game-packs/potion-scale.js','./game-packs/pocket-elevator.js','./game-packs/star-cartographer.js','./manifest.webmanifest','./assets/icon.svg','./assets/icon-180.png','./assets/icon-192.png','./assets/icon-512.png'];
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(PRECACHE)));
-  self.skipWaiting();
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE);
+    await cache.addAll(PRECACHE);
+    await self.skipWaiting();
+  })());
 });
 self.addEventListener('activate',event=>{
-  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-  self.clients.claim();
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    const obsolete=keys.filter(key=>key.startsWith(CACHE_PREFIX)&&key!==CACHE);
+    await Promise.all(obsolete.map(key=>caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 // Network first means freshly published games and fixes are visible without a
 // manual cache bump. Any successfully fetched new game pack is saved offline.
 self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;
+  if(event.request.method!=='GET'||!event.request.url.startsWith(self.registration.scope))return;
   event.respondWith((async()=>{
     try{
       const response=await fetch(event.request);
@@ -21,10 +29,11 @@ self.addEventListener('fetch',event=>{
       }
       return response;
     }catch{
-      const cached=await caches.match(event.request);
+      const cache=await caches.open(CACHE);
+      const cached=await cache.match(event.request);
       if(cached)return cached;
       if(event.request.mode==='navigate'){
-        const home=await caches.match('./index.html');
+        const home=await cache.match('./index.html');
         if(home)return home;
       }
       return new Response('You are offline. This game has not been downloaded yet.',{status:503,headers:{'Content-Type':'text/plain'}});

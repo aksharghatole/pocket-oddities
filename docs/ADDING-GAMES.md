@@ -7,7 +7,7 @@ The first 20 mini-games live in `games.js`. New games belong in separate JavaScr
 1. Make a new `game-packs/your-game.js` file (copy the pattern in `game-packs/echo-tiles.js`).
 2. Register metadata in this order: `[title, category, emoji, description, instructions]`. Category is one of `reflex`, `puzzle`, `strategy`, or `weird`. Give each game a unique title.
 3. The second argument is a function receiving the `api` object and returning a mini-game implementation with **`init()`** and **`draw()`**. Optional hooks: `tap(x,y)`, `move(x,y)`, `down(x,y)`, `up()`, `update(dt)`, `action(name)`, `timeout()`. `dt` is seconds.
-4. Add `<script src="./game-packs/your-game.js" defer></script>` after `games.js` in `index.html`.
+4. Add `<script src="./game-packs/your-game.js" defer></script>` after `games.js` in `index.html`. Add the pack to `PRECACHE` in `sw.js`, bump the cache version, and update the static fallback counts in `index.html`.
 5. Run `npm test && npm run build:web`. (Requires Node 22; building the web bundle does not require installed dependencies.)
 6. Test on a small touchscreen as well as desktop, including full game win/failure, back/home/restart, offline behavior, sound, and score persistence.
 7. Commit to `main` (GitHub Pages updates automatically) or use a pull request to review first.

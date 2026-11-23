@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   game-tests:
-    name: 21+ games / Android mobile browser
+    name: Arcade on Pixel 5 and compact Android
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -24,15 +24,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Install real Chromium browser
-        run: npx playwright install --with-deps chromium
       - name: Verify JavaScript and library structure
         run: |
           npm test
-          node --check games.js
-          for game in game-packs/*.js; do node --check "$game"; done
+          for file in games.js achievements.js sw.js game-packs/*.js; do node --check "$file"; done
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Exercise every game on Android-sized screens
         run: npm run test:games
       - name: Publish mobile test summary
@@ -41,17 +40,24 @@ jobs:
           echo "## Pocket Oddities Android mobile-browser tests" >> "$GITHUB_STEP_SUMMARY"
           echo "Every discovered game is exercised at both Pixel 5 and compact Android screen sizes." >> "$GITHUB_STEP_SUMMARY"
           if [ -f test-results/results.xml ]; then
-            python3 - <<'PY'
+            python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import xml.etree.ElementTree as ET
-          root=ET.parse('test-results/results.xml').getroot()
-          print('Read JUnit results')
-          tests=int(root.attrib.get('tests','0'))
-          failures=int(root.attrib.get('failures','0'))
-          skipped=int(root.attrib.get('skipped','0'))
-          with open('/tmp/test-summary','w') as f:
-              f.write(f"Tests: **{tests}** · Failures: **{failures}** · Skipped: **{skipped}**\n")
+          from pathlib import Path
+
+          report = ET.parse('test-results/results.xml').getroot()
+          fields = {
+              'Tests': 'tests',
+              'Failures': 'failures',
+              'Errors': 'errors',
+              'Skipped': 'skipped',
+              'Duration (seconds)': 'time',
+          }
+          print(' · '.join(f'{label}: **{report.get(key, "0")}**' for label, key in fields.items()))
+          if Path('playwright-report/index.html').is_file():
+              print('\nDownload the `pocket-oddities-game-test-report` artifact and run `npx playwright show-report playwright-report` from its extracted directory.')
           PY
-            cat /tmp/test-summary >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No browser test results were produced. Check the failed step in the job log." >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Save screenshots, traces, and HTML report
         uses: actions/upload-artifact@v4

@@ -4,3 +4,5 @@ android/
 ios/
 dist/
 .DS_Store
+playwright-report/
+test-results/

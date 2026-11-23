@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 
 async function start(page){
-  await page.getByRole('button',{name:/Fossil Forecast/}).first().click();
+  await page.getByRole('button',{name:'Play Fossil Forecast',exact:true}).click();
 }
 
 async function tapCell(page,row,col){

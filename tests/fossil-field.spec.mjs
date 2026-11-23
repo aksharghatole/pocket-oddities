@@ -6,7 +6,7 @@ test('Fossil Field supports mobile touch, three-site victory, four-crack failure
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto('/');
-  await page.getByRole('button',{name:/Fossil Field/}).click();
+  await page.getByRole('button',{name:'Play Fossil Field',exact:true}).click();
   await expect(page.locator('#game-title')).toHaveText('Fossil Field');
   await expect(page.locator('#instruction')).toContainText('Four broken crystals');
   const canvas=page.locator('#arena');

@@ -13,7 +13,7 @@ async function tapMirror(page,c,r){
 }
 async function launch(page){
   await page.goto('/');
-  await page.getByRole('button',{name:/Mirror Courier/}).first().click();
+  await page.getByRole('button',{name:'Play Mirror Courier',exact:true}).click();
   await expect(page.locator('#game-title')).toHaveText('Mirror Courier');
 }
 test('Mirror Courier completes all chambers with touch input',async ({page})=>{
@@ -29,7 +29,9 @@ test('Mirror Courier completes all chambers with touch input',async ({page})=>{
 });
 test('Mirror Courier turn limit fails and restart resets',async ({page})=>{
   await launch(page);
-  for(let i=0;i<14;i++)await tapMirror(page,3,3);
+  // Use an upper mirror so the final touch is clear of the newly shown buttons.
+  for(let i=0;i<14;i++)await tapMirror(page,1,1);
+  await expect(page.locator('#game-overlay')).toBeVisible();
   await expect(page.locator('#overlay-title')).toHaveText('Round over');
   await page.locator('#restart-btn').click();
   await expect(page.locator('#game-overlay')).toBeHidden();

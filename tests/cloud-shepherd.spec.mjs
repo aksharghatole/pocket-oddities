@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 async function start(page){
   await page.goto('/');
-  await page.getByRole('button',{name:/Cloud Shepherd/}).first().click();
+  await page.getByRole('button',{name:'Play Cloud Shepherd',exact:true}).click();
   await expect(page.locator('#game-title')).toHaveText('Cloud Shepherd');
 }
 async function selectLane(page,lane){

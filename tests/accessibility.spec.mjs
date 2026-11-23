@@ -12,6 +12,6 @@ test('game arena references live instructions and announces round results',async
   await expect(outcome).toHaveAttribute('role','status');
   await expect(outcome).toHaveAttribute('aria-live','polite');
   await expect(outcome).toHaveAttribute('aria-atomic','true');
-  await page.getByRole('button',{name:/Shadow Thief/}).first().click();
+  await page.getByRole('button',{name:'Play Shadow Thief',exact:true}).click();
   await expect(instruction).not.toBeEmpty();
 });

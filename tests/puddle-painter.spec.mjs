@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 async function launch(page){
   await page.goto('/');
-  await page.getByRole('button',{name:/Puddle Painter/}).first().click();
+  await page.getByRole('button',{name:'Play Puddle Painter',exact:true}).click();
   await expect(page.locator('#game-title')).toHaveText('Puddle Painter');
 }
 async function ink(page,name){await page.locator('#game-controls').getByRole('button',{name,exact:true}).click();}

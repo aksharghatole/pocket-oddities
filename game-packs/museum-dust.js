@@ -14,7 +14,7 @@
       const relics=['THE SUN VASE','THE MOON MASK','THE STAR TABLET'];
       const colors=['#e9b36c','#a6d4e6','#c5b3ec'];
       function setup(s) {
-        s.cleaned=new Set();
+        s.cleaned=new Set();s.broken=new Set();
         s.cracked=new Set(layouts[s.level-1]);
         s.safe=W*H-s.cracked.size;
         s.note='Brush the pale tiles. Red cracks are fragile!';

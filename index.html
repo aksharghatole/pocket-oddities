@@ -11,29 +11,29 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./assets/icon.svg">
   <link rel="apple-touch-icon" href="./assets/icon-180.png">
-  <title>Pocket Oddities · 33 Mini-Games</title>
+  <title>Pocket Oddities · 34 Mini-Games</title>
 </head>
 <body>
   <div class="backdrop" aria-hidden="true"></div>
   <div id="app">
     <header class="topbar">
-      <div class="brand"><span class="brand-glyph" aria-hidden="true">✳</span><div><strong>Pocket Oddities</strong><small id="game-count-tagline">33 tiny strange worlds</small></div></div>
+      <div class="brand"><span class="brand-glyph" aria-hidden="true">✳</span><div><strong>Pocket Oddities</strong><small id="game-count-tagline">34 tiny strange worlds</small></div></div>
       <div class="top-actions"><span class="offline-pill">● WORKS OFFLINE</span><button id="cabinet-trigger" class="cabinet-trigger" type="button" aria-haspopup="dialog" aria-controls="cabinet-dialog">◈ Cabinet <span id="cabinet-count">0/14</span></button><button id="install-app" class="install-btn" type="button" hidden>Install</button><button id="haptic-toggle" class="icon-btn" aria-label="Toggle vibration" title="Toggle vibration" aria-pressed="false">◌</button><button id="sound-toggle" class="icon-btn" aria-label="Toggle sound" title="Toggle sound">♫</button></div>
     </header>
     <main>
       <section id="home-screen" class="home-screen">
         <div class="hero">
-          <div class="hero-copy"><span class="eyebrow">THE WEIRD LITTLE ARCADE</span><h1><span id="hero-count">33</span> games.<br><em>Zero ordinary.</em></h1><p>Quick puzzles, tiny disasters, suspicious buttons, and pocket-sized chaos. All playable with one finger.</p><div class="hero-meta"><span id="hero-game-count">✦ 33 playable games</span><span>◷ 1–3 min rounds</span><span>↯ No account needed</span></div><div class="hero-actions"><button id="surprise-me" class="surprise-btn" type="button">🎲 Surprise Me</button></div></div>
+          <div class="hero-copy"><span class="eyebrow">THE WEIRD LITTLE ARCADE</span><h1><span id="hero-count">34</span> games.<br><em>Zero ordinary.</em></h1><p>Quick puzzles, tiny disasters, suspicious buttons, and pocket-sized chaos. All playable with one finger.</p><div class="hero-meta"><span id="hero-game-count">✦ 34 playable games</span><span>◷ 1–3 min rounds</span><span>↯ No account needed</span></div><div class="hero-actions"><button id="surprise-me" class="surprise-btn" type="button">🎲 Surprise Me</button></div></div>
           <div class="hero-art" aria-hidden="true"><span class="orbit orbit-a">👁</span><span class="orbit orbit-b">☄</span><div class="planet"><span>ಠ‿ಠ</span></div><span class="orbit orbit-c">★</span><span class="orbit orbit-d">◈</span></div>
         </div>
         <section id="game-of-day" class="game-of-day" aria-labelledby="game-of-day-title">
           <div class="game-of-day-copy"><span class="eyebrow" id="game-of-day-label">TODAY’S PICK</span><h2 id="game-of-day-title"></h2><p id="game-of-day-description"></p><button id="game-of-day-play" class="primary-btn" type="button">Play today’s oddity →</button></div>
           <div id="game-of-day-art" class="game-of-day-art" aria-hidden="true">✦</div>
         </section>
-        <div class="section-heading"><div><span class="eyebrow">PICK YOUR NEXT OBSESSION</span><h2>The collection</h2></div><div class="completion" id="completion">0 / 33 beaten</div></div>
+        <div class="section-heading"><div><span class="eyebrow">PICK YOUR NEXT OBSESSION</span><h2>The collection</h2></div><div class="completion" id="completion">0 / 34 beaten</div></div>
         <label class="search-label" for="game-search">FIND A GAME</label><input id="game-search" class="game-search" type="search" placeholder="Search the arcade…" autocomplete="off" aria-label="Search games">
         <nav class="collection-tabs" id="collection-tabs" role="tablist" aria-label="Arcade collections"><button class="collection-tab active" type="button" role="tab" aria-selected="true" data-view="discover">Discover</button><button class="collection-tab" type="button" role="tab" aria-selected="false" data-view="quick">Quick Play</button><button class="collection-tab" type="button" role="tab" aria-selected="false" data-view="speedrun">Speedruns</button><button class="collection-tab" type="button" role="tab" aria-selected="false" data-view="completed">Completed</button><button class="collection-tab" type="button" role="tab" aria-selected="false" data-view="unfinished">Unfinished</button><button class="collection-tab" type="button" role="tab" aria-selected="false" data-view="recent">Recently Played</button><button class="collection-tab" type="button" role="tab" aria-selected="false" data-view="favorites">Favorites</button><button class="collection-tab" type="button" role="tab" aria-selected="false" data-view="daily">Daily Rush</button></nav>
-        <div class="filter-row" id="filter-row" role="group" aria-label="Filter games"><button class="filter active" data-filter="all" id="all-filter">All 33</button><button class="filter" data-filter="reflex">Reflex</button><button class="filter" data-filter="puzzle">Puzzles</button><button class="filter" data-filter="strategy">Strategy</button><button class="filter" data-filter="weird">Weird</button></div>
+        <div class="filter-row" id="filter-row" role="group" aria-label="Filter games"><button class="filter active" data-filter="all" id="all-filter">All 34</button><button class="filter" data-filter="reflex">Reflex</button><button class="filter" data-filter="puzzle">Puzzles</button><button class="filter" data-filter="strategy">Strategy</button><button class="filter" data-filter="weird">Weird</button></div>
         <div id="game-grid" class="game-grid"></div>
         <footer>Made for small screens, short breaks, and curious fingers. ♡ <a href="https://github.com/aksharghatole/pocket-oddities/issues/new/choose" target="_blank" rel="noopener noreferrer">Suggest a game or report a bug</a></footer>
       </section>
@@ -101,6 +101,7 @@
   <script src="./game-packs/potion-scale.js" defer></script>
   <script src="./game-packs/pocket-elevator.js" defer></script>
   <script src="./game-packs/star-cartographer.js" defer></script>
+  <script src="./game-packs/anagram-attic.js" defer></script>
   <script src="./achievements.js" defer></script>
 </body>
 </html>

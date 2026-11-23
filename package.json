@@ -13,6 +13,7 @@
     "native:android": "cap open android",
     "native:ios": "cap open ios",
     "build:web": "node tools/build-web.mjs",
+    "sync:catalog": "node tools/check-library.mjs --sync",
     "test": "node tools/check-library.mjs",
     "test:games": "playwright test",
     "test:games:list": "playwright test --list"

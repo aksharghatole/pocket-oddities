@@ -14,7 +14,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] PWA install affordance and generated raster icons
 
 ## v1.2 — usability and polish
-- [ ] Playtest all 33 games end-to-end on small Android and iPhone screens
+- [ ] Playtest all 95 games end-to-end on small Android and iPhone screens
 - [x] Stop timer progression while browsing the achievement Cabinet
 - [x] First gameplay pass: Shadow Thief light readability and cooldown; Tiny Traffic God lane pause/resume, crossing logic and collision lives; Invisible Maze guaranteed routes, breadcrumbs, and improved peek feedback
 - [x] Shadow Thief uses high-contrast sun/star tile states, a clearer legend, and a pixel-level contrast regression test
@@ -46,6 +46,7 @@ This is a growing arcade, one app containing many original mini-games. Each new 
 - [x] Echo Tiles sequence-preview and mobile gameplay polish
 - [x] Echo Tiles offers Calm, Classic, and Rapid pacing with optional haptic preview cues
 - [x] Expansion packs #21–33: Echo Tiles, Moon Mail Sorter, Circuit Garden, Fossil Forecast, Ghost Gallery, Fossil Field, Orbit Locksmith, Pocket Elevator, Lantern Logic, Cloud Shepherd, Ink Tide, Potion Scale, and Star Cartographer
+- [x] Expansion packs #34–95: registered in the [game catalog](../README.md#the-95-game-catalog)
 - [x] Fossil Forecast’s three fixed nonograms and sixth hidden relic thread
 - [x] Star Cartographer connects three numbered-star constellations with full win and retry coverage
 - [ ] More game packs; prioritize quality over sheer count

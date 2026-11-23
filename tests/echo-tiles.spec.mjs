@@ -88,7 +88,7 @@ test('Echo Tiles exposes the app haptics toggle for preview cues on compact mobi
   });
   await page.setViewportSize({width:360,height:740});
   await page.goto('/');
-  await page.getByRole('button',{name:/Echo Tiles/}).first().click();
+  await page.getByRole('button',{name:'Play Echo Tiles',exact:true}).click();
   const controls=page.locator('#game-controls .control-btn');
   await expect(controls).toHaveCount(3);
   await expect(controls).toHaveText(['CALM · 2 TILES','CLASSIC · 3 TILES','RAPID · 4 TILES']);

@@ -8,7 +8,7 @@ const maps=[
 
 async function launch(page){
   await page.goto('/');
-  await page.getByRole('button',{name:/Star Cartographer/}).first().click();
+  await page.getByRole('button',{name:'Play Star Cartographer',exact:true}).click();
   await expect(page.locator('#game-title')).toHaveText('Star Cartographer');
 }
 async function tapStar(page,[x,y]){

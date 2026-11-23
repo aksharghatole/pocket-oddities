@@ -44,7 +44,7 @@ test('Moon Mail Sorter is registered and launches with touch-sized controls',asy
   const errors=collectErrors(page);
   await ready(page);
   await expect(page.locator('#game-grid')).toContainText('Moon Mail Sorter');
-  await page.getByRole('button',{name:/Moon Mail Sorter/}).click();
+  await page.getByRole('button',{name:'Play Moon Mail Sorter',exact:true}).click();
   await expect(page.locator('#game-title')).toHaveText('Moon Mail Sorter');
   await expect(page.locator('#game-controls .control-btn')).toHaveCount(3);
   await page.locator('#game-controls .control-btn').first().click();
@@ -297,7 +297,7 @@ test('The Game Is Lying rejects a wrong choice and accepts all ten counterexampl
   const errors=collectErrors(page);
   await page.setViewportSize({width:360,height:740});
   await ready(page);
-  await page.getByRole('button',{name:/The Game Is Lying/}).click();
+  await page.getByRole('button',{name:'Play The Game Is Lying',exact:true}).click();
   await expect(page.locator('#game-title')).toHaveText('The Game Is Lying');
   const controls=page.locator('#game-controls .control-btn');
   const choices=[
@@ -334,7 +334,7 @@ test('The Game Is Lying rejects a wrong choice and accepts all ten counterexampl
 test('winning, local high score, and restart work for a strategy game',async ({page})=>{
   const errors=collectErrors(page);
   await ready(page);
-  await page.getByRole('button',{name:/One Minute Villain/}).click();
+  await page.getByRole('button',{name:'Play One Minute Villain',exact:true}).click();
   await page.waitForTimeout(120);
   const glitch=page.locator('#game-controls .control-btn').filter({hasText:'GLITCH'});
   await expect(glitch).toBeVisible();
@@ -358,7 +358,7 @@ test('winning, local high score, and restart work for a strategy game',async ({p
 test('losing after eight turns shows a retry path',async ({page})=>{
   const errors=collectErrors(page);
   await ready(page);
-  await page.getByRole('button',{name:/One Minute Villain/}).click();
+  await page.getByRole('button',{name:'Play One Minute Villain',exact:true}).click();
   const decoy=page.locator('#game-controls .control-btn').filter({hasText:'DECOY'});
   for(let turn=0;turn<8;turn++)await decoy.click();
   await expect(page.locator('#game-overlay')).toBeVisible();

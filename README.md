@@ -42,9 +42,8 @@ For maintainers: medal definitions, connected-game clues, and theme unlocks are 
 
 ## Play it immediately
 
-1. Open `index.html` in a desktop browser (some PWA features need an HTTP server).
+1. Run `npm start` and open `http://localhost:4173` for the complete catalog and offline preview.
 2. For browsers on your phone and installable PWA behavior, serve this folder on a reachable HTTPS site such as **GitHub Pages**.
-3. To preview the production bundle locally, run `npm start` and open `http://localhost:4173`.
 
 ## Run and debug the tests
 
@@ -196,7 +195,7 @@ The first 20 games are built into the shared engine. Games 21–96 are independe
 - `tools/` contains build and validation scripts, `tests/` contains Playwright specs, and `docs/` contains the contributor and release guides.
 - `assets/` contains source artwork. The build generates the PNG icons in `www/assets/`. The native project folders and test reports are generated locally and ignored by Git.
 - `games.js` has the shared game engine, metadata (`info` array), and the original 20 implementations, each added using `define({...})`.
-- `game-packs/*.js` contains new mini-games; register with `window.PocketOddities.register()` and add a deferred script tag in `index.html`.
+- `game-packs/*.js` contains new mini-games; register with `window.PocketOddities.register()` in an `auto-*.js` file for discovery at build time.
 - `styles.css` controls the arcade visuals; `index.html` contains the app shell.
 - To change titles, game descriptions, emojis, or categories, edit `info`.
 - To tune difficulty, edit each game's `init()`, `update()`, `tap()` and `action()` handlers.

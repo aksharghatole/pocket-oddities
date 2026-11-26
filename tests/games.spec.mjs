@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
+import {readAutoPacks} from '../tools/auto-packs.mjs';
 
 const root=new URL('../',import.meta.url);
 const core=readFileSync(new URL('games.js',root),'utf8');
@@ -9,6 +10,7 @@ if(!listMatch)throw new Error('Cannot find the built-in game catalog');
 const builtIn=vm.runInNewContext('['+listMatch[1]+']',{}, {timeout:1000}).map(entry=>entry[0]);
 const indexHtml=readFileSync(new URL('index.html',root),'utf8');
 const extensionFiles=[...indexHtml.matchAll(/<script[^>]+src=["']\.\/game-packs\/([^"']+\.js)["']/g)].map(match=>match[1]);
+extensionFiles.push(...readAutoPacks(root).map(pack=>pack.name));
 const expansions=[];
 for(const file of extensionFiles){
   const content=readFileSync(new URL('game-packs/'+file,root),'utf8');

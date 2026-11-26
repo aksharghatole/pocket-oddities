@@ -1,19 +1,24 @@
 import assert from 'node:assert/strict';
-import {cp,copyFile,mkdir,readFile,rm,stat} from 'node:fs/promises';
+import {cp,copyFile,mkdir,readFile,rm,stat,writeFile} from 'node:fs/promises';
 import {generateIcons} from './generate-icons.mjs';
+import {expandAutoPacks,readAutoPacks} from './auto-packs.mjs';
 const root=new URL('../',import.meta.url),out=new URL('../www/',import.meta.url);
 const config=JSON.parse(await readFile(new URL('capacitor.config.json',root),'utf8'));
 assert.equal(config.webDir,'www','Capacitor webDir must match the generated bundle');
 
 await rm(out,{recursive:true,force:true});await mkdir(out,{recursive:true});
-for(const f of ['index.html','games.js','achievements.js','styles.css','manifest.webmanifest','sw.js'])await copyFile(new URL(f,root),new URL(f,out));
+for(const f of ['games.js','achievements.js','styles.css','manifest.webmanifest'])await copyFile(new URL(f,root),new URL(f,out));
 await cp(new URL('assets/',root),new URL('assets/',out),{recursive:true});
 await cp(new URL('game-packs/',root),new URL('game-packs/',out),{recursive:true});
 await generateIcons(out);
 const readOutput=file=>readFile(new URL(file,out),'utf8');
-const [html,manifestText,worker]=await Promise.all(
-  ['index.html','manifest.webmanifest','sw.js'].map(readOutput)
-);
+const [sourceHtml,manifestText,sourceWorker]=await Promise.all([
+  readFile(new URL('index.html',root),'utf8'),
+  readOutput('manifest.webmanifest'),
+  readFile(new URL('sw.js',root),'utf8')
+]);
+const {html,worker}=expandAutoPacks(sourceHtml,sourceWorker,readAutoPacks(root));
+await Promise.all([writeFile(new URL('index.html',out),html),writeFile(new URL('sw.js',out),worker)]);
 const manifest=JSON.parse(manifestText);
 const launcherAssets=[...html.matchAll(/\s(?:src|href)=["'](\.\/[^"']+)["']/g)].map(match=>match[1]);
 const precache=worker.match(/const PRECACHE=\[([^\]]*)\];/);

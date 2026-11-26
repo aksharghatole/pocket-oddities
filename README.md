@@ -1,13 +1,14 @@
-# Pocket Oddities — a growing mobile mini-game arcade
+# Pocket Oddities
 
-A dependency-free, original HTML5 arcade built for mobile portrait screens. All **96 mini-games** are playable with tap, drag, or on-screen buttons. Includes a responsive game library with a UTC-stable Game of the Day, a Surprise Me shortcut, completed and unfinished shelves, scores saved locally, independent sound, optional vibration, and a reduced-motion preference, offline PWA caching, and a Capacitor starter configuration for Android/iOS packaging. GitHub Actions deploys the project to GitHub Pages once Pages is enabled under Settings → Pages → Build and deployment → Source: GitHub Actions.
+[Play online](https://aksharghatole.github.io/pocket-oddities/) · [Android and iOS builds](#live-arcade-and-android-test-app)
 
-**Important:** This is a working **MVP**, not 96 fully polished commercial games or finished App Store / Play Store binaries. The arcade still needs broad playtesting, store screenshots and assets, a privacy policy, and native signing before release.
+A dependency-free, original HTML5 arcade built for mobile portrait screens. The growing library of mini-games is playable with tap, drag, or on-screen buttons. Includes a responsive game library with a UTC-stable Game of the Day, a Surprise Me shortcut, completed and unfinished shelves, scores saved locally, independent sound, optional vibration, and a reduced-motion preference, offline PWA caching, and a Capacitor starter configuration for Android/iOS packaging. GitHub Actions deploys the project to GitHub Pages once Pages is enabled under Settings → Pages → Build and deployment → Source: GitHub Actions.
+
+**Important:** This is a working **MVP**, not a collection of fully polished commercial games or finished App Store / Play Store binaries. The arcade still needs broad playtesting, store screenshots and assets, a privacy policy, and native signing before release.
 
 
 ## Live arcade and Android test app
 
-**Play online:** https://aksharghatole.github.io/pocket-oddities/
 
 **Android debug APK:** Open **Actions → Build and test Android APK → Run workflow**. After a successful build, download the `pocket-oddities-android-debug-apk` artifact; the APK inside is for testing only, not Play Store release.
 

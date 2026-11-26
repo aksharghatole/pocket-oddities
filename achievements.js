@@ -129,18 +129,19 @@
   }
   function mergeProgress(incoming){
     const data=asObject(incoming),names=new Set(api.catalog.map(game=>game.name));
+    const progressKeys=new Set(api.catalog.map(game=>game.progressKey));
     if(!BACKUP_KEYS.some(key=>Object.hasOwn(data,key)))throw new Error('This backup has no Pocket Oddities progress data.');
     let changed=false;
     const wins=safeRead('oddities-wins',{});
     for(const [key,value] of Object.entries(asObject(data['oddities-wins']))){
-      if(/^\d+$/.test(key)&&Number(key)<api.catalog.length&&value===true&&!wins[key]){wins[key]=true;changed=true}
+      if(progressKeys.has(key)&&value===true&&!wins[key]){wins[key]=true;changed=true}
     }
     if(changed)writeLocal('oddities-wins',wins);
     changed=false;
     const highs=safeRead('oddities-highs',{});
     for(const [key,value] of Object.entries(asObject(data['oddities-highs']))){
       const score=Number(value);
-      if(/^\d+$/.test(key)&&Number(key)<api.catalog.length&&Number.isFinite(score)&&score>=0&&score>Number(highs[key]||0)){highs[key]=score;changed=true}
+      if(progressKeys.has(key)&&Number.isFinite(score)&&score>=0&&score>Number(highs[key]||0)){highs[key]=score;changed=true}
     }
     if(changed)writeLocal('oddities-highs',highs);
     for(const key of ['oddities-favorites','oddities-recent']){
@@ -216,8 +217,8 @@
     const wins = safeRead('oddities-wins',{});
     const uniqueWins = new Set();
     const categoryWins={reflex:0,puzzle:0,strategy:0,weird:0};
-    catalog.forEach(({name,category},index)=>{
-      if(!wins[index])return;
+    catalog.forEach(({name,category,progressKey})=>{
+      if(!wins[progressKey])return;
       if(uniqueWins.has(name))return;
       uniqueWins.add(name);
       if(Object.hasOwn(categoryWins,category))categoryWins[category]++;

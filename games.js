@@ -168,6 +168,8 @@ const info=[
 ['One Minute Villain','strategy','🦹','Create mischief without getting caught.','Build chaos while keeping your heat down.']
 ];
 const games=[];
+const progressKeys=new Map();
+const progressKey=index=>progressKeys.get(index)??String(index);
 function define(def){games.push(def)}
 // Expansion API: keep existing game indices stable and register new games in separate packs.
 const extensionAPI=Object.freeze({
@@ -183,15 +185,17 @@ window.PocketOddities=Object.freeze({
     if(info.some(row=>row[0]===metadata[0]))throw Error('Duplicate game name: '+metadata[0]);
     const def=factory(extensionAPI);
     if(!def||typeof def.init!=='function'||typeof def.draw!=='function')throw Error('A mini-game needs init() and draw()');
+    const key=document.currentScript?.dataset.progressKey;
+    if(key)progressKeys.set(info.length,key);
     info.push(metadata);define(def);renderHome();
     window.dispatchEvent(new CustomEvent('oddities:catalog'));
   },
   get count(){return info.length},
-  get catalog(){return info.map(([name,category])=>({name,category}));}
+  get catalog(){return info.map(([name,category],index)=>({name,category,progressKey:progressKey(index)}));}
 });
-function finish(win,message=''){if(!m||m.ended)return;m.ended=true;m.win=win;if(win){beaten[idx]=true;storeSet('oddities-wins',beaten);beep(750);vibrate(HAPTIC_FEEDBACK.win);const title=info[idx]?.[0],seconds=Number(m.elapsed)||0,previous=fastestClears[title];if(title&&seconds>0&&(!previous||!Number.isFinite(Number(previous.seconds))||seconds<Number(previous.seconds))){fastestClears[title]={seconds:Number(seconds.toFixed(3)),score:m.score,date:new Date().toISOString().slice(0,10)};storeSet('oddities-fastest-clears',fastestClears)}}else{beep(170);vibrate(HAPTIC_FEEDBACK.loss)}if(m.score>(highs[idx]||0)){highs[idx]=m.score;storeSet('oddities-highs',highs)}$('overlay-icon').textContent=win?'✦':'☄';$('overlay-title').textContent=win?'You did it!':'Round over';$('overlay-message').textContent=message|| (win?'Another strange victory for your collection.':'Try again — every oddity takes practice.');$('game-overlay').classList.remove('hidden');refreshHud();renderHome();window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{name:info[idx]?.[0],category:info[idx]?.[1],index:idx,won:!!win,score:m.score,elapsed:m.elapsed}}))}
+function finish(win,message=''){if(!m||m.ended)return;m.ended=true;m.win=win;if(win){beaten[progressKey(idx)]=true;storeSet('oddities-wins',beaten);beep(750);vibrate(HAPTIC_FEEDBACK.win);const title=info[idx]?.[0],seconds=Number(m.elapsed)||0,previous=fastestClears[title];if(title&&seconds>0&&(!previous||!Number.isFinite(Number(previous.seconds))||seconds<Number(previous.seconds))){fastestClears[title]={seconds:Number(seconds.toFixed(3)),score:m.score,date:new Date().toISOString().slice(0,10)};storeSet('oddities-fastest-clears',fastestClears)}}else{beep(170);vibrate(HAPTIC_FEEDBACK.loss)}if(m.score>(highs[progressKey(idx)]||0)){highs[progressKey(idx)]=m.score;storeSet('oddities-highs',highs)}$('overlay-icon').textContent=win?'✦':'☄';$('overlay-title').textContent=win?'You did it!':'Round over';$('overlay-message').textContent=message|| (win?'Another strange victory for your collection.':'Try again — every oddity takes practice.');$('game-overlay').classList.remove('hidden');refreshHud();renderHome();window.dispatchEvent(new CustomEvent('oddities:game-finish',{detail:{name:info[idx]?.[0],category:info[idx]?.[1],index:idx,won:!!win,score:m.score,elapsed:m.elapsed}}))}
 function addScore(n=1){m.score+=n;beep(480+Math.min(400,m.score*25))}
-function refreshHud(){$('score').textContent=m?m.score:0;$('clock').textContent=m&&m.t!=null?Math.max(0,Math.ceil(m.t))+'s':'—';$('best').textContent=highs[idx]||0;$('level-pill').textContent='ROUND '+String(m?.level||1).padStart(2,'0')}
+function refreshHud(){$('score').textContent=m?m.score:0;$('clock').textContent=m&&m.t!=null?Math.max(0,Math.ceil(m.t))+'s':'—';$('best').textContent=highs[progressKey(idx)]||0;$('level-pill').textContent='ROUND '+String(m?.level||1).padStart(2,'0')}
 function openGame(i){cancelDailyAdvance();$('rush-next').classList.add('hidden');$('restart-btn').hidden=false;idx=i;game=games[i];recentlyPlayed=[info[i][0],...recentlyPlayed.filter(name=>name!==info[i][0])].slice(0,12);storeSet('oddities-recent',recentlyPlayed);m={score:0,t:null,level:1,ended:false,elapsed:0};$('home-screen').classList.add('hidden');$('play-screen').classList.remove('hidden');$('game-overlay').classList.add('hidden');$('game-title').textContent=info[i][0];$('game-category').textContent=info[i][1].toUpperCase()+' · MINI GAME '+String(i+1).padStart(2,'0');$('game-description').textContent=info[i][3];$('instruction').textContent=info[i][4];controls([]);game.init();refreshHud();window.scrollTo({top:0,behavior:'instant'});window.dispatchEvent(new CustomEvent('oddities:game-start',{detail:{name:info[i][0],category:info[i][1],index:i}}))}
 function showHome(){cancelDailyAdvance();game=null;m=null;idx=-1;$('play-screen').classList.add('hidden');$('home-screen').classList.remove('hidden');renderHome();window.scrollTo({top:0,behavior:'instant'})}
 function act(action){if(!m||m.ended)return;game.action?.(action)}
@@ -217,8 +221,8 @@ function renderHome(filter='all'){
   let catalog=info.map(([name,category,emoji,desc],i)=>({name,category,emoji,desc,index:i}));
   if(libraryView==='quick')catalog=catalog.filter(item=>QUICK_PLAY_NAMES.has(item.name));
   if(libraryView==='speedrun')catalog.sort((a,b)=>{const at=Number(fastestClears[a.name]?.seconds),bt=Number(fastestClears[b.name]?.seconds);const av=Number.isFinite(at)&&at>0?at:Infinity,bv=Number.isFinite(bt)&&bt>0?bt:Infinity;return av-bv||a.name.localeCompare(b.name)});
-  if(libraryView==='completed')catalog=catalog.filter(item=>Boolean(beaten[item.index]));
-  if(libraryView==='unfinished')catalog=catalog.filter(item=>!beaten[item.index]);
+  if(libraryView==='completed')catalog=catalog.filter(item=>Boolean(beaten[progressKey(item.index)]));
+  if(libraryView==='unfinished')catalog=catalog.filter(item=>!beaten[progressKey(item.index)]);
   if(libraryView==='recent')catalog=recentlyPlayed.map(name=>catalog.find(item=>item.name===name)).filter(Boolean);
   if(libraryView==='favorites')catalog=catalog.filter(item=>favorites.includes(item.name));
   if(selected!=='all')catalog=catalog.filter(item=>item.category===selected);
@@ -230,14 +234,14 @@ function renderHome(filter='all'){
     const launch=document.createElement('button');launch.type='button';launch.className='game-launch';launch.setAttribute('aria-label','Play '+name);
     const clear=fastestClears[name],clearSeconds=Number(clear?.seconds),hasClear=Number.isFinite(clearSeconds)&&clearSeconds>0;
     const cardLeft=libraryView==='speedrun'?(hasClear?'PERSONAL BEST':'NO CLEAR'):category;
-    const cardRight=libraryView==='speedrun'?(hasClear?clearSeconds.toFixed(1)+'s':'—'):(beaten[i]?'★ BEATEN':'PLAY →');
-    launch.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span class="${libraryView==='speedrun'?(hasClear?'speedrun-record':'speedrun-record-none'):''}">${cardLeft}</span><span class="${libraryView==='speedrun'?'speedrun-record':(beaten[i]?'card-beat':'')}">${cardRight}</span></div>`;
+    const cardRight=libraryView==='speedrun'?(hasClear?clearSeconds.toFixed(1)+'s':'—'):(beaten[progressKey(i)]?'★ BEATEN':'PLAY →');
+    launch.innerHTML=`<div class="game-card-top"><span class="card-emoji">${emoji}</span><span class="card-number">${String(i+1).padStart(2,'0')}</span></div><h3>${name}</h3><p>${desc}</p><div class="game-card-bottom"><span class="${libraryView==='speedrun'?(hasClear?'speedrun-record':'speedrun-record-none'):''}">${cardLeft}</span><span class="${libraryView==='speedrun'?'speedrun-record':(beaten[progressKey(i)]?'card-beat':'')}">${cardRight}</span></div>`;
     launch.onclick=()=>openGame(i);
     const favorite=document.createElement('button');favorite.type='button';favorite.className='favorite-toggle';favorite.setAttribute('aria-pressed',String(favorites.includes(name)));favorite.setAttribute('aria-label',favorites.includes(name)?'Remove from favorites':'Add to favorites');favorite.title=(favorites.includes(name)?'Remove '+name+' from':'Add '+name+' to')+' favorites';favorite.textContent=favorites.includes(name)?'★':'☆';
     favorite.onclick=event=>{event.stopPropagation();favorites=favorites.includes(name)?favorites.filter(item=>item!==name):[...favorites,name];storeSet('oddities-favorites',favorites);renderHome()};
     card.append(launch,favorite);grid.appendChild(card);
   });
-  $('completion').textContent=libraryView==='speedrun'?Object.keys(fastestClears).filter(name=>Number(fastestClears[name]?.seconds)>0).length+' personal bests':libraryView==='completed'?catalog.length+' completed games':libraryView==='unfinished'?catalog.length+' games to discover':info.filter((_,index)=>beaten[index]).length+' / '+info.length+' beaten';
+  $('completion').textContent=libraryView==='speedrun'?Object.keys(fastestClears).filter(name=>Number(fastestClears[name]?.seconds)>0).length+' personal bests':libraryView==='completed'?catalog.length+' completed games':libraryView==='unfinished'?catalog.length+' games to discover':info.filter((_,index)=>beaten[progressKey(index)]).length+' / '+info.length+' beaten';
   $('game-count-tagline').textContent=info.length+' tiny strange worlds';$('hero-count').textContent=info.length;
   $('hero-game-count').textContent='✦ '+info.length+' playable games';$('all-filter').textContent='All '+info.length;
   const heading=libraryView==='quick'?'Quick Play':libraryView==='speedrun'?'Speedruns':libraryView==='completed'?'Completed':libraryView==='unfinished'?'Unfinished':libraryView==='recent'?'Recently Played':libraryView==='favorites'?'Favorites':libraryView==='daily'?'Daily Rush':'The collection';

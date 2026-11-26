@@ -61,6 +61,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Install and smoke-test on actual Android emulator
+        id: emulator_smoke
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -88,11 +89,13 @@ jobs:
           retention-days: 14
       - name: Summarize Android test
         if: always()
+        env:
+          SMOKE_OUTCOME: ${{ steps.emulator_smoke.outcome }}
         run: |
           echo "## Pocket Oddities Android app" >> "$GITHUB_STEP_SUMMARY"
           echo "APK builds and emulator smoke checks run automatically after changes to games or app files." >> "$GITHUB_STEP_SUMMARY"
-          if [ -f test-results/android/process.txt ]; then
-            echo "✅ App installed and launched. See APK and emulator report artifacts." >> "$GITHUB_STEP_SUMMARY"
+          if [ "$SMOKE_OUTCOME" = success ]; then
+            echo "✅ APK installed, launched, and relaunched offline. See the APK and emulator report artifacts." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "⚠️ Check the step logs and uploaded reports for build/emulator errors." >> "$GITHUB_STEP_SUMMARY"
           fi

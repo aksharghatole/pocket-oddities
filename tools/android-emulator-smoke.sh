@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Smoke-test an actual Android emulator without requiring a human to install the APK.
 set -euo pipefail
-PACKAGE="com.yourstudio.pocketoddities"
+PACKAGE="$(node -p "require('./capacitor.config.json').appId")"
 ACTIVITY="$PACKAGE/.MainActivity"
 APK="android/app/build/outputs/apk/debug/app-debug.apk"
 mkdir -p test-results/android
@@ -19,8 +19,7 @@ if [[ -z "$pid" ]]; then
 fi
 printf 'Android package: %s, running PID: %s\n' "$PACKAGE" "$pid" | tee test-results/android/process.txt
 adb exec-out screencap -p > test-results/android/launcher.png
-# Exercise a touch gesture in the game collection (all 21 game paths
-# are tested individually by the separate Playwright browser workflow).
+# Send a swipe and capture the result. Playwright covers individual game launches.
 adb shell input swipe 175 650 175 250 350
 sleep 1
 adb exec-out screencap -p > test-results/android/after-touch.png
@@ -38,4 +37,4 @@ if grep -E -A 18 'FATAL EXCEPTION' test-results/android/logcat.txt | grep -q -F 
   echo "Detected native app crash in logcat." >&2
   exit 1
 fi
-echo "PASS: native app installed, launched, accepted touch, and relaunched offline."
+echo "PASS: native app installed, launched, received a swipe, and relaunched offline."

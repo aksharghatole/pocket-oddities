@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFile,readdir,access,writeFile} from 'node:fs/promises';
+import {readAutoPacks,withGameCount} from './auto-packs.mjs';
 const source=file=>new URL('../'+file,import.meta.url);
 const read=file=>readFile(source(file),'utf8');
 const sync=process.argv[2]==='--sync';
@@ -14,8 +15,10 @@ assert.match(engine,/PocketOddities=Object\.freeze/,'Game pack registration API 
 assert.match(engine,/info\.length\+' beaten'/,'Completion count must be dynamic');
 const manifestJSON=JSON.parse(manifest);
 assert.ok(manifestJSON.name&&manifestJSON.start_url&&manifestJSON.icons.length);
+const autoPacks=readAutoPacks(source('./'));
+const automaticNames=new Set(autoPacks.map(pack=>pack.name));
 const packPaths=(await readdir(source('game-packs/')))
-  .filter(name=>name.endsWith('.js'))
+  .filter(name=>name.endsWith('.js')&&!automaticNames.has(name))
   .map(name=>'game-packs/'+name)
   .sort();
 const launcherPacks=[...html.matchAll(/<script\b[^>]*\bsrc=["']\.\/(game-packs\/[^"']+\.js)["'][^>]*>/g)]
@@ -31,19 +34,7 @@ for(const path of launcherPacks){
 }
 const builtIn=(engine.match(/\bdefine\(\{/g)||[]).length;
 const count=builtIn+registered;
-const fallbackCounts=[
-  /(<title>Pocket Oddities · )\d+( Mini-Games<\/title>)/,
-  /(id="game-count-tagline">)\d+( tiny strange worlds)/,
-  /(id="hero-count">)\d+(<\/span> games\.)/,
-  /(id="hero-game-count">✦ )\d+( playable games)/,
-  /(id="completion">0 \/ )\d+( beaten)/,
-  /(id="all-filter">All )\d+(<\/button>)/
-];
-let syncedHtml=html;
-for(const markup of fallbackCounts){
-  assert.match(html,markup,'Missing static launcher count: '+markup);
-  syncedHtml=syncedHtml.replace(markup,(_,before,after)=>before+count+after);
-}
+const syncedHtml=withGameCount(html,count);
 
 const precachePattern=/const PRECACHE=(\[[^\n]*\]);/;
 const precache=worker.match(precachePattern);
@@ -74,4 +65,4 @@ if(sync){
   if(syncedHtml!==html)await writeFile(source('index.html'),syncedHtml);
   if(syncedWorker!==worker)await writeFile(source('sw.js'),syncedWorker);
 }
-console.log('Verified '+count+' game definitions ('+builtIn+' original, '+registered+' expansion) and web assets.');
+console.log('Verified '+(count+autoPacks.length)+' game definitions ('+builtIn+' original, '+(registered+autoPacks.length)+' expansion) and web assets.');

@@ -20,7 +20,7 @@
       }
       function newDive(){
         const s=api.state;
-        s.x=0;s.y=0;s.oxygen=24;s.collected=new Set();s.seen=new Set();
+        s.x=0;s.y=0;s.oxygen=24;s.collected=new Set();s.seen=new Set();s.pendingWin=false;
         s.note='Explore. Avoid the red reef tiles.';
         reveal(s,1);
       }
@@ -31,7 +31,7 @@
       }
       function ping(){
         const s=api.state;
-        if(s.ended)return;
+        if(s.ended||s.pendingWin)return;
         if(s.oxygen<=2){s.note='Not enough oxygen for sonar. Swim instead.';return;}
         s.oxygen-=2;reveal(s,2);s.ripple=1;
         s.note='Sonar reveals water up to two steps away.';
@@ -39,7 +39,7 @@
       }
       function swim(x,y){
         const s=api.state;
-        if(s.ended||!inside(x,y))return;
+        if(s.ended||s.pendingWin||!inside(x,y))return;
         if(Math.abs(x-s.x)+Math.abs(y-s.y)!==1){
           s.note='Tap one adjacent square (not diagonally).';return;
         }
@@ -64,7 +64,15 @@
         if(x===4&&y===4&&s.collected.size===2){
           api.addScore(100+s.oxygen*5+s.hull*20);
           if(s.level===maps.length){
-            api.finish(true,'Three dives complete! Every lost pearl is home.');
+            // Finish after the touch-generated click to avoid tapping through
+            // the new overlay's Home button on compact Android screens.
+            s.pendingWin=true;
+            s.note='All pearls secured! Surfacing…';
+            setTimeout(()=>{
+              if(api.state===s&&!s.ended&&s.pendingWin){
+                api.finish(true,'Three dives complete! Every lost pearl is home.');
+              }
+            },180);
             return;
           }
           s.level++;newDive();s.note='Dive cleared! Fresh oxygen and darker reefs.';

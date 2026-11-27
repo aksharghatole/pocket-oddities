@@ -21,7 +21,10 @@ test('Prism Loom solves all three patterns with touch',async({page})=>{
   await launch(page);
   for(let p=0;p<patterns.length;p++){
     for(const [axis,values] of [['row',patterns[p].r],['col',patterns[p].c]]){
-      for(let i=0;i<4;i++)for(let j=0;j<values[i];j++)await spool(page,axis,i);
+      for(let i=0;i<4;i++)for(let j=0;j<values[i];j++){
+        await spool(page,axis,i);
+        await page.waitForTimeout(80);
+      }
     }
     if(p<2)await expect(page.locator('#level-pill')).toContainText(String(p+2).padStart(2,'0'));
   }

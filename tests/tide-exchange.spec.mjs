@@ -22,7 +22,7 @@ test('Tide Exchange balances all three harbors',async({page})=>{
 });
 test('Tide Exchange spends tokens and restarts',async({page})=>{
   await launch(page);
-  for(let i=0;i<5;i++)await transfer(page,i%2,1-i%2);
+  for(let i=0;i<5;i++)await transfer(page,i%2?3:2,i%2?2:3);
   await expect(page.locator('#overlay-title')).toHaveText('Round over');
   await page.locator('#restart-btn').click();
   await expect(page.locator('#game-overlay')).toBeHidden();

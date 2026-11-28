@@ -12,7 +12,9 @@ async function launch(page){
   await expect(page.locator('#game-title')).toHaveText('Prism Loom');
 }
 async function spool(page,axis,i){
-  const b=await page.locator('#arena').boundingBox();
+  const arena=page.locator('#arena');
+  await arena.scrollIntoViewIfNeeded();
+  const b=await arena.boundingBox();
   expect(b).toBeTruthy();
   const x=axis==='row'?45:103+i*54,y=axis==='row'?217+i*54:160;
   await page.touchscreen.tap(b.x+x*b.width/360,b.y+y*b.height/450);

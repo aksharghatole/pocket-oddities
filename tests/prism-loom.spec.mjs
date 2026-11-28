@@ -1,8 +1,9 @@
 import {test,expect} from '@playwright/test';
+// Minimum-move equivalent phases prevent a solved prefix from spilling taps into the next round.
 const patterns=[
   {r:[1,0,1,0],c:[0,1,0,1]},
-  {r:[2,0,1,2],c:[1,2,0,1]},
-  {r:[2,1,2,0],c:[2,0,1,2]}
+  {r:[0,1,2,0],c:[0,1,2,0]},
+  {r:[0,2,0,1],c:[1,2,0,1]}
 ];
 async function launch(page){
   await page.goto('/');

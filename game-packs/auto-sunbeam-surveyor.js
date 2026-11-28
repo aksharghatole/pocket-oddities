@@ -27,6 +27,7 @@
         ]}
       ];
       function reset(s){
+        s.pending=false;
         const p=surveys[s.level-1];
         s.mirrors=p.mirrors.map(m=>({...m}));
         s.shots=3;s.beam=[];s.note='Turn the mirrors, then fire.';
